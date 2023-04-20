@@ -3,8 +3,8 @@ import Image from "next/image";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
-
-const inter = Inter({ subsets: ["latin"] });
+import localFont from "next/font/local";
+const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 
 export default function Home() {
   const [tempo, setTempo] = useState(90);
@@ -43,7 +43,7 @@ export default function Home() {
       >
         Decrease
       </button>
-      {tempo}
+      <p className="tempo">{tempo}</p>
     </>
   );
 }

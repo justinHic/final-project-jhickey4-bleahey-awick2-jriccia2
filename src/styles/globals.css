@@ -1,6 +1,70 @@
+@font-face {
+  font-family: "DS-Digital";
+  src: url("../../public/fonts/DS-Digital.eot");
+  src: url("../../public/fonts/DS-Digital.eot?#iefix")
+      format("embedded-opentype"),
+    url("../../public/fonts/DS-Digital.woff2") format("woff2"),
+    url("../../public/fonts/DS-Digital.woff") format("woff"),
+    url("../../public/fonts/DS-Digital.ttf") format("truetype"),
+    url("../../public/fonts/DS-Digital.svg#DS-Digital") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DS-Digital";
+  src: url("../../public/fonts/DS-Digital-Italic.eot");
+  src: url("../../public/fonts/DS-Digital-Italic.eot?#iefix")
+      format("embedded-opentype"),
+    url("../../public/fonts/DS-Digital-Italic.woff2") format("woff2"),
+    url("../../public/fonts/DS-Digital-Italic.woff") format("woff"),
+    url("../../public/fonts/DS-Digital-Italic.ttf") format("truetype"),
+    url("../../public/fonts/DS-Digital-Italic.svg#DS-Digital-Italic")
+      format("svg");
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DS-Digital";
+  src: url("../../public/fonts/DS-Digital-BoldItalic.eot");
+  src: url("../../public/fonts/DS-Digital-BoldItalic.eot?#iefix")
+      format("embedded-opentype"),
+    url("../../public/fonts/DS-Digital-BoldItalic.woff2") format("woff2"),
+    url("../../public/fonts/DS-Digital-BoldItalic.woff") format("woff"),
+    url("../../public/fonts/DS-Digital-BoldItalic.ttf") format("truetype"),
+    url("../../public/fonts/DS-Digital-BoldItalic.svg#DS-Digital-BoldItalic")
+      format("svg");
+  font-weight: bold;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DS-Digital";
+  src: url("../../public/fonts/DS-Digital-Bold.eot");
+  src: url("../../public/fonts/DS-Digital-Bold.eot?#iefix")
+      format("embedded-opentype"),
+    url("../../public/fonts/DS-Digital-Bold.woff2") format("woff2"),
+    url("../../public/fonts/DS-Digital-Bold.woff") format("woff"),
+    url("../../public/fonts/DS-Digital-Bold.ttf") format("truetype"),
+    url("../../public/fonts/DS-Digital-Bold.svg#DS-Digital-Bold") format("svg");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
 a {
   color: inherit;
   text-decoration: none;
+}
+
+.tempo {
+  font-family: "DS-Digital";
+  font-weight: normal;
+  font-style: normal;
 }
 
 @media (prefers-color-scheme: dark) {
