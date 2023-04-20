@@ -18,32 +18,39 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <button
-        onClick={() => {
-          console.log("hit");
-          metronome.startStop();
-        }}
-      >
-        Play
-      </button>
-      <button
-        className="testButton"
-        onClick={() => {
-          setTempo(tempo + 10);
-          metronome.tempo = tempo + 10;
-        }}
-      >
-        increase
-      </button>
-      <button
-        onClick={() => {
-          setTempo(tempo - 10);
-          metronome.tempo = tempo - 10;
-        }}
-      >
-        Decrease
-      </button>
-      <p className="tempo">{tempo}</p>
+      <div className="outer">
+        <div className="inner">
+          <button
+            onClick={() => {
+              console.log("hit");
+              metronome.startStop();
+            }}
+          >
+            Play
+          </button>
+          <div className="metronome_div">
+            <button
+              className="decreaseMetronome"
+              onClick={() => {
+                setTempo(tempo - 10);
+                metronome.tempo = tempo - 10;
+              }}
+            >
+              -
+            </button>
+            <div className="tempo">Tempo: {tempo}</div>
+            <button
+              className="increaseMetronome"
+              onClick={() => {
+                setTempo(tempo + 10);
+                metronome.tempo = tempo + 10;
+              }}
+            >
+              +
+            </button>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
