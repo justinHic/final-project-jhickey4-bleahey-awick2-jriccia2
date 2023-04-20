@@ -1,4 +1,20 @@
+//https://github.com/grantjames/metronome
+type noteType = {
+  note: number;
+  time: number;
+};
 export class Metronome {
+  audioContext: AudioContext | null;
+  notesInQueue: noteType[];
+  currentBeatInBar: number;
+  beatsPerBar: number;
+  tempo: number;
+  lookahead: number;
+  scheduleAheadTime: number;
+  nextNoteTime: number;
+  isRunning: boolean;
+  intervalID: NodeJS.Timer | undefined;
+
   constructor(tempo = 120) {
     this.audioContext = null;
     this.notesInQueue = []; // notes that have been put into the web audio and may or may not have been played yet {note, time}
@@ -9,7 +25,7 @@ export class Metronome {
     this.scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
     this.nextNoteTime = 0.0; // when the next note is due
     this.isRunning = false;
-    this.intervalID = null;
+    this.intervalID = undefined;
   }
 
   nextNote() {
@@ -23,34 +39,38 @@ export class Metronome {
     }
   }
 
-  scheduleNote(beatNumber, time) {
+  scheduleNote(beatNumber: number, time: number) {
     // push the note on the queue, even if we're not playing.
     this.notesInQueue.push({ note: beatNumber, time: time });
 
     // create an oscillator
-    const osc = this.audioContext.createOscillator();
-    const envelope = this.audioContext.createGain();
+    if (this.audioContext !== null) {
+      const osc = this.audioContext.createOscillator();
+      const envelope = this.audioContext.createGain();
 
-    osc.frequency.value = beatNumber % this.beatsPerBar == 0 ? 1000 : 1000;
-    envelope.gain.value = 1;
-    envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
-    envelope.gain.exponentialRampToValueAtTime(0.001, time + 0.02);
+      osc.frequency.value = beatNumber % this.beatsPerBar == 0 ? 1000 : 1000;
+      envelope.gain.value = 1;
+      envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
+      envelope.gain.exponentialRampToValueAtTime(0.001, time + 0.02);
 
-    osc.connect(envelope);
-    envelope.connect(this.audioContext.destination);
+      osc.connect(envelope);
+      envelope.connect(this.audioContext.destination);
 
-    osc.start(time);
-    osc.stop(time + 0.03);
+      osc.start(time);
+      osc.stop(time + 0.03);
+    }
   }
 
   scheduler() {
     // while there are notes that will need to play before the next interval, schedule them and advance the pointer.
-    while (
-      this.nextNoteTime <
-      this.audioContext.currentTime + this.scheduleAheadTime
-    ) {
-      this.scheduleNote(this.currentBeatInBar, this.nextNoteTime);
-      this.nextNote();
+    if (this.audioContext !== null) {
+      while (
+        this.nextNoteTime <
+        this.audioContext.currentTime + this.scheduleAheadTime
+      ) {
+        this.scheduleNote(this.currentBeatInBar, this.nextNoteTime);
+        this.nextNote();
+      }
     }
   }
 
@@ -58,8 +78,8 @@ export class Metronome {
     if (this.isRunning) return;
 
     if (this.audioContext == null) {
-      this.audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)();
+      this.audioContext = new window.AudioContext();
+      //|| window.webkitAudioContext
     }
 
     this.isRunning = true;
