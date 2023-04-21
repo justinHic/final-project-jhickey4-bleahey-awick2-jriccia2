@@ -12,16 +12,18 @@ export default function Home() {
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [numSongs, setNumSongs] = useState<number>();
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if (event.target) {
-      console.log(event.target.value);
-      if (!selectedGenres.includes(event.target.value)) {
-        const copy = selectedGenres.slice();
-        copy.push(event.target.value);
-        setSelectedGenres(copy);
-      }
+  const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    if (!selectedGenres.includes(event.target.value)) {
+      const copy = selectedGenres.slice();
+      copy.push(event.target.value);
+      setSelectedGenres(copy);
     }
+  };
+  const handleNumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const num = parseInt(event.target.value);
+    setNumSongs(num);
   };
 
   return (
@@ -59,9 +61,11 @@ export default function Home() {
                 metronome.tempo = tempo - 5;
               }}
             >
-              -
+              <div className="incrementer-outer">
+                <div className="incrementer-inner">-</div>
+              </div>
             </button>
-            <div className="test">
+            <div className="backdiv">
               <div className="tempo">Tempo: {tempo}</div>
             </div>
 
@@ -72,32 +76,66 @@ export default function Home() {
                 metronome.tempo = tempo + 5;
               }}
             >
-              +
+              <div className="incrementer-outer">
+                <div className="incrementer-inner">+</div>
+              </div>
             </button>
           </div>
           <div className="selectedOptions">
-            {selectedGenres.map((val) => {
-              return (
-                <Genre
-                  genre={val}
-                  genres={selectedGenres}
-                  setGenre={setSelectedGenres}
-                ></Genre>
-              );
-            })}
+            {selectedGenres.length === 0 ? (
+              <>
+                <br></br>
+                <br></br>
+                <br></br>
+              </>
+            ) : (
+              selectedGenres.map((val, i) => {
+                return (
+                  <Genre
+                    key={i}
+                    genre={val}
+                    genres={selectedGenres}
+                    setGenre={setSelectedGenres}
+                  ></Genre>
+                );
+              })
+            )}
           </div>
 
-          <select
-            name="genre"
-            onChange={handleChange}
-            defaultValue={"disabled"}
-          >
-            <option disabled value={"disabled"}>
-              select desired genres
-            </option>
-            <option value="test1">test1</option>
-            <option value="test2">test2</option>
-          </select>
+          <div className="dropdown-div">
+            <select
+              name="genre"
+              onChange={handleGenreChange}
+              defaultValue={"disabled"}
+              className="dropdown"
+            >
+              <option disabled value={"disabled"}>
+                select desired genres
+              </option>
+              <option value="test1">test1</option>
+              <option value="test2">test2</option>
+              <option value="test3">test3</option>
+              <option value="test4">test4</option>
+            </select>
+
+            <select
+              name="num-songs"
+              onChange={handleNumChange}
+              defaultValue={"disabled"}
+              className="dropdown"
+            >
+              <option disabled value={"disabled"}>
+                Select desired number of songs
+              </option>
+              {[...Array(10)].map((x, i) => {
+                return (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
         </div>
       </div>
     </>
