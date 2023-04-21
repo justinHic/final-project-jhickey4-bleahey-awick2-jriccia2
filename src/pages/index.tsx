@@ -4,19 +4,23 @@ import { Inter } from "next/font/google";
 import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
-import { Genre } from "../components/Genre";
+import Genre from "../components/Genre";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 
 export default function Home() {
   const [tempo, setTempo] = useState(100);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState([]);
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event);
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target) {
       console.log(event.target.value);
+      if (!selectedGenres.includes(event.target.value)) {
+        const copy = selectedGenres.slice();
+        copy.push(event.target.value);
+        setSelectedGenres(copy);
+      }
     }
   };
 
@@ -72,13 +76,25 @@ export default function Home() {
             </button>
           </div>
           <div className="selectedOptions">
-            <div className="genre-option">
-              <label className="genre-option-label">test</label>
-              <button className="genre-option-button">X</button>
-            </div>
+            {selectedGenres.map((val) => {
+              return (
+                <Genre
+                  genre={val}
+                  genres={selectedGenres}
+                  setGenre={setSelectedGenres}
+                ></Genre>
+              );
+            })}
           </div>
 
-          <select name="genre" onChange={handleChange}>
+          <select
+            name="genre"
+            onChange={handleChange}
+            defaultValue={"disabled"}
+          >
+            <option disabled value={"disabled"}>
+              select desired genres
+            </option>
             <option value="test1">test1</option>
             <option value="test2">test2</option>
           </select>
