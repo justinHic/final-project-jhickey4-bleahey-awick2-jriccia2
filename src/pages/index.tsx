@@ -1,14 +1,24 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import { useEffect, useState } from "react";
+import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
+import { Genre } from "../components/Genre";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 
 export default function Home() {
-  const [tempo, setTempo] = useState(90);
+  const [tempo, setTempo] = useState(100);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
+  const [metronomePlaying, setMetronomePlaying] = useState(false);
+  const [selectedGenres, setSelectedGenres] = useState([]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(event);
+    if (event.target) {
+      console.log(event.target.value);
+    }
+  };
 
   return (
     <>
@@ -20,35 +30,58 @@ export default function Home() {
       </Head>
       <div className="outer">
         <div className="inner">
-          <button
-            onClick={() => {
-              console.log("hit");
-              metronome.startStop();
-            }}
-          >
-            Play
-          </button>
+          <h1 className="header">CADANCE</h1>
+          <div className="log-in-buttons">
+            <button>Log into Spotify</button>
+            <button>Log into Garmin</button>
+          </div>
+          <div className="metronome-play-pause-div">
+            <button
+              className="metronome-play-pause"
+              onClick={() => {
+                metronome.startStop();
+                setMetronomePlaying(!metronomePlaying);
+              }}
+            >
+              {metronomePlaying ? "Stop Metronome" : "Play Metronome"}
+            </button>
+          </div>
+
           <div className="metronome_div">
             <button
               className="decreaseMetronome"
               onClick={() => {
-                setTempo(tempo - 10);
-                metronome.tempo = tempo - 10;
+                setTempo(tempo - 5);
+                metronome.tempo = tempo - 5;
               }}
             >
               -
             </button>
-            <div className="tempo">Tempo: {tempo}</div>
+            <div className="test">
+              <div className="tempo">Tempo: {tempo}</div>
+            </div>
+
             <button
               className="increaseMetronome"
               onClick={() => {
-                setTempo(tempo + 10);
-                metronome.tempo = tempo + 10;
+                setTempo(tempo + 5);
+                metronome.tempo = tempo + 5;
               }}
             >
               +
             </button>
           </div>
+          <div className="selectedOptions">
+            <div className="genre-option">
+              <label className="genre-option-label">test</label>
+              <button className="genre-option-button">X</button>
+            </div>
+          </div>
+
+          <select name="genre" onChange={handleChange}>
+            <option value="test1">test1</option>
+            <option value="test2">test2</option>
+          </select>
         </div>
       </div>
     </>
