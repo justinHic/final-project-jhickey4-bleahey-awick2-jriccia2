@@ -41,16 +41,19 @@ export default function Home() {
             <button>Log into Spotify</button>
             <button>Log into Garmin</button>
           </div>
-          <div className="metronome-play-pause-div">
-            <button
-              className="metronome-play-pause"
-              onClick={() => {
-                metronome.startStop();
-                setMetronomePlaying(!metronomePlaying);
-              }}
-            >
-              {metronomePlaying ? "Stop Metronome" : "Play Metronome"}
-            </button>
+
+          <h3 className="switch-title">Metronome ON/OFF</h3>
+          <div className="metronome-switch-div">
+            <label className="switch">
+              <input
+                onChange={() => {
+                  metronome.startStop();
+                  setMetronomePlaying(!metronomePlaying);
+                }}
+                type="checkbox"
+              />
+              <span className="slider round"></span>
+            </label>
           </div>
 
           <div className="metronome_div">
@@ -107,10 +110,10 @@ export default function Home() {
               name="genre"
               onChange={handleGenreChange}
               defaultValue={"disabled"}
-              className="dropdown"
+              className="dropdown hvr-grow"
             >
               <option disabled value={"disabled"}>
-                select desired genres
+                Select desired genres
               </option>
               <option value="test1">test1</option>
               <option value="test2">test2</option>
@@ -122,7 +125,7 @@ export default function Home() {
               name="num-songs"
               onChange={handleNumChange}
               defaultValue={"disabled"}
-              className="dropdown"
+              className="dropdown hvr-grow"
             >
               <option disabled value={"disabled"}>
                 Select desired number of songs
@@ -135,6 +138,9 @@ export default function Home() {
                 );
               })}
             </select>
+          </div>
+          <div className="search-button-div">
+            <button className="search-button hvr-grow">FIND SONGS</button>
           </div>
         </div>
       </div>
