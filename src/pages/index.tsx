@@ -5,6 +5,7 @@ import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
 import Genre from "../components/Genre";
+import { redirectToVerification } from "../../src/pages/api/spotify/testVerifier.js";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 
 export default function Home() {
@@ -36,7 +37,7 @@ export default function Home() {
         <div className="inner">
           <h1 className="header">CADANCE</h1>
           <div className="log-in-buttons">
-            <button>Log into Spotify</button>
+            <button onClick={redirectToVerification}>Log into Spotify</button>
             <button>Log into Garmin</button>
           </div>
           <div className="metronome-play-pause-div">
