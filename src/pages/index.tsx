@@ -5,7 +5,7 @@ import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
 import Genre from "../components/Genre";
-import { redirectToVerification } from "../../src/pages/api/spotify/testVerifier.js";
+import { redirectToVerification } from "../api/spotify/testVerifier";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 
 export default function Home() {
@@ -37,68 +37,8 @@ export default function Home() {
         <div className="inner">
           <h1 className="header">CADANCE</h1>
           <div className="log-in-buttons">
-            <button onClick={redirectToVerification}>Log into Spotify</button>
-            <button>Log into Garmin</button>
+            <button onClick={redirectToVerification}>Login to Spotify</button>
           </div>
-          <div className="metronome-play-pause-div">
-            <button
-              className="metronome-play-pause"
-              onClick={() => {
-                metronome.startStop();
-                setMetronomePlaying(!metronomePlaying);
-              }}
-            >
-              {metronomePlaying ? "Stop Metronome" : "Play Metronome"}
-            </button>
-          </div>
-
-          <div className="metronome_div">
-            <button
-              className="decreaseMetronome"
-              onClick={() => {
-                setTempo(tempo - 5);
-                metronome.tempo = tempo - 5;
-              }}
-            >
-              -
-            </button>
-            <div className="test">
-              <div className="tempo">Tempo: {tempo}</div>
-            </div>
-
-            <button
-              className="increaseMetronome"
-              onClick={() => {
-                setTempo(tempo + 5);
-                metronome.tempo = tempo + 5;
-              }}
-            >
-              +
-            </button>
-          </div>
-          <div className="selectedOptions">
-            {selectedGenres.map((val) => {
-              return (
-                <Genre
-                  genre={val}
-                  genres={selectedGenres}
-                  setGenre={setSelectedGenres}
-                ></Genre>
-              );
-            })}
-          </div>
-
-          <select
-            name="genre"
-            onChange={handleChange}
-            defaultValue={"disabled"}
-          >
-            <option disabled value={"disabled"}>
-              select desired genres
-            </option>
-            <option value="test1">test1</option>
-            <option value="test2">test2</option>
-          </select>
         </div>
       </div>
     </>

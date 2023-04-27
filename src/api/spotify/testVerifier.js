@@ -113,9 +113,10 @@ async function addThrowErrorToFetch(response) {
   }
 }
 
-function logout() {
+export function logout() {
   localStorage.clear();
   window.location.reload();
+  window.location = "http://localhost:3000";
 }
 
 function processTokenResponse(data) {
@@ -168,7 +169,7 @@ function getUserData() {
 
 const client_id = "d4f1fb65364d48f38e76c1d7c26da3ae";
 //const client_id = "94e44d9212c746d0be764f24a8e61079";
-const redirect_uri = "https://localhost:3000"; // Your redirect uri
+const redirect_uri = "http://localhost:3000/loggedin"; // Your redirect uri
 //const redirect_uri = "https://www.google.com";
 
 // Restore tokens from localStorage
