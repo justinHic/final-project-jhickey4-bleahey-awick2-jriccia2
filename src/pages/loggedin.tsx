@@ -7,12 +7,31 @@ import localFont from "next/font/local";
 import Genre from "../components/Genre";
 import { logout } from "../api/spotify/testVerifier";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
+import { useRouter } from "next/router";
 
 export default function LoggedIn() {
   const [tempo, setTempo] = useState(100);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+
+  const router = useRouter();
+  const { code } = router.query;
+  console.log(code);
+
+  useEffect(() => {
+    if (router.isReady) {
+      if (code === undefined) {
+        router.push("/");
+      }
+    }
+  }, []);
+
+  // if (code === undefined) {
+  //   router.push("/");
+  // }
+
+  //add some sort of check to send back to the homepage if there is no code
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target) {
@@ -85,7 +104,12 @@ export default function LoggedIn() {
           })}
         </div>
 
-        <select name="genre" onChange={handleChange} defaultValue={"disabled"}>
+        <select
+          className="dropdown"
+          name="genre"
+          onChange={handleChange}
+          defaultValue={"disabled"}
+        >
           <option disabled value={"disabled"}>
             select desired genres
           </option>
