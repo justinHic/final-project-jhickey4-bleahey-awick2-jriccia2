@@ -19,28 +19,24 @@ export default function LoggedIn() {
   const { code } = router.query;
   console.log(code);
 
-
-  //TODO: make code part of the state
+  //TODO: make code part of the state and use it to get the user's name from the spotify api
 
   useEffect(() => {
     if (router.isReady) {
-      console.log("here")
+      console.log("here");
       if (code !== undefined) {
-        console.log("got code")
-        exchangeToken(code)
+        console.log("got code");
+        exchangeToken(code);
       } else if (
         localStorage.getItem("access_token") &&
         localStorage.getItem("refresh_token") &&
         localStorage.getItem("expires_at")
       ) {
-
       } else {
         router.push("/");
       }
-
     }
   }, [code]);
-
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target) {
