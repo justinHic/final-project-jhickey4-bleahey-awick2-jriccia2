@@ -18,6 +18,7 @@ export default function LoggedIn() {
   const router = useRouter();
   const { code } = router.query;
   console.log(code);
+  //TODO: make code part of the state
 
   useEffect(() => {
     if (router.isReady) {
