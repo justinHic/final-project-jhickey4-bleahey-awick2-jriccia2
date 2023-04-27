@@ -1,12 +1,11 @@
 import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
 import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
-import Genre from "../components/Genre";
 import { redirectToVerification } from "../api/spotify/testVerifier";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
+
+//POTENTIAL TODO: check if the user is already logged in and redirect them to the logged in page if they are
 
 export default function Home() {
   const [tempo, setTempo] = useState(100);
