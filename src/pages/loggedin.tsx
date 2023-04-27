@@ -5,7 +5,7 @@ import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
 import Genre from "../components/Genre";
-import { logout } from "../api/spotify/testVerifier";
+import { logout, exchangeToken } from "../api/spotify/testVerifier";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 import { useRouter } from "next/router";
 
@@ -18,21 +18,29 @@ export default function LoggedIn() {
   const router = useRouter();
   const { code } = router.query;
   console.log(code);
+
+
   //TODO: make code part of the state
 
   useEffect(() => {
     if (router.isReady) {
-      if (code === undefined) {
+      console.log("here")
+      if (code !== undefined) {
+        console.log("got code")
+        exchangeToken(code)
+      } else if (
+        localStorage.getItem("access_token") &&
+        localStorage.getItem("refresh_token") &&
+        localStorage.getItem("expires_at")
+      ) {
+
+      } else {
         router.push("/");
       }
+
     }
-  }, []);
+  }, [code]);
 
-  // if (code === undefined) {
-  //   router.push("/");
-  // }
-
-  //add some sort of check to send back to the homepage if there is no code
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target) {

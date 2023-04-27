@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 function generateRandomString(length) {
   let text = "";
   const possible =
@@ -54,7 +56,7 @@ export function redirectToVerification() {
   });
 }
 
-function exchangeToken(code) {
+export function exchangeToken(code) {
   const code_verifier = localStorage.getItem("code_verifier");
 
   fetch("https://accounts.spotify.com/api/token", {
@@ -75,12 +77,13 @@ function exchangeToken(code) {
       processTokenResponse(data);
 
       // clear search query params in the url
-      window.history.replaceState({}, document.title, "/");
+      window.history.replaceState({}, document.title, "/loggedin");
     })
     .catch(handleError);
 }
 
 function refreshToken() {
+  const refresh_token = initialState.refresh_token
   fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: {
@@ -122,21 +125,15 @@ export function logout() {
 function processTokenResponse(data) {
   console.log(data);
 
-  access_token = data.access_token;
-  refresh_token = data.refresh_token;
+  initialState.access_token = data.access_token;
+  initialState.refresh_token = data.refresh_token;
 
   const t = new Date();
-  expires_at = t.setSeconds(t.getSeconds() + data.expires_in);
+  initialState.expires_at = t.setSeconds(t.getSeconds() + data.expires_in);
 
-  localStorage.setItem("access_token", access_token);
-  localStorage.setItem("refresh_token", refresh_token);
-  localStorage.setItem("expires_at", expires_at);
-
-  oauthPlaceholder.innerHTML = oAuthTemplate({
-    access_token,
-    refresh_token,
-    expires_at,
-  });
+  localStorage.setItem("access_token", initialState.access_token);
+  localStorage.setItem("refresh_token", initialState.refresh_token);
+  localStorage.setItem("expires_at", initialState.expires_at);
 
   // load data of logged in user
   getUserData();
@@ -145,7 +142,7 @@ function processTokenResponse(data) {
 function getUserData() {
   fetch("https://api.spotify.com/v1/me", {
     headers: {
-      Authorization: "Bearer " + access_token,
+      Authorization: "Bearer " + initialState.access_token,
     },
   })
     .then(async (response) => {
@@ -157,22 +154,27 @@ function getUserData() {
     })
     .then((data) => {
       console.log(data);
-      document.getElementById("login").style.display = "none";
-      document.getElementById("loggedin").style.display = "unset";
-      mainPlaceholder.innerHTML = userProfileTemplate(data);
     })
     .catch((error) => {
       console.error(error);
-      mainPlaceholder.innerHTML = errorTemplate(error.error);
     });
 }
 
 const client_id = "d4f1fb65364d48f38e76c1d7c26da3ae";
-//const client_id = "94e44d9212c746d0be764f24a8e61079";
 const redirect_uri = "http://localhost:3000/loggedin"; // Your redirect uri
-//const redirect_uri = "https://www.google.com";
 
-// Restore tokens from localStorage
-// let access_token = localStorage.getItem("access_token") || null;
-// let refresh_token = localStorage.getItem("refresh_token") || null;
-// let expires_at = localStorage.getItem("expires_at") || null;
+//restore tokens from localstorage or set them to null
+const initialState = {
+  access_token:
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("access_token")
+      : null,
+  refresh_token:
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("refresh_token")
+      : null,
+  expires_at:
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("expires_at")
+      : null,
+};
