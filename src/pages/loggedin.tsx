@@ -33,72 +33,65 @@ export default function LoggedIn() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="outer">
-        <div className="inner">
-          <h1 className="header">CADANCE</h1>
-          <div className="log-in-buttons">
-            <button onClick={logout}>Log Out</button>
-          </div>
-          <div className="metronome-play-pause-div">
-            <button
-              className="metronome-play-pause"
-              onClick={() => {
-                metronome.startStop();
-                setMetronomePlaying(!metronomePlaying);
-              }}
-            >
-              {metronomePlaying ? "Stop Metronome" : "Play Metronome"}
-            </button>
-          </div>
+      <h1 className="header">CADANCE</h1>
+      <div className="log-in-buttons">
+        <button onClick={logout}>Log Out</button>
+      </div>
 
-          <div className="metronome_div">
-            <button
-              className="decreaseMetronome"
-              onClick={() => {
-                setTempo(tempo - 5);
-                metronome.tempo = tempo - 5;
-              }}
-            >
-              -
-            </button>
-            <div className="test">
-              <div className="tempo">Tempo: {tempo}</div>
-            </div>
-
-            <button
-              className="increaseMetronome"
-              onClick={() => {
-                setTempo(tempo + 5);
-                metronome.tempo = tempo + 5;
-              }}
-            >
-              +
-            </button>
-          </div>
-          <div className="selectedOptions">
-            {selectedGenres.map((val) => {
-              return (
-                <Genre
-                  genre={val}
-                  genres={selectedGenres}
-                  setGenre={setSelectedGenres}
-                ></Genre>
-              );
-            })}
-          </div>
-
-          <select
-            name="genre"
-            onChange={handleChange}
-            defaultValue={"disabled"}
+      <div className="options">
+        <button
+          className="metronome-play-pause"
+          onClick={() => {
+            metronome.startStop();
+            setMetronomePlaying(!metronomePlaying);
+          }}
+        >
+          {metronomePlaying ? "Stop Metronome" : "Play Metronome"}
+        </button>
+        <div className="metronome_div">
+          <button
+            className="decreaseMetronome"
+            onClick={() => {
+              setTempo(tempo - 5);
+              metronome.tempo = tempo - 5;
+            }}
           >
-            <option disabled value={"disabled"}>
-              select desired genres
-            </option>
-            <option value="test1">test1</option>
-            <option value="test2">test2</option>
-          </select>
+            -
+          </button>
+          <div className="test">
+            <div className="tempo">Tempo: {tempo}</div>
+          </div>
+
+          <button
+            className="increaseMetronome"
+            onClick={() => {
+              setTempo(tempo + 5);
+              metronome.tempo = tempo + 5;
+            }}
+          >
+            +
+          </button>
         </div>
+
+        <div className="selectedOptions">
+          {selectedGenres.map((val) => {
+            return (
+              <Genre
+                genre={val}
+                genres={selectedGenres}
+                setGenre={setSelectedGenres}
+              ></Genre>
+            );
+          })}
+        </div>
+
+        <select name="genre" onChange={handleChange} defaultValue={"disabled"}>
+          <option disabled value={"disabled"}>
+            select desired genres
+          </option>
+          <option value="test1">test1</option>
+          <option value="test2">test2</option>
+        </select>
       </div>
     </>
   );

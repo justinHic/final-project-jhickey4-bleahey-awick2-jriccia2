@@ -69,7 +69,7 @@
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 body {
-  background-color: #222222;
+  background-color: #ffffff;
 }
 
 /*prevents these from expanding beyond its container and taking up a row*/
@@ -98,6 +98,7 @@ a {
   display: flex;
   justify-content: center;
 }
+
 .inner {
   max-width: 100ch;
   padding: 5%;
@@ -107,16 +108,29 @@ a {
 }
 
 .header {
+  margin-top: 4rem;
   text-align: center;
   font-size: 50px;
-  color: #dd6522;
+  color: #ff7328;
+}
+
+.app-description {
+  text-align: center;
+  font-size: 1.5rem;
+  margin: 2rem 0;
 }
 
 .log-in-buttons {
-  width: 100%;
   display: flex;
   justify-content: space-around;
-  padding: 10%;
+}
+
+.log-in-buttons button {
+  border: none;
+  background: #1ed760;
+  width: 15rem;
+  font-size: 1rem;
+  padding: 0.75rem;
 }
 
 .test {
@@ -137,18 +151,22 @@ a {
   background-color: #3a3a3a;
 }
 
+.options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
 .metronome_div {
   display: flex;
   justify-content: center;
 }
 
-.metronome-play-pause-div {
-  display: flex;
-  justify-content: center;
-  padding: 10%;
-}
 .metronome-play-pause {
   width: 50%;
+  max-width: 24rem;
 }
 
 .decreaseMetronome {
@@ -222,4 +240,30 @@ a {
 .selectedOptions {
   display: flex;
   justify-content: center;
+}
+
+.info-section {
+  margin: 2rem;
+}
+
+.info-box {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.info-box-icon {
+  width: 8rem;
+}
+
+.info-box-icon img {
+  height: 8rem;
+  padding: 1rem;
+}
+
+.info-box p {
+  display: flex;
+  align-items: center;
+  width: 60%;
+  max-width: 50rem;
 }
