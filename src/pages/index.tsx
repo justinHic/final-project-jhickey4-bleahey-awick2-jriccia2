@@ -2,7 +2,7 @@ import Head from "next/head";
 import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
-import { redirectToVerification } from "../api/spotify/testVerifier";
+import { redirectToVerification } from "../api/spotify/PKCEVerifier";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 
 //POTENTIAL TODO: check if the user is already logged in and redirect them to the logged in page if they are

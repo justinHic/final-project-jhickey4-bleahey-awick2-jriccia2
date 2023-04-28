@@ -5,9 +5,10 @@ import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
 import Genre from "../components/Genre";
-import { logout, exchangeToken } from "../api/spotify/testVerifier";
+import { logout, exchangeToken } from "../api/spotify/PKCEVerifier";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 import { useRouter } from "next/router";
+import { testButton } from "@/api/spotify/playlistBuilder";
 
 export default function LoggedIn() {
   const [tempo, setTempo] = useState(100);
@@ -19,28 +20,23 @@ export default function LoggedIn() {
   const { code } = router.query;
   console.log(code);
 
-
   //TODO: make code part of the state
 
   useEffect(() => {
     if (router.isReady) {
-      console.log("here")
       if (code !== undefined) {
-        console.log("got code")
-        exchangeToken(code)
+        exchangeToken(code);
       } else if (
         localStorage.getItem("access_token") &&
         localStorage.getItem("refresh_token") &&
         localStorage.getItem("expires_at")
       ) {
-
+        //TODO: this is where we check if the user is already logged in, might need to put in a diff. file
       } else {
         router.push("/");
       }
-
     }
   }, [code]);
-
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target) {
@@ -64,6 +60,7 @@ export default function LoggedIn() {
       <h1 className="header">CADANCE</h1>
       <div className="log-in-buttons">
         <button onClick={logout}>Log Out</button>
+        <button onClick={testButton}>TEST</button>
       </div>
 
       <div className="options">

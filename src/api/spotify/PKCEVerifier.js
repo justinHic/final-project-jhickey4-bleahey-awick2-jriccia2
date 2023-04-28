@@ -164,7 +164,7 @@ const client_id = "d4f1fb65364d48f38e76c1d7c26da3ae";
 const redirect_uri = "http://localhost:3000/loggedin"; // Your redirect uri
 
 //restore tokens from localstorage or set them to null
-const initialState = {
+export const initialState = {
   access_token:
     typeof window !== "undefined"
       ? window.localStorage.getItem("access_token")
