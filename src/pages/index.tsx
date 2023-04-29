@@ -4,11 +4,12 @@ import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
 import Genre from "../components/Genre";
+import { MetronomeComponent } from "@/components/MetronomeComponent";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 
 export default function Home() {
   const [tempo, setTempo] = useState(100);
-  const [metronome, setMetronome] = useState(new Metronome(tempo));
+  const [metronome, setMetronome] = useState<Metronome>(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [numSongs, setNumSongs] = useState<number>();
@@ -36,10 +37,7 @@ export default function Home() {
       <div className="outer">
         <div className="inner">
           <h1 className="header">CADANCE</h1>
-          <div className="log-in-buttons">
-            <button>Log into Spotify</button>
-            <button>Log into Garmin</button>
-          </div>
+          <div className="log-in-buttons"></div>
 
           <h3 className="switch-title">Metronome ON/OFF</h3>
           <div className="metronome-switch-div">
@@ -49,40 +47,19 @@ export default function Home() {
                   metronome.startStop();
                   setMetronomePlaying(!metronomePlaying);
                 }}
+                aria-label="metronome switch"
                 type="checkbox"
               />
               <span className="slider round"></span>
             </label>
           </div>
-
-          <div className="metronome_div">
-            <button
-              className="decreaseMetronome"
-              onClick={() => {
-                setTempo(tempo - 5);
-                metronome.tempo = tempo - 5;
-              }}
-            >
-              <div className="incrementer-outer">
-                <div className="incrementer-inner">-</div>
-              </div>
-            </button>
-            <div className="backdiv">
-              <div className="tempo">Tempo: {tempo}</div>
-            </div>
-
-            <button
-              className="increaseMetronome"
-              onClick={() => {
-                setTempo(tempo + 5);
-                metronome.tempo = tempo + 5;
-              }}
-            >
-              <div className="incrementer-outer">
-                <div className="incrementer-inner">+</div>
-              </div>
-            </button>
-          </div>
+          <MetronomeComponent
+            tempo={tempo}
+            setTempo={setTempo}
+            metronome={metronome}
+            max={300}
+            min={50}
+          ></MetronomeComponent>
           <div className="selectedOptions">
             {selectedGenres.length === 0 ? (
               <>
