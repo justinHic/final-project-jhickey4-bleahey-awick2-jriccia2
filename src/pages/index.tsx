@@ -8,22 +8,6 @@ const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 //POTENTIAL TODO: check if the user is already logged in and redirect them to the logged in page if they are
 
 export default function Home() {
-  // const [tempo, setTempo] = useState(100);
-  // const [metronome, setMetronome] = useState(new Metronome(tempo));
-  // const [metronomePlaying, setMetronomePlaying] = useState(false);
-  // const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-
-  // const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //   if (event.target) {
-  //     console.log(event.target.value);
-  //     if (!selectedGenres.includes(event.target.value)) {
-  //       const copy = selectedGenres.slice();
-  //       copy.push(event.target.value);
-  //       setSelectedGenres(copy);
-  //     }
-  //   }
-  // };
-
   return (
     <>
       <Head>
