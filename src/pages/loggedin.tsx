@@ -18,10 +18,6 @@ export default function LoggedIn() {
   const router = useRouter();
   const { code } = router.query;
   console.log(code);
-<<<<<<< HEAD
-
-=======
->>>>>>> cce564d (prolly a conflict)
   //TODO: make code part of the state and use it to get the user's name from the spotify api
 
   useEffect(() => {
