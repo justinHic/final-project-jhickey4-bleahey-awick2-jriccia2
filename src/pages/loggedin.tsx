@@ -5,10 +5,10 @@ import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
 import Genre from "../components/Genre";
-import { logout, exchangeToken } from "../api/spotify/PKCEVerifier";
+import { logout, exchangeToken } from "./api/spotify/PKCEVerifier";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 import { useRouter } from "next/router";
-import { testButton } from "@/api/spotify/playlistBuilder";
+import { testButton } from "@/pages/api/spotify/playlistBuilder";
 import { MetronomeComponent } from "@/components/MetronomeComponent";
 
 export default function LoggedIn() {
@@ -26,7 +26,7 @@ export default function LoggedIn() {
   useEffect(() => {
     if (router.isReady) {
       if (code !== undefined) {
-        exchangeToken(code);
+        // exchangeToken(code);
       } else if (
         localStorage.getItem("access_token") &&
         localStorage.getItem("refresh_token") &&

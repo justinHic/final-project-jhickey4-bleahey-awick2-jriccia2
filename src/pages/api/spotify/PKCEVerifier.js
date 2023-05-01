@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 function generateRandomString(length) {
   let text = "";
   const possible =
@@ -30,32 +28,36 @@ function generateUrlWithSearchParams(url, params) {
   return urlObject.toString();
 }
 
-export function redirectToVerification() {
+export default async function handler() {
   const codeVerifier = generateRandomString(64);
+  const result = async () => {
+    const code = await generateCodeChallenge(codeVerifier);
 
-  generateCodeChallenge(codeVerifier).then((code_challenge) => {
-    window.localStorage.setItem("code_verifier", codeVerifier);
+    //window.localStorage.setItem("code_verifier", codeVerifier);
 
     // Redirect to example:
     // GET https://accounts.spotify.com/authorize?response_type=code&client_id=77e602fc63fa4b96acff255ed33428d3&redirect_uri=http%3A%2F%2Flocalhost&scope=user-follow-modify&state=e21392da45dbf4&code_challenge=KADwyz1X~HIdcAG20lnXitK6k51xBP4pEMEZHmCneHD1JhrcHjE1P3yU_NjhBz4TdhV6acGo16PCd10xLwMJJ4uCutQZHw&code_challenge_method=S256
 
-    window.location = generateUrlWithSearchParams(
+    return generateUrlWithSearchParams(
       "https://accounts.spotify.com/authorize",
       {
         response_type: "code",
         client_id,
         scope: "user-read-private user-read-email",
         code_challenge_method: "S256",
-        code_challenge,
+        code,
         redirect_uri,
       }
     );
 
     // If the user accepts spotify will come back to your application with the code in the response query string
     // Example: http://127.0.0.1:8080/?code=NApCCg..BkWtQ&state=profile%2Factivity
-  });
+  };
+  const res = await result();
+  return Response.json({ url: res });
 }
 
+//needs to be moved
 export function exchangeToken(code) {
   const code_verifier = localStorage.getItem("code_verifier");
 
@@ -82,8 +84,9 @@ export function exchangeToken(code) {
     .catch(handleError);
 }
 
+//exernal
 function refreshToken() {
-  const refresh_token = initialState.refresh_token
+  const refresh_token = initialState.refresh_token;
   fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: {

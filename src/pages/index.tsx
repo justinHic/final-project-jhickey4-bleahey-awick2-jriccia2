@@ -2,7 +2,6 @@ import Head from "next/head";
 import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
-import { redirectToVerification } from "../api/spotify/PKCEVerifier";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 
 //POTENTIAL TODO: check if the user is already logged in and redirect them to the logged in page if they are
@@ -24,6 +23,27 @@ export default function Home() {
   //   }
   // };
 
+  interface RedirectURL {
+    url: string;
+  }
+  function onClick() {
+    fetch("/api/spotify/verify")
+      .then((res) => {
+        console.log(res);
+        return res.json();
+      })
+      .then((json) => {
+        console.log(json);
+        window.location.assign(json.url);
+      });
+    /*
+    fetch("/api/hello2")
+      .then((res) => res.json())
+      .then((json) => {
+        console.log(json);
+      });*/
+  }
+
   return (
     <>
       <Head>
@@ -39,7 +59,7 @@ export default function Home() {
             A fine tuned running and listening experience
           </p>
           <div className="log-in-buttons">
-            <button className="spotify-button" onClick={redirectToVerification}>
+            <button className="spotify-button" onClick={onClick}>
               Login to Spotify
             </button>
           </div>
