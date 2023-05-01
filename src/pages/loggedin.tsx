@@ -9,16 +9,17 @@ import { logout, exchangeToken } from "../api/spotify/PKCEVerifier";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 import { useRouter } from "next/router";
 import { testButton } from "@/api/spotify/playlistBuilder";
+import { MetronomeComponent } from "@/components/MetronomeComponent";
 
 export default function LoggedIn() {
   const [tempo, setTempo] = useState(100);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [numSongs, setNumSongs] = useState<number>();
 
   const router = useRouter();
   const { code } = router.query;
-  console.log(code);
 
   //TODO: make code part of the state
 
@@ -38,16 +39,18 @@ export default function LoggedIn() {
     }
   }, [code]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if (event.target) {
-      console.log(event.target.value);
-      if (!selectedGenres.includes(event.target.value)) {
-        const copy = selectedGenres.slice();
-        copy.push(event.target.value);
-        setSelectedGenres(copy);
-      }
+  const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    if (!selectedGenres.includes(event.target.value)) {
+      const copy = selectedGenres.slice();
+      copy.push(event.target.value);
+      setSelectedGenres(copy);
     }
   };
+  const handleNumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const num = parseInt(event.target.value);
+    setNumSongs(num);
+  };
+
   //TODO: get the user's name from the spotify api and display it here
   return (
     <>
@@ -57,71 +60,99 @@ export default function LoggedIn() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h1 className="header">CADANCE</h1>
-      <div className="log-in-buttons">
-        <button onClick={logout}>Log Out</button>
-        <button onClick={testButton}>TEST</button>
-      </div>
-
-      <div className="options">
-        <button
-          className="metronome-play-pause"
-          onClick={() => {
-            metronome.startStop();
-            setMetronomePlaying(!metronomePlaying);
-          }}
-        >
-          {metronomePlaying ? "Stop Metronome" : "Play Metronome"}
-        </button>
-        <div className="metronome_div">
-          <button
-            className="decreaseMetronome"
-            onClick={() => {
-              setTempo(tempo - 5);
-              metronome.tempo = tempo - 5;
-            }}
-          >
-            -
-          </button>
-          <div className="test">
-            <div className="tempo">Tempo: {tempo}</div>
+      <div className="outer">
+        <div className="inner">
+          <h1 className="header">CADANCE</h1>
+          <div className="log-in-buttons">
+            <button className="spotify-button" onClick={logout}>
+              Log Out
+            </button>
+            <button className="" onClick={testButton}>
+              TEST
+            </button>
           </div>
 
-          <button
-            className="increaseMetronome"
-            onClick={() => {
-              setTempo(tempo + 5);
-              metronome.tempo = tempo + 5;
-            }}
-          >
-            +
-          </button>
-        </div>
+          <h3 className="switch-title">Metronome ON/OFF</h3>
+          <div className="metronome-switch-div">
+            <label className="switch">
+              <input
+                onChange={() => {
+                  metronome.startStop();
+                  setMetronomePlaying(!metronomePlaying);
+                }}
+                aria-label="metronome switch"
+                type="checkbox"
+              />
+              <span className="slider round"></span>
+            </label>
+          </div>
+          <MetronomeComponent
+            tempo={tempo}
+            setTempo={setTempo}
+            metronome={metronome}
+            max={300}
+            min={50}
+          ></MetronomeComponent>
 
-        <div className="selectedOptions">
-          {selectedGenres.map((val) => {
-            return (
-              <Genre
-                genre={val}
-                genres={selectedGenres}
-                setGenre={setSelectedGenres}
-              ></Genre>
-            );
-          })}
-        </div>
+          <div className="selectedOptions">
+            {selectedGenres.length === 0 ? (
+              <>
+                <br></br>
+                <br></br>
+                <br></br>
+              </>
+            ) : (
+              selectedGenres.map((val, i) => {
+                return (
+                  <Genre
+                    key={i}
+                    genre={val}
+                    genres={selectedGenres}
+                    setGenre={setSelectedGenres}
+                  ></Genre>
+                );
+              })
+            )}
+          </div>
 
-        <select
-          className="dropdown"
-          name="genre"
-          onChange={handleChange}
-          defaultValue={"disabled"}
-        >
-          <option disabled value={"disabled"}>
-            select desired genres
-          </option>
-          <option value="test1">test1</option>
-          <option value="test2">test2</option>
-        </select>
+          <div className="dropdown-div">
+            <select
+              name="genre"
+              onChange={handleGenreChange}
+              defaultValue={"disabled"}
+              className="dropdown hvr-grow"
+            >
+              <option disabled value={"disabled"}>
+                Select desired genres
+              </option>
+              <option value="test1">test1</option>
+              <option value="test2">test2</option>
+              <option value="test3">test3</option>
+              <option value="test4">test4</option>
+            </select>
+
+            <select
+              name="num-songs"
+              onChange={handleNumChange}
+              defaultValue={"disabled"}
+              className="dropdown hvr-grow"
+            >
+              <option disabled value={"disabled"}>
+                Select desired number of songs
+              </option>
+              {[...Array(10)].map((x, i) => {
+                return (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          <div className="search-button-div">
+            <button className="search-button hvr-grow">FIND SONGS</button>
+          </div>
+        </div>
       </div>
     </>
   );

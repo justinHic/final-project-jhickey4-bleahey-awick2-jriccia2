@@ -7,6 +7,10 @@ interface GenreProps {
 export default function Genre(props: GenreProps) {
   const handleClick = () => {
     let temp = props.genres.slice();
+    temp = temp.filter((x) => {
+      return x !== props.genre;
+    });
+    props.setGenre(temp);
   };
   return (
     <div className="genre-option">
