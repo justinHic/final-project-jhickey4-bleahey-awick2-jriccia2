@@ -118,8 +118,12 @@ export default function LoggedIn() {
           <div className="dropdown-div">
             <select
               name="genre"
+              value={
+                selectedGenres.length === 0
+                  ? "disabled"
+                  : selectedGenres[selectedGenres.length - 1]
+              }
               onChange={handleGenreChange}
-              defaultValue={"disabled"}
               className="dropdown hvr-grow"
             >
               <option disabled value={"disabled"}>
