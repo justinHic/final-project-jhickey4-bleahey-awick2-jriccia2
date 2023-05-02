@@ -4,6 +4,8 @@ const redirect_uri = "http://localhost:3000/loggedin";
 
 type data = {
   access_token: string;
+  expires_in: number;
+  refresh_token: string;
 };
 
 export default async function handler(
@@ -17,8 +19,11 @@ export default async function handler(
     state === null ||
     code === null ||
     code === undefined ||
-    Array.isArray(code)
+    state === undefined ||
+    Array.isArray(code) ||
+    Array.isArray(state)
   ) {
+    console.log(state);
     res.status(405).end();
   } else {
     const response = async () => {
@@ -42,13 +47,13 @@ export default async function handler(
       return resp.json();
       */
       const client_secret = process.env.CLIENT_SECRET;
-      console.log(process.env.CLIENT_SECRET);
+
       const response = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
         headers: {
-          Authorization: `Basic ${Buffer.from(
-            client_id + ":" + client_secret
-          ).toString("base64")}`,
+          Authorization:
+            "Basic " +
+            Buffer.from(client_id + ":" + client_secret).toString("base64url"),
           "Content-Type": "application/x-www-form-urlencoded",
           Accept: "application/json",
         },
@@ -57,14 +62,20 @@ export default async function handler(
           grant_type: "authorization_code",
           code: code,
           redirect_uri: redirect_uri,
+          client_id: client_id,
+          scope: "user-read-private user-read-email",
+          state: state,
         }),
       });
 
       return response.json();
     };
     await response().then((info) => {
-      console.log(info);
-      res.status(200).json({ access_token: info.access_token });
+      res.status(200).json({
+        access_token: info.access_token,
+        refresh_token: info.refresh_token,
+        expires_in: info.expires_in,
+      });
     });
     /*
     const authOptions = {

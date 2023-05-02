@@ -17,7 +17,7 @@ export default function handler(
     scope: scope,
     redirect_uri: redirect_uri,
     state: state,
-    //show_dialog: "true",
+    show_dialog: "true",
   });
   res.status(200).json({
     url: generateUrlWithSearchParams(
