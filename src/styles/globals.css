@@ -98,6 +98,7 @@ a {
   display: flex;
   justify-content: center;
 }
+
 .inner {
   max-width: 100ch;
   width: 100%;
@@ -113,13 +114,43 @@ a {
   color: #dd6522;
 }
 
+.app-description {
+  text-align: center;
+  font-size: 1.5rem;
+  margin: 2rem 0;
+  color: #d9d9d9;
+}
+
 .log-in-buttons {
   width: 100%;
   display: flex;
   justify-content: space-around;
-  padding: 10%;
+  padding: 5%;
 }
 
+<<<<<<< HEAD
+=======
+.spotify-button {
+  border: none;
+  border-radius: 10px;
+  background-color: #1db954;
+  color: #ffffff;
+  width: 15rem;
+  font-size: 1rem;
+  padding: 0.75rem;
+  font-weight: bold;
+}
+
+.spotify-button:hover {
+  cursor: pointer;
+  background-color: #1ed760;
+}
+.spotify-button:active {
+  background-color: #d9d9d9;
+  color: #1ed760;
+}
+
+>>>>>>> justin
 .backdiv {
   display: flex;
   justify-content: center;
@@ -151,16 +182,31 @@ a {
   background-color: #3a3a3a;
 }
 
+.options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
 .metronome_div {
   display: flex;
   justify-content: center;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> justin
 .metronome-switch-div {
   display: flex;
   justify-content: center;
   padding: 3%;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> justin
 .switch-title {
   text-align: center;
   color: #d9d9d9;
@@ -186,6 +232,32 @@ a {
   border-style: none;
   width: 4ch;
   border-radius: 0px 10px 10px 0px;
+}
+.dropdown-div {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dropdown {
+  border-style: none;
+  cursor: pointer;
+  border-radius: 10px;
+  width: 35ch;
+  padding: 1ch;
+  margin: 1ch;
+  color: #d9d9d9;
+  background-color: #3a3a3a;
+  appearance: none;
+
+  background-image: linear-gradient(45deg, transparent 50%, #3a3a3a 50%),
+    linear-gradient(135deg, #3a3a3a 50%, transparent 50%),
+    linear-gradient(to right, #d9d9d9, #d9d9d9);
+  background-position: calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px), 100% 0;
+  background-size: 5px 5px, 5px 5px, 3em 2.5em;
+  background-repeat: no-repeat;
 }
 
 .dropdown-div {
@@ -278,6 +350,36 @@ a {
   padding: 5%;
 }
 
+<<<<<<< HEAD
+=======
+.info-section {
+  margin: 2rem;
+  color: #d9d9d9;
+}
+
+.info-box {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.info-box-icon {
+  width: 8rem;
+}
+
+.info-box-icon img {
+  height: 8rem;
+  padding: 1rem;
+}
+
+.info-box p {
+  display: flex;
+  align-items: center;
+  width: 60%;
+  max-width: 50rem;
+}
+
+>>>>>>> justin
 .search-button {
   border-style: none;
   border-radius: 10px;
