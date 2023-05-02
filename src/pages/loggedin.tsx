@@ -15,7 +15,7 @@ export default function LoggedIn() {
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-  const [numSongs, setNumSongs] = useState<number>();
+  const [numSongs, setNumSongs] = useState<number>(0);
   const [ready, setReady] = useState(false);
 
   const router = useRouter();
@@ -79,6 +79,26 @@ export default function LoggedIn() {
   const handleNumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const num = parseInt(event.target.value);
     setNumSongs(num);
+  };
+
+  const handleClick = () => {
+    if (selectedGenres.length > 0 && numSongs > 0) {
+      const url =
+        "/api/spotify/songs?bpm=" +
+        tempo +
+        "&genres=" +
+        selectedGenres +
+        "&numsongs=" +
+        numSongs +
+        "&access_token=" +
+        localStorage.getItem("access_token");
+      console.log(url);
+      fetch(url)
+        .then((res) => res.json())
+        .then((json) => {
+          console.log(json);
+        });
+    }
   };
 
   const logout = () => {
@@ -202,7 +222,12 @@ export default function LoggedIn() {
                 </select>
               </div>
               <div className="search-button-div">
-                <button className="search-button hvr-grow">FIND SONGS</button>
+                <button
+                  className="search-button hvr-grow"
+                  onClick={handleClick}
+                >
+                  FIND SONGS
+                </button>
               </div>
             </div>
           </div>

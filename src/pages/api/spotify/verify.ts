@@ -10,7 +10,7 @@ export default function handler(
   res: NextApiResponse<data>
 ) {
   const state: string = generateRandomString(16);
-  const scope: string = "user-read-private user-read-email";
+  const scope: string = "user-read-private user-read-email streaming";
   const params: URLSearchParams = new URLSearchParams({
     response_type: "code",
     client_id: client_id,

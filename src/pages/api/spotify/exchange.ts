@@ -63,7 +63,7 @@ export default async function handler(
           code: code,
           redirect_uri: redirect_uri,
           client_id: client_id,
-          scope: "user-read-private user-read-email",
+          scope: "user-read-private user-read-email streaming",
           state: state,
         }),
       });
