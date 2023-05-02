@@ -31,25 +31,37 @@ export default function LoggedIn() {
 
   useEffect(() => {
     if (router.isReady) {
+      const access_token = localStorage.getItem("access_token");
+      const refresh_token = localStorage.getItem("refresh_token");
+      const expires_at = localStorage.getItem("expires_at");
       if (code !== undefined && state !== undefined) {
         fetch("/api/spotify/exchange?code=" + code + "&state=" + state)
           .then((res) => res.json())
           .then((json: data) => {
             console.log(json);
             const t = new Date();
-            const time = t.setSeconds(t.getSeconds() + json.expires_in);
+            t.setSeconds(t.getSeconds() + json.expires_in);
             localStorage.setItem("access_token", json.access_token);
             localStorage.setItem("refresh_token", json.refresh_token);
-            localStorage.setItem("expires_at", time.toString());
+            localStorage.setItem("expires_at", t.toString());
             window.history.replaceState({}, document.title, "/loggedin");
           });
         setReady(true);
-      } else if (
-        localStorage.getItem("access_token") &&
-        localStorage.getItem("refresh_token") &&
-        localStorage.getItem("expires_at")
-      ) {
-        //TODO: this is where we check if the user is already logged in, might need to put in a diff. file
+      } else if (access_token && refresh_token && expires_at) {
+        if (new Date(expires_at).valueOf() - new Date().valueOf() <= 0) {
+          fetch(
+            "/api/spotify/refresh?refresh_token=" +
+              localStorage.getItem("refresh_token")
+          )
+            .then((res) => res.json())
+            .then((json) => {
+              console.log(json);
+              const t = new Date();
+              t.setSeconds(t.getSeconds() + json.expires_in);
+              localStorage.setItem("access_token", json.access_token);
+              localStorage.setItem("expires_at", t.toString());
+            });
+        }
         setReady(true);
       } else {
         router.push("/").then(() => setReady(true));
@@ -74,6 +86,10 @@ export default function LoggedIn() {
     localStorage.clear();
     sessionStorage.clear();
     router.push("/");
+  };
+
+  const testButton = () => {
+    console.log(new Date().getUTCSeconds());
   };
 
   //TODO: get the user's name from the spotify api and display it here
