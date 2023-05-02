@@ -33,7 +33,7 @@ export function MetronomeComponent(props: MetronomeProps) {
           id="current-tempo"
           aria-busy
         >
-          Tempo: {props.metronome.isRunning ? props.tempo : "OFF"}
+          Tempo: {props.tempo}
         </div>
       </div>
 

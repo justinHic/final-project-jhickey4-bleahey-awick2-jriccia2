@@ -195,6 +195,8 @@ a {
   display: flex;
   justify-content: center;
   padding: 3%;
+  align-items: center;
+  gap: 0.5rem;
 }
 .switch-title {
   text-align: center;
@@ -331,6 +333,11 @@ a {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  background: #161616;
+  border-radius: 16px;
+  width: 40%;
+  margin: 1rem auto 0.5rem;
+  min-height: 3.375rem;
 }
 
 .search-button-div {
