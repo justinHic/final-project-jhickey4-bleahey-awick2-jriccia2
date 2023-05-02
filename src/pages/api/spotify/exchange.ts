@@ -1,0 +1,87 @@
+import type { NextApiRequest, NextApiResponse } from "next";
+const client_id = "d4f1fb65364d48f38e76c1d7c26da3ae";
+const redirect_uri = "http://localhost:3000/loggedin";
+
+type data = {
+  access_token: string;
+};
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<data>
+) {
+  const code = req.query.code;
+  const state = req.query.state;
+
+  if (
+    state === null ||
+    code === null ||
+    code === undefined ||
+    Array.isArray(code)
+  ) {
+    res.status(405).end();
+  } else {
+    const response = async () => {
+      /*
+      const resp = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+          Authorization:
+            "Basic " +
+            Buffer.from(client_id + ":" + process.env.CLIENT_SECRET).toString(
+              'base64'
+            ),
+        },
+        body: new URLSearchParams({
+          code,
+          redirect_uri,
+          client_id,
+          grant_type: "authorization_code",
+        }),
+      });
+      return resp.json();
+      */
+      const client_secret = process.env.CLIENT_SECRET;
+      console.log(process.env.CLIENT_SECRET);
+      const response = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${Buffer.from(
+            client_id + ":" + client_secret
+          ).toString("base64")}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+        //`grant_type=authorization_code&code=${code}&redirect_uri=${redirect_uri}`,
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          code: code,
+          redirect_uri: redirect_uri,
+        }),
+      });
+
+      return response.json();
+    };
+    await response().then((info) => {
+      console.log(info);
+      res.status(200).json({ access_token: info.access_token });
+    });
+    /*
+    const authOptions = {
+      url: "https://accounts.spotify.com/api/token",
+      form: {
+        code: code,
+        redirect_uri: redirect_uri,
+        grant_type: "authorization_code",
+      },
+      headers: {
+        Authorization:
+          "Basic " +
+          Buffer.from(client_id + ":" + process.env.CLIENT_SECRET).toString(
+            'base64'
+          ),
+      },
+      json: true,
+    };*/
+  }
+}

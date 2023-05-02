@@ -2,26 +2,23 @@ import Head from "next/head";
 import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
+import { useRouter } from "next/router";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 
 //POTENTIAL TODO: check if the user is already logged in and redirect them to the logged in page if they are
 
 export default function Home() {
-  // const [tempo, setTempo] = useState(100);
-  // const [metronome, setMetronome] = useState(new Metronome(tempo));
-  // const [metronomePlaying, setMetronomePlaying] = useState(false);
-  // const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const router = useRouter();
+  const { code } = router.query;
 
-  // const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //   if (event.target) {
-  //     console.log(event.target.value);
-  //     if (!selectedGenres.includes(event.target.value)) {
-  //       const copy = selectedGenres.slice();
-  //       copy.push(event.target.value);
-  //       setSelectedGenres(copy);
-  //     }
-  //   }
-  // };
+  useEffect(() => {
+    if (router.isReady) {
+      //TODO: if we want to change from code to access token, we need to change this
+      if (code !== undefined) {
+        router.push("/logged-in");
+      }
+    }
+  }, []);
 
   interface RedirectURL {
     url: string;
@@ -36,12 +33,6 @@ export default function Home() {
         console.log(json);
         window.location.assign(json.url);
       });
-    /*
-    fetch("/api/hello2")
-      .then((res) => res.json())
-      .then((json) => {
-        console.log(json);
-      });*/
   }
 
   return (

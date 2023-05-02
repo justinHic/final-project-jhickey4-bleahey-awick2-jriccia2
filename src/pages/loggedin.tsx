@@ -5,7 +5,6 @@ import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import localFont from "next/font/local";
 import Genre from "../components/Genre";
-import { logout, exchangeToken } from "./api/spotify/PKCEVerifier";
 const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 import { useRouter } from "next/router";
 import { testButton } from "@/pages/api/spotify/playlistBuilder";
@@ -19,14 +18,17 @@ export default function LoggedIn() {
   const [numSongs, setNumSongs] = useState<number>();
 
   const router = useRouter();
-  const { code } = router.query;
+  const { code, state } = router.query;
 
   //TODO: make code part of the state
 
   useEffect(() => {
     if (router.isReady) {
-      if (code !== undefined) {
-        // exchangeToken(code);
+      if (code !== undefined && state !== undefined) {
+        console.log(code);
+        fetch("/api/spotify/exchange?code=" + code + "state=" + state)
+          .then((res) => res.json())
+          .then((json) => console.log(json));
       } else if (
         localStorage.getItem("access_token") &&
         localStorage.getItem("refresh_token") &&
@@ -49,6 +51,13 @@ export default function LoggedIn() {
   const handleNumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const num = parseInt(event.target.value);
     setNumSongs(num);
+  };
+
+  const logout = () => {
+    //TODO: make sure any environment variables associated with the user are cleared
+    localStorage.clear();
+    sessionStorage.clear();
+    router.push("/");
   };
 
   //TODO: get the user's name from the spotify api and display it here
