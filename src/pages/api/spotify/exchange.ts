@@ -63,7 +63,8 @@ export default async function handler(
           code: code,
           redirect_uri: redirect_uri,
           client_id: client_id,
-          scope: "user-read-private user-read-email streaming",
+          scope:
+            "user-read-private user-read-email streaming user-modify-playback-state",
           state: state,
         }),
       });
@@ -77,22 +78,5 @@ export default async function handler(
         expires_in: info.expires_in,
       });
     });
-    /*
-    const authOptions = {
-      url: "https://accounts.spotify.com/api/token",
-      form: {
-        code: code,
-        redirect_uri: redirect_uri,
-        grant_type: "authorization_code",
-      },
-      headers: {
-        Authorization:
-          "Basic " +
-          Buffer.from(client_id + ":" + process.env.CLIENT_SECRET).toString(
-            'base64'
-          ),
-      },
-      json: true,
-    };*/
   }
 }
