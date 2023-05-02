@@ -128,8 +128,6 @@ a {
   padding: 5%;
 }
 
-<<<<<<< HEAD
-=======
 .spotify-button {
   border: none;
   border-radius: 10px;
@@ -150,7 +148,6 @@ a {
   color: #1ed760;
 }
 
->>>>>>> justin
 .backdiv {
   display: flex;
   justify-content: center;
@@ -194,19 +191,11 @@ a {
   display: flex;
   justify-content: center;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> justin
 .metronome-switch-div {
   display: flex;
   justify-content: center;
   padding: 3%;
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> justin
 .switch-title {
   text-align: center;
   color: #d9d9d9;
@@ -350,8 +339,6 @@ a {
   padding: 5%;
 }
 
-<<<<<<< HEAD
-=======
 .info-section {
   margin: 2rem;
   color: #d9d9d9;
@@ -379,7 +366,6 @@ a {
   max-width: 50rem;
 }
 
->>>>>>> justin
 .search-button {
   border-style: none;
   border-radius: 10px;
