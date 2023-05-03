@@ -11,6 +11,11 @@ import {
   getValidTempos,
   hrToEnergy,
 } from "@/scripts/algorithms";
+import { HR_ZONES } from "@/resources/metrics";
+
+interface SongsResponse {
+  uris: string[];
+}
 
 export default function LoggedIn() {
   const [tempo, setTempo] = useState(100);
@@ -22,6 +27,10 @@ export default function LoggedIn() {
   const [playerShow, setPlayerShow] = useState(false);
   const [songs, setSongs] = useState<string[]>([]);
   const [access_token, setAccessToken] = useState("");
+  const [gender, setGender] = useState<string>();
+  const [HR, setHR] = useState<string>();
+  const [inches, setInches] = useState<number>();
+  const [feet, setFeet] = useState<number>();
 
   const router = useRouter();
   const { code, state } = router.query;
@@ -95,7 +104,16 @@ export default function LoggedIn() {
   };
 
   const handleClick = () => {
-    if (selectedGenres.length > 0 && numSongs > 0) {
+    if (
+      selectedGenres.length > 0 &&
+      numSongs > 0 &&
+      gender !== undefined &&
+      inches !== undefined &&
+      feet !== undefined
+    ) {
+      let gen: string = gender === "male" ? "true" : "false";
+      let totalInches = 12 * feet + inches;
+
       const url =
         "/api/spotify/songs?bpm=" +
         tempo +
@@ -104,11 +122,16 @@ export default function LoggedIn() {
         "&numsongs=" +
         numSongs +
         "&access_token=" +
-        localStorage.getItem("access_token");
+        localStorage.getItem("access_token") +
+        "&height=" +
+        totalInches +
+        "&male=" +
+        gen +
+        (HR !== undefined ? "&hr=" + HR : "");
       fetch(url)
         .then((res) => res.json())
-        .then((json) => {
-          console.log(json);
+        .then((json: SongsResponse) => {
+          setSongs(json.uris);
           setPlayerShow(true);
         });
     }
@@ -238,6 +261,67 @@ export default function LoggedIn() {
                     );
                   })}
                 </select>
+                <select
+                  name="gender"
+                  defaultValue={"disabled"}
+                  onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                    setGender(event.target.value)
+                  }
+                  className="dropdown hvr-grow"
+                >
+                  <option disabled value={"disabled"}>
+                    Select your gender
+                  </option>
+                  <option value={"male"}>Male</option>
+                  <option value={"female"}>Female</option>
+                </select>
+
+                <select
+                  name="hr"
+                  defaultValue={"disabled"}
+                  className="dropdown hvr-grow"
+                  onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                    setHR(event.target.value)
+                  }
+                >
+                  <option disabled value={"disabled"}>
+                    Select your heart rate zone (optional)
+                  </option>
+                  {HR_ZONES.map((val, index) => {
+                    return (
+                      <option key={index} value={val}>
+                        {val}
+                      </option>
+                    );
+                  })}
+                </select>
+                <p className="height-title">Please enter your height</p>
+                <div className="height-div">
+                  <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    min="3"
+                    max="8"
+                    className="height-input"
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      setFeet(parseInt(event.target.value))
+                    }
+                  ></input>
+                  <label className="height-label">ft</label>
+                  <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    min="1"
+                    max="12"
+                    className="height-input"
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      setInches(parseInt(event.target.value))
+                    }
+                  ></input>
+                  <label className="height-label">in</label>
+                </div>
               </div>
               <div className="search-button-div">
                 <button

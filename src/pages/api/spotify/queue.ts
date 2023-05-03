@@ -34,7 +34,7 @@ export default async function handler(
       }
     )
       .then((res) => res.json())
-      .then((json) => console.log(json))
+      .then((json) => console.log("queue" + json))
       .catch((err) => console.log(err));
 
     res.status(200).end();
