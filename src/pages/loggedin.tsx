@@ -1,14 +1,16 @@
 import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
 import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
-import localFont from "next/font/local";
 import Genre from "../components/Genre";
-const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
 import { useRouter } from "next/router";
-import { testButton } from "@/pages/api/spotify/playlistBuilder";
 import { MetronomeComponent } from "@/components/MetronomeComponent";
+import Webplayer from "@/components/Webplayer";
+import { genres } from "@/resources/genres";
+import {
+  cadenceToEnergy,
+  getValidTempos,
+  hrToEnergy,
+} from "@/scripts/algorithms";
 
 export default function LoggedIn() {
   const [tempo, setTempo] = useState(100);
@@ -17,6 +19,9 @@ export default function LoggedIn() {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [numSongs, setNumSongs] = useState<number>(0);
   const [ready, setReady] = useState(false);
+  const [playerShow, setPlayerShow] = useState(false);
+  const [songs, setSongs] = useState<string[]>([]);
+  const [access_token, setAccessToken] = useState("");
 
   const router = useRouter();
   const { code, state } = router.query;
@@ -31,7 +36,7 @@ export default function LoggedIn() {
 
   useEffect(() => {
     if (router.isReady) {
-      const access_token = localStorage.getItem("access_token");
+      const access = localStorage.getItem("access_token");
       const refresh_token = localStorage.getItem("refresh_token");
       const expires_at = localStorage.getItem("expires_at");
       if (code !== undefined && state !== undefined) {
@@ -44,15 +49,13 @@ export default function LoggedIn() {
             localStorage.setItem("access_token", json.access_token);
             localStorage.setItem("refresh_token", json.refresh_token);
             localStorage.setItem("expires_at", t.toString());
+            setAccessToken(json.access_token);
             window.history.replaceState({}, document.title, "/loggedin");
           });
         setReady(true);
-      } else if (access_token && refresh_token && expires_at) {
+      } else if (access && refresh_token && expires_at) {
         if (new Date(expires_at).valueOf() - new Date().valueOf() <= 0) {
-          fetch(
-            "/api/spotify/refresh?refresh_token=" +
-              localStorage.getItem("refresh_token")
-          )
+          fetch("/api/spotify/refresh?refresh_token=" + refresh_token)
             .then((res) => res.json())
             .then((json) => {
               console.log(json);
@@ -60,7 +63,12 @@ export default function LoggedIn() {
               t.setSeconds(t.getSeconds() + json.expires_in);
               localStorage.setItem("access_token", json.access_token);
               localStorage.setItem("expires_at", t.toString());
+              setAccessToken(json.access_token);
             });
+        }
+        let x = localStorage.getItem("access_token");
+        {
+          x !== null ? setAccessToken(x) : "";
         }
         setReady(true);
       } else {
@@ -70,10 +78,15 @@ export default function LoggedIn() {
   }, [code]);
 
   const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if (!selectedGenres.includes(event.target.value)) {
+    if (
+      !selectedGenres.includes(event.target.value) &&
+      selectedGenres.length < 5
+    ) {
       const copy = selectedGenres.slice();
       copy.push(event.target.value);
       setSelectedGenres(copy);
+    } else if (selectedGenres.length >= 5) {
+      alert("Can only select a maximum of 5 genres");
     }
   };
   const handleNumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -92,11 +105,11 @@ export default function LoggedIn() {
         numSongs +
         "&access_token=" +
         localStorage.getItem("access_token");
-      console.log(url);
       fetch(url)
         .then((res) => res.json())
         .then((json) => {
           console.log(json);
+          setPlayerShow(true);
         });
     }
   };
@@ -109,7 +122,9 @@ export default function LoggedIn() {
   };
 
   const testButton = () => {
-    console.log(new Date().getUTCSeconds());
+    // hrToEnergy(210);
+    //getValidTempos(170);
+    //console.log(cadenceToEnergy(182, 70, true));
   };
 
   //TODO: get the user's name from the spotify api and display it here
@@ -195,12 +210,15 @@ export default function LoggedIn() {
                   className="dropdown hvr-grow"
                 >
                   <option disabled value={"disabled"}>
-                    Select desired genres
+                    Select up to 5 desired genres
                   </option>
-                  <option value="test1">test1</option>
-                  <option value="test2">test2</option>
-                  <option value="test3">test3</option>
-                  <option value="test4">test4</option>
+                  {genres.map((val, index) => {
+                    return (
+                      <option key={index} value={val}>
+                        {val}
+                      </option>
+                    );
+                  })}
                 </select>
 
                 <select
@@ -229,6 +247,14 @@ export default function LoggedIn() {
                   FIND SONGS
                 </button>
               </div>
+              {playerShow ? (
+                <Webplayer
+                  songs={songs}
+                  access_token={access_token}
+                ></Webplayer>
+              ) : (
+                <></>
+              )}
             </div>
           </div>
         </>

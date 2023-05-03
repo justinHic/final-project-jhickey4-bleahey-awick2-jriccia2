@@ -253,11 +253,11 @@ a {
 .genre-option {
   display: flex;
   justify-content: space-between;
-  margin: 3%;
+  margin: 1%;
   padding: 3px;
   border-radius: 10px;
   background-color: #3a3a3a;
-  width: 10ch;
+  width: 14ch;
 }
 
 .genre-option {
@@ -305,6 +305,8 @@ a {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  padding-top: 5%;
+  padding-bottom: 5%;
 }
 
 .search-button-div {

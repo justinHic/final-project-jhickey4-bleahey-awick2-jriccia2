@@ -1,3 +1,4 @@
+import { access } from "fs";
 import React, { useState, useEffect } from "react";
 const track = {
   name: "",
@@ -7,7 +8,12 @@ const track = {
   artists: [{ name: "" }],
 };
 
-export default function testplayer() {
+interface PlayerProps {
+  access_token: string;
+  songs: string[];
+}
+
+export default function Webplayer(props: PlayerProps) {
   const [is_paused, setPaused] = useState(false);
   const [is_active, setActive] = useState(false);
   const [player, setPlayer] = useState<any>(undefined);
@@ -24,11 +30,10 @@ export default function testplayer() {
       const player = new window.Spotify.Player({
         name: "Web Playback SDK",
         getOAuthToken: (cb: any) => {
-          cb(localStorage.getItem("access_token"));
+          cb(props.access_token);
         },
         volume: 0.5,
       });
-
       setPlayer(player);
 
       player.addListener("ready", ({ device_id }) => {
@@ -41,13 +46,9 @@ export default function testplayer() {
         ).then(() => {
           fetch(
             "/api/spotify/queue?access_token=" +
-              localStorage.getItem("access_token") +
+              props.access_token +
               "&song_uris=" +
-              JSON.stringify([
-                "spotify:track:5R8dQOPq8haW94K7mgERlO",
-                "spotify:track:0SiywuOBRcynK0uKGWdCnn",
-                "spotify:track:46MX86XQqYCZRvwPpeq4Gi",
-              ]) +
+              JSON.stringify(props.songs) +
               "&device_id=" +
               device_id
           );
@@ -56,6 +57,18 @@ export default function testplayer() {
 
       player.addListener("not_ready", ({ device_id }) => {
         console.log("Device ID has gone offline", device_id);
+      });
+      player.on("initialization_error", ({ message }) => {
+        console.error("Failed to initialize", message);
+      });
+      player.on("authentication_error", ({ message }) => {
+        console.error("Failed to authenticate", message);
+      });
+      player.on("account_error", ({ message }) => {
+        console.error("Failed to validate Spotify account", message);
+      });
+      player.on("playback_error", ({ message }) => {
+        console.error("Failed to perform playback", message);
       });
 
       player.addListener("player_state_changed", (state) => {
@@ -80,10 +93,7 @@ export default function testplayer() {
       <>
         <div className="container">
           <div className="main-wrapper">
-            <b>
-              {" "}
-              Instance not active. Transfer your playback using your Spotify app{" "}
-            </b>
+            <b>Test</b>
           </div>
         </div>
       </>
@@ -126,7 +136,7 @@ export default function testplayer() {
               <button
                 className="btn-spotify"
                 onClick={() => {
-                  player.nextTrack().then((res: any) => console.log(res));
+                  player.nextTrack();
                 }}
               >
                 &gt;&gt;
