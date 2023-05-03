@@ -201,6 +201,7 @@ export default function LoggedIn() {
                   <option value="test2">test2</option>
                   <option value="test3">test3</option>
                   <option value="test4">test4</option>
+                  <option value="hip-hop">hip-hop</option>
                 </select>
 
                 <select
