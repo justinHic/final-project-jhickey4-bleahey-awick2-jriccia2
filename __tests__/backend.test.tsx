@@ -1,10 +1,6 @@
-import { createMocks, RequestMethod, createResponse, createRequest } from "node-mocks-http";
+import { createMocks } from "node-mocks-http";
 import songHandler from "../src/pages/api/spotify/songs";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { mockResponse } from "../mocks/data";
-
-export type ApiRequest = NextApiRequest & ReturnType<typeof createRequest>;
-export type APiResponse = NextApiResponse & ReturnType<typeof createResponse>;
 
 import fetchMock from "jest-fetch-mock";
 
