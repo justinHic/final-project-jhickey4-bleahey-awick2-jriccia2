@@ -33,11 +33,10 @@ export default async function handler(
     )
       .then((res) => {
         if (res !== undefined) {
-          /* console.log(res);
-        res
-          .json()
-          .then((json) => console.log(json))
-          .catch((err) => console.log(err));*/
+          res
+            .json()
+            .then((json) => console.log(json))
+            .catch((err) => console.log(err));
         }
       })
       .catch((err) => console.log(err));

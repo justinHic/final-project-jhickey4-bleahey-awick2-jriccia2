@@ -12,6 +12,7 @@ import {
   hrToEnergy,
 } from "@/scripts/algorithms";
 import { HR_ZONES } from "@/resources/metrics";
+import { error } from "console";
 
 interface SongsResponse {
   uris: string[];
@@ -52,7 +53,6 @@ export default function LoggedIn() {
         fetch("/api/spotify/exchange?code=" + code + "&state=" + state)
           .then((res) => res.json())
           .then((json: data) => {
-            console.log(json);
             const t = new Date();
             t.setSeconds(t.getSeconds() + json.expires_in);
             localStorage.setItem("access_token", json.access_token);
@@ -64,16 +64,7 @@ export default function LoggedIn() {
         setReady(true);
       } else if (access && refresh_token && expires_at) {
         if (new Date(expires_at).valueOf() - new Date().valueOf() <= 0) {
-          fetch("/api/spotify/refresh?refresh_token=" + refresh_token)
-            .then((res) => res.json())
-            .then((json) => {
-              console.log(json);
-              const t = new Date();
-              t.setSeconds(t.getSeconds() + json.expires_in);
-              localStorage.setItem("access_token", json.access_token);
-              localStorage.setItem("expires_at", t.toString());
-              setAccessToken(json.access_token);
-            });
+          refreshToken();
         }
         let x = localStorage.getItem("access_token");
         {
@@ -85,6 +76,21 @@ export default function LoggedIn() {
       }
     }
   }, [code]);
+
+  function refreshToken() {
+    fetch(
+      "/api/spotify/refresh?refresh_token=" +
+        localStorage.getItem("refresh_token")
+    )
+      .then((res) => res.json())
+      .then((json) => {
+        const t = new Date();
+        t.setSeconds(t.getSeconds() + json.expires_in);
+        localStorage.setItem("access_token", json.access_token);
+        localStorage.setItem("expires_at", t.toString());
+        setAccessToken(json.access_token);
+      });
+  }
 
   const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (
@@ -129,11 +135,18 @@ export default function LoggedIn() {
         gen +
         (HR !== undefined ? "&hr=" + HR : "");
       fetch(url)
-        .then((res) => res.json())
+        .then((res) => {
+          if (res.status === 201) {
+            alert("Session expired. Please refresh page");
+          } else {
+            return res.json();
+          }
+        })
         .then((json: SongsResponse) => {
           setSongs(json.uris);
           setPlayerShow(true);
-        });
+        })
+        .catch((err) => console.log(err));
     }
   };
 
