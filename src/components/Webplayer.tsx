@@ -18,12 +18,12 @@ export default function Webplayer(props: PlayerProps) {
   const [is_active, setActive] = useState(false);
   const [player, setPlayer] = useState<any>(undefined);
   const [current_track, setTrack] = useState(track);
+  const [device_id, setDeviceId] = useState<string>();
 
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
-
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -38,6 +38,7 @@ export default function Webplayer(props: PlayerProps) {
 
       player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
+        setDeviceId(device_id);
         fetch(
           "/api/spotify/transfer?access_token=" +
             localStorage.getItem("access_token") +
@@ -45,8 +46,7 @@ export default function Webplayer(props: PlayerProps) {
             device_id
         ).then(() => {
           fetch(
-            "/api/spotify/createPlaylist?access_token=" +
-            // "/api/spotify/queue?access_token=" +
+            "/api/spotify/queue?access_token=" +
               props.access_token +
               "&song_uris=" +
               JSON.stringify(props.songs) +
@@ -79,7 +79,6 @@ export default function Webplayer(props: PlayerProps) {
 
         setTrack(state.track_window.current_track);
         setPaused(state.paused);
-
         player.getCurrentState().then((state) => {
           !state ? setActive(false) : setActive(true);
         });
@@ -88,6 +87,27 @@ export default function Webplayer(props: PlayerProps) {
       player.connect();
     };
   }, []);
+
+  useEffect(() => {
+    if (device_id !== undefined) {
+      setTrack(track);
+      fetch(
+        "/api/spotify/transfer?access_token=" +
+          localStorage.getItem("access_token") +
+          "&id=" +
+          device_id
+      ).then(() => {
+        fetch(
+          "/api/spotify/queue?access_token=" +
+            props.access_token +
+            "&song_uris=" +
+            JSON.stringify(props.songs) +
+            "&device_id=" +
+            device_id
+        ).then(() => player.seek(0));
+      });
+    }
+  }, [props.songs]);
 
   if (!is_active) {
     return (
@@ -111,37 +131,38 @@ export default function Webplayer(props: PlayerProps) {
             />
 
             <div className="now-playing__side">
-              <div className="now-playing__name">{current_track.name}</div>
-              <div className="now-playing__artist">
+              <p className="now-playing__name">{current_track.name}</p>
+              <p className="now-playing__artist">
                 {current_track.artists[0].name}
+              </p>
+              <div className="spotify-btn-div">
+                <button
+                  className="btn-spotify"
+                  onClick={() => {
+                    player.previousTrack();
+                  }}
+                >
+                  &lt;&lt;
+                </button>
+
+                <button
+                  className="btn-spotify"
+                  onClick={() => {
+                    player.togglePlay();
+                  }}
+                >
+                  {is_paused ? "PLAY" : "PAUSE"}
+                </button>
+
+                <button
+                  className="btn-spotify"
+                  onClick={() => {
+                    player.nextTrack();
+                  }}
+                >
+                  &gt;&gt;
+                </button>
               </div>
-
-              <button
-                className="btn-spotify"
-                onClick={() => {
-                  player.previousTrack();
-                }}
-              >
-                &lt;&lt;
-              </button>
-
-              <button
-                className="btn-spotify"
-                onClick={() => {
-                  player.togglePlay();
-                }}
-              >
-                {is_paused ? "PLAY" : "PAUSE"}
-              </button>
-
-              <button
-                className="btn-spotify"
-                onClick={() => {
-                  player.nextTrack();
-                }}
-              >
-                &gt;&gt;
-              </button>
             </div>
           </div>
         </div>

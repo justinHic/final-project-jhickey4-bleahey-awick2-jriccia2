@@ -39,7 +39,18 @@ export default function testplayer() {
             "&id=" +
             device_id
         ).then(() => {
-          fetch("/api/spotify/que");
+          fetch(
+            "/api/spotify/queue?access_token=" +
+              localStorage.getItem("access_token") +
+              "&song_uris=" +
+              JSON.stringify([
+                "spotify:track:5R8dQOPq8haW94K7mgERlO",
+                "spotify:track:0SiywuOBRcynK0uKGWdCnn",
+                "spotify:track:46MX86XQqYCZRvwPpeq4Gi",
+              ]) +
+              "&device_id=" +
+              device_id
+          );
         });
       });
 
@@ -115,7 +126,7 @@ export default function testplayer() {
               <button
                 className="btn-spotify"
                 onClick={() => {
-                  player.nextTrack();
+                  player.nextTrack().then((res: any) => console.log(res));
                 }}
               >
                 &gt;&gt;
