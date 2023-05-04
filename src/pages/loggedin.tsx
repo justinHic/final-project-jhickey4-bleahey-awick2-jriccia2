@@ -98,6 +98,7 @@ export default function LoggedIn() {
       alert("Can only select a maximum of 5 genres");
     }
   };
+
   const handleNumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const num = parseInt(event.target.value);
     setNumSongs(num);
@@ -143,6 +144,21 @@ export default function LoggedIn() {
     sessionStorage.clear();
     router.push("/");
   };
+
+  /**
+   * TODO: make watch mode
+   * Has fields:
+   * - cadence
+   * - energy
+   * - genres
+   * - number of songs
+   *
+   * Does not have:
+   * - metronome
+   * - gender
+   * - height
+   * - heart rate
+   */
 
   //TODO: get the user's name from the spotify api and display it here
   return (
