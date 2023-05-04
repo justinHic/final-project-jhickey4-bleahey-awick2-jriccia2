@@ -6,8 +6,6 @@ export default async function handler(
 ) {
   const { id, access_token } = req.query;
   if (isString(id) && isString(access_token)) {
-    const x = "[" + '"' + id + '"' + "]";
-    console.log(JSON.stringify([id]));
     const result = await fetch("https://api.spotify.com/v1/me/player", {
       method: "PUT",
       headers: {
