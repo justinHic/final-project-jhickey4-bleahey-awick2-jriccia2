@@ -31,6 +31,7 @@ export default function LoggedIn() {
   const [HR, setHR] = useState<string>();
   const [inches, setInches] = useState<number>();
   const [feet, setFeet] = useState<number>();
+  const [watchMode, setWatchMode] = useState<boolean>(false);
 
   const router = useRouter();
   const { code, state } = router.query;
@@ -184,6 +185,25 @@ export default function LoggedIn() {
               Logout of Spotify
             </button>
             <div className="input-fields">
+              <div className="mode-selector">
+                <select
+                  name="mode"
+                  defaultValue={"standard"}
+                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                    if (event.target.value === "watch") {
+                      setWatchMode(true);
+                      metronome.startStop();
+                      setMetronomePlaying(!metronomePlaying);
+                    } else {
+                      setWatchMode(false);
+                    }
+                  }}
+                  className="dropdown hvr-grow"
+                >
+                  <option value={"standard"}>Standard mode</option>
+                  <option value={"watch"}>Watch mode</option>
+                </select>
+              </div>
               <div className="metronome-container">
                 <div className="metronome-switch-div">
                   <h3 className="switch-title">
@@ -191,6 +211,7 @@ export default function LoggedIn() {
                   </h3>
                   <label className="switch">
                     <input
+                      checked={metronomePlaying}
                       onChange={() => {
                         metronome.startStop();
                         setMetronomePlaying(!metronomePlaying);
@@ -265,67 +286,73 @@ export default function LoggedIn() {
                     );
                   })}
                 </select>
-                <select
-                  name="gender"
-                  defaultValue={"disabled"}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                    setGender(event.target.value)
-                  }
-                  className="dropdown hvr-grow"
-                >
-                  <option disabled value={"disabled"}>
-                    Select your gender
-                  </option>
-                  <option value={"male"}>Male</option>
-                  <option value={"female"}>Female</option>
-                </select>
-
-                <select
-                  name="hr"
-                  defaultValue={"disabled"}
-                  className="dropdown hvr-grow"
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                    setHR(event.target.value)
-                  }
-                >
-                  <option disabled value={"disabled"}>
-                    Select your heart rate zone (optional)
-                  </option>
-                  {HR_ZONES.map((val, index) => {
-                    return (
-                      <option key={index} value={val}>
-                        {val}
+                {watchMode ? (
+                  <></>
+                ) : (
+                  <>
+                    <select
+                      name="gender"
+                      defaultValue={"disabled"}
+                      onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                        setGender(event.target.value)
+                      }
+                      className="dropdown hvr-grow"
+                    >
+                      <option disabled value={"disabled"}>
+                        Select your gender
                       </option>
-                    );
-                  })}
-                </select>
-                <p className="height-title">Please enter your height</p>
-                <div className="height-div">
-                  <input
-                    type="number"
-                    id="quantity"
-                    name="quantity"
-                    min="3"
-                    max="8"
-                    className="height-input"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      setFeet(parseInt(event.target.value))
-                    }
-                  ></input>
-                  <label className="height-label">ft</label>
-                  <input
-                    type="number"
-                    id="quantity"
-                    name="quantity"
-                    min="1"
-                    max="12"
-                    className="height-input"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      setInches(parseInt(event.target.value))
-                    }
-                  ></input>
-                  <label className="height-label">in</label>
-                </div>
+                      <option value={"male"}>Male</option>
+                      <option value={"female"}>Female</option>
+                    </select>
+
+                    <select
+                      name="hr"
+                      defaultValue={"disabled"}
+                      className="dropdown hvr-grow"
+                      onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                        setHR(event.target.value)
+                      }
+                    >
+                      <option disabled value={"disabled"}>
+                        Select your heart rate zone (optional)
+                      </option>
+                      {HR_ZONES.map((val, index) => {
+                        return (
+                          <option key={index} value={val}>
+                            {val}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    <p className="height-title">Please enter your height</p>
+                    <div className="height-div">
+                      <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        min="3"
+                        max="8"
+                        className="height-input"
+                        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                          setFeet(parseInt(event.target.value))
+                        }
+                      ></input>
+                      <label className="height-label">ft</label>
+                      <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        min="1"
+                        max="12"
+                        className="height-input"
+                        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                          setInches(parseInt(event.target.value))
+                        }
+                      ></input>
+                      <label className="height-label">in</label>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
