@@ -52,7 +52,7 @@ export default async function songHandler(
           json.tracks.forEach((element) => {
             uris.push(element.uri);
           });
-          res.status(200).json({ uris: uris });
+          res.status(200).json({ uris: uris, result: "success!" });
         } else {
           if (result.status === 401) {
             res.status(201).json({ error: "access token expired" });
