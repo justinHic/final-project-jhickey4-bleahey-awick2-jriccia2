@@ -178,38 +178,37 @@ export default function LoggedIn() {
             />
             <link rel="icon" href="/favicon.ico" />
           </Head>
-          <div className="outer">
-            <div className="inner">
-              <h1 className="header">CADANCE</h1>
-              <div className="log-in-buttons">
-                <button className="spotify-button" onClick={logout}>
-                  Log Out
-                </button>
+          <div className="container">
+            <h1 className="header">CADANCE</h1>
+            <button className="spotify-button" onClick={logout}>
+              Logout of Spotify
+            </button>
+            <div className="input-fields">
+              <div className="metronome-container">
+                <div className="metronome-switch-div">
+                  <h3 className="switch-title">
+                    Metronome {metronomePlaying ? <>ON</> : <> OFF</>}
+                  </h3>
+                  <label className="switch">
+                    <input
+                      onChange={() => {
+                        metronome.startStop();
+                        setMetronomePlaying(!metronomePlaying);
+                      }}
+                      aria-label="metronome switch"
+                      type="checkbox"
+                    />
+                    <span className="slider round"></span>
+                  </label>
+                </div>
+                <MetronomeComponent
+                  tempo={tempo}
+                  setTempo={setTempo}
+                  metronome={metronome}
+                  max={300}
+                  min={50}
+                ></MetronomeComponent>
               </div>
-              <div className="metronome-switch-div">
-                <h3 className="switch-title">
-                  Metronome {metronomePlaying ? <>ON</> : <> OFF</>}
-                </h3>
-                <label className="switch">
-                  <input
-                    onChange={() => {
-                      metronome.startStop();
-                      setMetronomePlaying(!metronomePlaying);
-                    }}
-                    aria-label="metronome switch"
-                    type="checkbox"
-                  />
-                  <span className="slider round"></span>
-                </label>
-              </div>
-              <MetronomeComponent
-                tempo={tempo}
-                setTempo={setTempo}
-                metronome={metronome}
-                max={300}
-                min={50}
-              ></MetronomeComponent>
-
               <div className="selectedOptions">
                 {selectedGenres.length === 0 ? (
                   <></>
@@ -226,7 +225,6 @@ export default function LoggedIn() {
                   })
                 )}
               </div>
-
               <div className="dropdown-div">
                 <select
                   name="genre"
@@ -329,23 +327,18 @@ export default function LoggedIn() {
                   <label className="height-label">in</label>
                 </div>
               </div>
-              <div className="search-button-div">
-                <button
-                  className="search-button hvr-grow"
-                  onClick={handleClick}
-                >
-                  FIND SONGS
-                </button>
-              </div>
-              {playerShow ? (
-                <Webplayer
-                  songs={songs}
-                  access_token={access_token}
-                ></Webplayer>
-              ) : (
-                <></>
-              )}
             </div>
+
+            <div className="search-button-div">
+              <button className="search-button hvr-grow" onClick={handleClick}>
+                FIND SONGS
+              </button>
+            </div>
+            {playerShow ? (
+              <Webplayer songs={songs} access_token={access_token}></Webplayer>
+            ) : (
+              <></>
+            )}
           </div>
         </>
       )}

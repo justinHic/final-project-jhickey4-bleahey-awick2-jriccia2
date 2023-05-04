@@ -51,41 +51,37 @@ export default function Home() {
             />
             <link rel="icon" href="/favicon.ico" />
           </Head>
-          <div className="outer">
-            <div className="inner">
-              <h1 className="header">CADANCE</h1>
-              <p className="app-description">
-                A fine tuned running and listening experience
-              </p>
-              <div className="log-in-buttons">
-                <button className="spotify-button" onClick={login}>
-                  Login to Spotify
-                </button>
+          <div className="container">
+            <h1 className="header">CADANCE</h1>
+            <p className="app-description">
+              A fine tuned running and listening experience
+            </p>
+            <button className="spotify-button" onClick={login}>
+              Login to Spotify
+            </button>
+            <section className="info-section">
+              <div className="info-box">
+                <div className="info-box-icon">
+                  <img src="img/music-note-white.png" alt="" />
+                </div>
+                <p>Select the desired genre and duration of your Cadance.</p>
               </div>
-              <section className="info-section">
-                <div className="info-box">
-                  <div className="info-box-icon">
-                    <img src="img/music-note-white.png" alt="" />
-                  </div>
-                  <p>Select the desired genre and duration of your Cadance.</p>
+              <div className="info-box">
+                <div className="info-box-icon">
+                  <img src="img/running-shoe-white.png" alt="" />
                 </div>
-                <div className="info-box">
-                  <div className="info-box-icon">
-                    <img src="img/running-shoe-white.png" alt="" />
-                  </div>
-                  <p>
-                    Cadance creates a playlist based on your preferences and
-                    running cadence and queues songs accordingly.
-                  </p>
+                <p>
+                  Cadance creates a playlist based on your preferences and
+                  running cadence and queues songs accordingly.
+                </p>
+              </div>
+              <div className="info-box">
+                <div className="info-box-icon">
+                  <img src="img/save-icon-white.png" alt="" />
                 </div>
-                <div className="info-box">
-                  <div className="info-box-icon">
-                    <img src="img/save-icon-white.png" alt="" />
-                  </div>
-                  <p>Save your Cadances for future reuse.</p>
-                </div>
-              </section>
-            </div>
+                <p>Save your Cadances for future reuse.</p>
+              </div>
+            </section>
           </div>
         </>
       )}
