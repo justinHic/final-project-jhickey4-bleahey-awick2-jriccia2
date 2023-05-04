@@ -339,8 +339,8 @@ a {
   margin: 1rem auto 0.5rem;
   min-height: 3.375rem;
   min-width: 18rem;
-  padding-top: 5%;
-  padding-bottom: 5%;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .height-input {

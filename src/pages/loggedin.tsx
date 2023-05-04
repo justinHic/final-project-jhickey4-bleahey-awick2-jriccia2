@@ -144,15 +144,6 @@ export default function LoggedIn() {
     router.push("/");
   };
 
-<<<<<<< HEAD
-  const testButton = () => {
-    // hrToEnergy(210);
-    //getValidTempos(170);
-    //console.log(cadenceToEnergy(182, 70, true));
-  };
-
-=======
->>>>>>> Alex
   //TODO: get the user's name from the spotify api and display it here
   return (
     <>
