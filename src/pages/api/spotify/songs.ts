@@ -23,14 +23,12 @@ export default async function handler(
       hr === undefined
         ? cadenceToEnergy(t, h, m)
         : hrToEnergy(convertHR(hr.toString()));
-    console.log(energy);
     let x = "seed_genres=";
     g.forEach((val) => (x += val + "%2C"));
     x = x.substring(0, x.length - 3);
     x += "&target_tempo=" + bpm;
     x += "&limit=" + numsongs;
     x += "&target_energy=" + energy;
-    console.log(x);
     const result = await fetch(
       //"https://api.spotify.com/v1/recommendations?seed_genres=club%2Cpop&target_tempo=120&target_liveness=1&target_energy=1",
       "https://api.spotify.com/v1/recommendations?" + x,
@@ -40,12 +38,11 @@ export default async function handler(
         },
       }
     );
-    result.json().then((json) => {
+    await result.json().then((json) => {
       let uris: any = [];
       json.tracks.forEach((element: any) => {
         uris.push(element.uri);
       });
-      console.log(uris);
       res.status(200).json({ uris: uris });
     });
   } else {

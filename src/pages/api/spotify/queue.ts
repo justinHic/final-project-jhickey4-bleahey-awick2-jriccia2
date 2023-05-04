@@ -5,11 +5,9 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { access_token, song_uris, device_id } = req.query;
-  console.log(song_uris);
 
   if (isString(access_token) && isString(song_uris) && isString(device_id)) {
     const uris = JSON.parse(song_uris);
-    console.log(uris);
     const result = await fetch(
       "https://api.spotify.com/v1/me/player/play?device_id=" + device_id,
       {
@@ -33,8 +31,15 @@ export default async function handler(
         }),
       }
     )
-      .then((res) => res.json())
-      .then((json) => console.log("queue" + json))
+      .then((res) => {
+        if (res !== undefined) {
+          /* console.log(res);
+        res
+          .json()
+          .then((json) => console.log(json))
+          .catch((err) => console.log(err));*/
+        }
+      })
       .catch((err) => console.log(err));
 
     res.status(200).end();

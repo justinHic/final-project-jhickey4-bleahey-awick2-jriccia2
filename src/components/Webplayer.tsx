@@ -18,12 +18,12 @@ export default function Webplayer(props: PlayerProps) {
   const [is_active, setActive] = useState(false);
   const [player, setPlayer] = useState<any>(undefined);
   const [current_track, setTrack] = useState(track);
+  const [device_id, setDeviceId] = useState<string>();
 
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
-
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -38,6 +38,7 @@ export default function Webplayer(props: PlayerProps) {
 
       player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
+        setDeviceId(device_id);
         fetch(
           "/api/spotify/transfer?access_token=" +
             localStorage.getItem("access_token") +
@@ -87,6 +88,27 @@ export default function Webplayer(props: PlayerProps) {
       player.connect();
     };
   }, []);
+
+  useEffect(() => {
+    if (device_id !== undefined) {
+      setTrack(track);
+      fetch(
+        "/api/spotify/transfer?access_token=" +
+          localStorage.getItem("access_token") +
+          "&id=" +
+          device_id
+      ).then(() => {
+        fetch(
+          "/api/spotify/queue?access_token=" +
+            props.access_token +
+            "&song_uris=" +
+            JSON.stringify(props.songs) +
+            "&device_id=" +
+            device_id
+        );
+      });
+    }
+  }, [props.songs]);
 
   if (!is_active) {
     return (
