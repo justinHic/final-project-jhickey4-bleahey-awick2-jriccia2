@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type data = {};
-export default function handler(
+export default function songHandler(
   req: NextApiRequest,
   res: NextApiResponse<data>
 ) {
