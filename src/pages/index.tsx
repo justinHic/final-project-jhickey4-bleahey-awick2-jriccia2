@@ -1,25 +1,12 @@
 import Head from "next/head";
-import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
-import { Metronome } from "../scripts/metronome";
-import localFont from "next/font/local";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
-
-//POTENTIAL TODO: check if the user is already logged in and redirect them to the logged in page if they are
 
 export default function Home() {
   const router = useRouter();
-  const { code } = router.query;
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    /*
-    if (router.isReady) {
-      //TODO: if we want to change from code to access token, we need to change this
-      if (code !== undefined) {
-        router.push("/logged-in");
-      }
-    }*/
     if (
       localStorage.getItem("access_token") &&
       localStorage.getItem("refresh_token") &&
@@ -34,7 +21,8 @@ export default function Home() {
   interface RedirectURL {
     url: string;
   }
-  function onClick() {
+
+  function login() {
     fetch("/api/spotify/verify")
       .then((res) => {
         console.log(res);
@@ -70,20 +58,20 @@ export default function Home() {
                 A fine tuned running and listening experience
               </p>
               <div className="log-in-buttons">
-                <button className="spotify-button" onClick={onClick}>
+                <button className="spotify-button" onClick={login}>
                   Login to Spotify
                 </button>
               </div>
               <section className="info-section">
                 <div className="info-box">
                   <div className="info-box-icon">
-                    <img src="img/music-note-white.png" />
+                    <img src="img/music-note-white.png" alt="" />
                   </div>
                   <p>Select the desired genre and duration of your Cadance.</p>
                 </div>
                 <div className="info-box">
                   <div className="info-box-icon">
-                    <img src="img/running-shoe-white.png" />
+                    <img src="img/running-shoe-white.png" alt="" />
                   </div>
                   <p>
                     Cadance creates a playlist based on your preferences and
@@ -92,13 +80,13 @@ export default function Home() {
                 </div>
                 <div className="info-box">
                   <div className="info-box-icon">
-                    <img src="img/save-icon-white.png" />
+                    <img src="img/save-icon-white.png" alt="" />
                   </div>
                   <p>Save your Cadances for future reuse.</p>
                 </div>
               </section>
             </div>
-          </div>{" "}
+          </div>
         </>
       )}
     </>
