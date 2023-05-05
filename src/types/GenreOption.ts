@@ -1,9 +1,9 @@
-interface GenreOption {
+export default interface GenreOption {
   value: string;
   label: string;
 }
 
-function createGenreOptionsFromStringArray(
+export function createGenreOptionsFromStringArray(
   genreStrings: string[]
 ): GenreOption[] {
   return genreStrings.map((genreString) => ({

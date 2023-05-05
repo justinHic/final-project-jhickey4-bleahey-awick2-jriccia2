@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { NextRouter } from "next/router";
 
 export enum SpotifyButtonAction {
   Login = "Login to Spotify",
@@ -7,44 +7,42 @@ export enum SpotifyButtonAction {
 
 interface SpotifyButtonProps {
   action: SpotifyButtonAction;
+  router: NextRouter;
 }
 
 interface RedirectURL {
   url: string;
 }
 
-const router = useRouter();
-
-function login(): void {
-  fetch("/api/spotify/verify")
-    .then((res) => {
-      console.log(res);
-      return res.json();
-    })
-    .then((json: RedirectURL) => {
-      console.log(json);
-      window.location.assign(json.url);
-    });
-}
-
-function logout() {
-  localStorage.clear();
-  sessionStorage.clear();
-  router.push("/");
-}
-
-function handleClick(action: SpotifyButtonAction): void {
-  switch (action) {
-    case SpotifyButtonAction.Login:
-      login();
-      break;
-    case SpotifyButtonAction.Logout:
-      logout();
-      break;
-  }
-}
-
 export default function SpotifyButton(props: SpotifyButtonProps) {
+  function login(): void {
+    fetch("/api/spotify/verify")
+      .then((res) => {
+        console.log(res);
+        return res.json();
+      })
+      .then((json: RedirectURL) => {
+        console.log(json);
+        window.location.assign(json.url);
+      });
+  }
+
+  function logout() {
+    localStorage.clear();
+    sessionStorage.clear();
+    props.router.push("/");
+  }
+
+  function handleClick(action: SpotifyButtonAction): void {
+    switch (action) {
+      case SpotifyButtonAction.Login:
+        login();
+        break;
+      case SpotifyButtonAction.Logout:
+        logout();
+        break;
+    }
+  }
   return (
     <button
       className="spotify-button"

@@ -1,16 +1,23 @@
 import Head from "next/head";
-import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Metronome } from "../scripts/metronome";
 import Genre from "../components/Genre";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import { MetronomeController } from "@/components/MetronomeController";
 import Webplayer from "@/components/Webplayer";
 import { genres } from "@/resources/genres";
 import {
   HEAD_TITLE,
   APP_TITLE,
-  APP_DESCRIPTION,
   ACCESS_TOKEN_NAME,
+  REFRESH_TOKEN_NAME,
+  EXPIRATION_STRING,
 } from "@/resources/strings";
 import {
   cadenceToEnergy,
@@ -18,8 +25,12 @@ import {
   hrToEnergy,
 } from "@/scripts/algorithms";
 import { HR_ZONES } from "@/resources/metrics";
-import Select from "react-select";
 import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
+import GenreSelect from "@/components/GenreSelect";
+import { Mode } from "../types/Mode";
+import ModeSelect from "@/components/ModeSelect";
+import MetronomeSwitch from "@/components/MetronomeSwitch";
+import GenreOption from "../types/GenreOption";
 
 interface SongsResponse {
   uris: string[];
@@ -29,7 +40,7 @@ export default function LoggedIn() {
   const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<GenreOption[]>([]);
   const [numSongs, setNumSongs] = useState<number>(0);
   const [ready, setReady] = useState(false);
   const [playerShow, setPlayerShow] = useState(false);
@@ -39,12 +50,11 @@ export default function LoggedIn() {
   const [HR, setHR] = useState<string>();
   const [inches, setInches] = useState<number>();
   const [feet, setFeet] = useState<number>();
-  const [watchMode, setWatchMode] = useState<boolean>(false);
+  const [mode, setMode] = useState<Mode>(Mode.Standard);
+  const [profile, setProfile] = useState<Profile>({ username: "" });
 
-  const router = useRouter();
+  const router: NextRouter = useRouter();
   const { code, state } = router.query;
-
-  //TODO: make code part of the state
 
   type data = {
     access_token: string;
@@ -55,18 +65,20 @@ export default function LoggedIn() {
   useEffect(() => {
     if (router.isReady) {
       const access = localStorage.getItem(ACCESS_TOKEN_NAME);
-      const refresh_token = localStorage.getItem("refresh_token");
-      const expires_at = localStorage.getItem("expires_at");
+      const refresh_token = localStorage.getItem(REFRESH_TOKEN_NAME);
+      const expires_at = localStorage.getItem(EXPIRATION_STRING);
       if (code !== undefined && state !== undefined) {
         fetch("/api/spotify/exchange?code=" + code + "&state=" + state)
           .then((res) => res.json())
           .then((json: data) => {
             console.log(json);
-            const t = new Date();
-            t.setSeconds(t.getSeconds() + json.expires_in);
+            const expirationTime = new Date();
+            expirationTime.setSeconds(
+              expirationTime.getSeconds() + json.expires_in
+            );
             localStorage.setItem(ACCESS_TOKEN_NAME, json.access_token);
-            localStorage.setItem("refresh_token", json.refresh_token);
-            localStorage.setItem("expires_at", t.toString());
+            localStorage.setItem(REFRESH_TOKEN_NAME, json.refresh_token);
+            localStorage.setItem(EXPIRATION_STRING, expirationTime.toString());
             setAccessToken(json.access_token);
             window.history.replaceState({}, document.title, "/loggedin");
           });
@@ -77,10 +89,15 @@ export default function LoggedIn() {
             .then((res) => res.json())
             .then((json) => {
               console.log(json);
-              const t = new Date();
-              t.setSeconds(t.getSeconds() + json.expires_in);
+              const expirationTime = new Date();
+              expirationTime.setSeconds(
+                expirationTime.getSeconds() + json.expires_in
+              );
               localStorage.setItem(ACCESS_TOKEN_NAME, json.access_token);
-              localStorage.setItem("expires_at", t.toString());
+              localStorage.setItem(
+                EXPIRATION_STRING,
+                expirationTime.toString()
+              );
               setAccessToken(json.access_token);
             });
         }
@@ -95,25 +112,13 @@ export default function LoggedIn() {
     }
   }, [code]);
 
-  const genresOptions = [
-    { value: "blues", label: "Blues" },
-    { value: "rock", label: "Rock" },
-    { value: "jazz", label: "Jazz" },
-    { value: "orchestra", label: "Orchestra" },
-  ];
-
-  const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if (
-      !selectedGenres.includes(event.target.value) &&
-      selectedGenres.length < 5
-    ) {
-      const copy = selectedGenres.slice();
-      copy.push(event.target.value);
-      setSelectedGenres(copy);
-    } else if (selectedGenres.length >= 5) {
-      alert("Can only select a maximum of 5 genres");
+  useEffect(() => {
+    if (ready) {
+      if (access_token !== undefined) {
+        retrieveUserInfo();
+      }
     }
-  };
+  }, [ready, access_token]);
 
   const handleNumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const num = parseInt(event.target.value);
@@ -154,6 +159,24 @@ export default function LoggedIn() {
     }
   };
 
+  interface Profile {
+    username: string;
+  }
+
+  /**
+   * Helper function to retrieve the user's information from the Spotify API.
+   */
+  function retrieveUserInfo() {
+    const url = "/api/spotify/profile?access_token=" + access_token;
+    fetch(url)
+      .then((res) => res.json())
+      .then((json: Profile) => {
+        if (json.username !== null && json.username !== undefined) {
+          setProfile(json);
+        }
+      });
+  }
+
   /**
    * TODO: make watch mode
    * Has fields:
@@ -187,85 +210,51 @@ export default function LoggedIn() {
           </Head>
           <div className="container">
             <h1 className="header">{APP_TITLE}</h1>
-            <SpotifyButton action={SpotifyButtonAction.Logout} />
+            <div className="login-container">
+              <p className="user-info">
+                {profile.username === ""
+                  ? "Logged in"
+                  : "Logged in as " + profile.username}
+              </p>
+              <SpotifyButton
+                action={SpotifyButtonAction.Logout}
+                router={router}
+              />
+            </div>
             <div className="input-fields">
-              <div className="mode-selector">
-                <select
-                  name="mode"
-                  defaultValue={"standard"}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                    if (event.target.value === "watch") {
-                      setWatchMode(true);
-                      if (metronomePlaying) {
-                        metronome.startStop();
-                        setMetronomePlaying(!metronomePlaying);
-                      }
-                    } else {
-                      setWatchMode(false);
-                    }
-                  }}
-                  className="dropdown hvr-grow"
-                >
-                  <option value={"standard"}>Standard mode</option>
-                  <option value={"watch"}>Watch mode</option>
-                </select>
-              </div>
-              <div className="metronome-container">
-                <div className="metronome-switch-div">
-                  <h3 className="switch-title">
-                    Metronome {metronomePlaying ? <>ON</> : <> OFF</>}
-                  </h3>
-                  <label className="switch">
-                    <input
-                      checked={metronomePlaying}
-                      onChange={() => {
-                        metronome.startStop();
-                        setMetronomePlaying(!metronomePlaying);
-                      }}
-                      aria-label="metronome switch"
-                      type="checkbox"
+              <ModeSelect
+                setMode={setMode}
+                metronome={metronome}
+                metronomePlaying={metronomePlaying}
+                setMetronomePlaying={setMetronomePlaying}
+              />
+              {mode == Mode.Watch ? (
+                <></>
+              ) : (
+                <>
+                  <div className="metronome-container">
+                    <MetronomeSwitch
+                      metronome={metronome}
+                      metronomePlaying={metronomePlaying}
+                      setMetronomePlaying={setMetronomePlaying}
                     />
-                    <span className="slider round"></span>
-                  </label>
-                </div>
-                <MetronomeController
-                  tempo={tempo}
-                  setTempo={setTempo}
-                  metronome={metronome}
-                  max={300}
-                  min={50}
-                ></MetronomeController>
-              </div>
+                    <MetronomeController
+                      tempo={tempo}
+                      setTempo={setTempo}
+                      metronome={metronome}
+                      max={300}
+                      min={50}
+                    />
+                  </div>
+                </>
+              )}
               <div className="dropdown-div">
-                <Select
-                  defaultValue={[genres[2], genres[3]]}
-                  isMulti
-                  name="colors"
-                  options={genresOptions}
-                  className="basic-multi-select"
-                  classNamePrefix="select"
+                <GenreSelect
+                  genres={genres}
+                  selectedGenres={selectedGenres}
+                  setSelectedGenres={setSelectedGenres}
+                  maxLimit={5}
                 />
-                <select
-                  name="genre"
-                  value={
-                    selectedGenres.length === 0
-                      ? "disabled"
-                      : selectedGenres[selectedGenres.length - 1]
-                  }
-                  onChange={handleGenreChange}
-                  className="dropdown hvr-grow"
-                >
-                  <option disabled value={"disabled"}>
-                    Select up to 5 desired genres
-                  </option>
-                  {genres.map((val, index) => {
-                    return (
-                      <option key={index} value={val}>
-                        {val}
-                      </option>
-                    );
-                  })}
-                </select>
 
                 <select
                   name="num-songs"
@@ -284,7 +273,7 @@ export default function LoggedIn() {
                     );
                   })}
                 </select>
-                {watchMode ? (
+                {mode == Mode.Watch ? (
                   <></>
                 ) : (
                   <>

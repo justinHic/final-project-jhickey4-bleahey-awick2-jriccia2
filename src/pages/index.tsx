@@ -2,7 +2,13 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { InfoBox } from "@/components/InfoBox";
-import { HEAD_TITLE, APP_TITLE, APP_DESCRIPTION } from "@/resources/strings";
+import {
+  HEAD_TITLE,
+  APP_TITLE,
+  APP_DESCRIPTION,
+  ACCESS_TOKEN_NAME,
+  REFRESH_TOKEN_NAME,
+} from "@/resources/strings";
 import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
 
 export default function Home() {
@@ -11,8 +17,8 @@ export default function Home() {
 
   useEffect(() => {
     if (
-      localStorage.getItem("access_token") &&
-      localStorage.getItem("refresh_token") &&
+      localStorage.getItem(ACCESS_TOKEN_NAME) &&
+      localStorage.getItem(REFRESH_TOKEN_NAME) &&
       localStorage.getItem("expires_at")
     ) {
       router.push("/loggedin").then(() => setReady(true));
@@ -39,7 +45,7 @@ export default function Home() {
           <div className="container">
             <h1 className="header">{APP_TITLE}</h1>
             <p className="app-description">{APP_DESCRIPTION}</p>
-            <SpotifyButton action={SpotifyButtonAction.Login} />
+            <SpotifyButton action={SpotifyButtonAction.Login} router={router} />
             <section className="info-section">
               <InfoBox
                 imgsrc="img/music-note-white.png"
