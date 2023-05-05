@@ -192,8 +192,10 @@ export default function LoggedIn() {
                   onChange={(event: ChangeEvent<HTMLSelectElement>) => {
                     if (event.target.value === "watch") {
                       setWatchMode(true);
-                      metronome.startStop();
-                      setMetronomePlaying(!metronomePlaying);
+                      if (metronomePlaying) {
+                        metronome.startStop();
+                        setMetronomePlaying(!metronomePlaying);
+                      }
                     } else {
                       setWatchMode(false);
                     }
