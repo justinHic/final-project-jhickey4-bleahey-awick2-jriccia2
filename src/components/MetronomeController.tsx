@@ -8,7 +8,7 @@ interface MetronomeProps {
   min: number;
 }
 
-export function MetronomeComponent(props: MetronomeProps) {
+export function MetronomeController(props: MetronomeProps) {
   return (
     <div className="metronome" aria-label="metronome" aria-description="">
       <button
