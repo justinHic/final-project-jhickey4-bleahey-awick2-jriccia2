@@ -1,6 +1,6 @@
 import { createMocks } from "node-mocks-http";
-import songHandler from "../src/pages/api/spotify/songs";
-import { mockResponse } from "../mocks/data";
+import songHandler from "../../../src/pages/api/spotify/songs";
+import { mockResponse, mockResponse2 } from "../../../mocks/mocks";
 
 import fetchMock from "jest-fetch-mock";
 
@@ -142,5 +142,41 @@ describe("/api/spotify/songs", () => {
     });
     await songHandler(req, res);
     expect(res.statusCode).toBe(405);
+  });
+
+  test("returns success multiple calls", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockResponse));
+    const { req: req1, res: res1 } = createMocks({
+      method: "GET",
+      query: {
+        bpm: "220",
+        genres: "hip-hop",
+        numsongs: "5",
+        access_token: localStorage.getItem("access_token"),
+        height: "72",
+        male: "true",
+        hr: "",
+      },
+    });
+    await songHandler(req1, res1);
+    expect(res1.statusCode).toBe(200);
+    expect(res1._getData()).toEqual('{"uris":["string"],"result":"success!"}');
+
+    fetchMock.mockResponseOnce(JSON.stringify(mockResponse2));
+    let { req: req2, res: res2 } = createMocks({
+      method: "GET",
+      query: {
+        bpm: "220",
+        genres: "hip-hop",
+        numsongs: "5",
+        access_token: localStorage.getItem("access_token"),
+        height: "72",
+        male: "true",
+        hr: "",
+      },
+    });
+    await songHandler(req2, res2);
+    expect(res2.statusCode).toBe(200);
+    expect(res2._getData()).toEqual('{"uris":["string2"],"result":"success!"}');
   });
 });
