@@ -1,17 +1,31 @@
 import Head from "next/head";
-import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
-import Genre from "../components/Genre";
-import { useRouter } from "next/router";
-import { MetronomeComponent } from "@/components/MetronomeComponent";
+import { NextRouter, useRouter } from "next/router";
+import { MetronomeController } from "@/components/MetronomeController";
 import Webplayer from "@/components/Webplayer";
 import { genres } from "@/resources/genres";
+import {
+  HEAD_TITLE,
+  APP_TITLE,
+  ACCESS_TOKEN_NAME,
+  REFRESH_TOKEN_NAME,
+  EXPIRATION_STRING,
+} from "@/resources/strings";
 import {
   cadenceToEnergy,
   getValidTempos,
   hrToEnergy,
 } from "@/scripts/algorithms";
 import { HR_ZONES } from "@/resources/metrics";
+import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
+import GenreSelect from "@/components/GenreSelect";
+import { Mode } from "../types/Mode";
+import ModeSelect from "@/components/ModeSelect";
+import MetronomeSwitch from "@/components/MetronomeSwitch";
+import SelectOption from "../types/SelectOption";
+import Select from "react-select";
+import { SpotifyProfile } from "../types/SpotifyProfile";
 import { error } from "console";
 
 interface SongsResponse {
@@ -19,10 +33,10 @@ interface SongsResponse {
 }
 
 export default function LoggedIn() {
-  const [tempo, setTempo] = useState(100);
+  const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<SelectOption[]>([]);
   const [numSongs, setNumSongs] = useState<number>(0);
   const [ready, setReady] = useState(false);
   const [playerShow, setPlayerShow] = useState(false);
@@ -32,41 +46,58 @@ export default function LoggedIn() {
   const [HR, setHR] = useState<string>();
   const [inches, setInches] = useState<number>();
   const [feet, setFeet] = useState<number>();
+  const [mode, setMode] = useState<Mode>(Mode.Standard);
+  const [profile, setProfile] = useState<SpotifyProfile>({ username: "" });
 
-  const router = useRouter();
+  const router: NextRouter = useRouter();
   const { code, state } = router.query;
 
-  //TODO: make code part of the state
-
-  type data = {
+  interface AccessTokenData {
     access_token: string;
     expires_in: number;
     refresh_token: string;
-  };
+  }
 
   useEffect(() => {
     if (router.isReady) {
-      const access = localStorage.getItem("access_token");
-      const refresh_token = localStorage.getItem("refresh_token");
-      const expires_at = localStorage.getItem("expires_at");
+      const access = localStorage.getItem(ACCESS_TOKEN_NAME);
+      const refresh_token = localStorage.getItem(REFRESH_TOKEN_NAME);
+      const expires_at = localStorage.getItem(EXPIRATION_STRING);
       if (code !== undefined && state !== undefined) {
         fetch("/api/spotify/exchange?code=" + code + "&state=" + state)
           .then((res) => res.json())
-          .then((json: data) => {
-            const t = new Date();
-            t.setSeconds(t.getSeconds() + json.expires_in);
-            localStorage.setItem("access_token", json.access_token);
-            localStorage.setItem("refresh_token", json.refresh_token);
-            localStorage.setItem("expires_at", t.toString());
+          .then((json: AccessTokenData) => {
+            console.log(json);
+            const expirationTime = new Date();
+            expirationTime.setSeconds(
+              expirationTime.getSeconds() + json.expires_in
+            );
+            localStorage.setItem(ACCESS_TOKEN_NAME, json.access_token);
+            localStorage.setItem(REFRESH_TOKEN_NAME, json.refresh_token);
+            localStorage.setItem(EXPIRATION_STRING, expirationTime.toString());
             setAccessToken(json.access_token);
             window.history.replaceState({}, document.title, "/loggedin");
           });
         setReady(true);
       } else if (access && refresh_token && expires_at) {
         if (new Date(expires_at).valueOf() - new Date().valueOf() <= 0) {
-          refreshToken();
+          fetch("/api/spotify/refresh?refresh_token=" + refresh_token)
+            .then((res) => res.json())
+            .then((json) => {
+              console.log(json);
+              const expirationTime = new Date();
+              expirationTime.setSeconds(
+                expirationTime.getSeconds() + json.expires_in
+              );
+              localStorage.setItem(ACCESS_TOKEN_NAME, json.access_token);
+              localStorage.setItem(
+                EXPIRATION_STRING,
+                expirationTime.toString()
+              );
+              setAccessToken(json.access_token);
+            });
         }
-        let x = localStorage.getItem("access_token");
+        let x = localStorage.getItem(ACCESS_TOKEN_NAME);
         {
           x !== null ? setAccessToken(x) : "";
         }
@@ -77,39 +108,22 @@ export default function LoggedIn() {
     }
   }, [code]);
 
-  function refreshToken() {
-    fetch(
-      "/api/spotify/refresh?refresh_token=" +
-        localStorage.getItem("refresh_token")
-    )
-      .then((res) => res.json())
-      .then((json) => {
-        const t = new Date();
-        t.setSeconds(t.getSeconds() + json.expires_in);
-        localStorage.setItem("access_token", json.access_token);
-        localStorage.setItem("expires_at", t.toString());
-        setAccessToken(json.access_token);
-      });
-  }
-
-  const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if (
-      !selectedGenres.includes(event.target.value) &&
-      selectedGenres.length < 5
-    ) {
-      const copy = selectedGenres.slice();
-      copy.push(event.target.value);
-      setSelectedGenres(copy);
-    } else if (selectedGenres.length >= 5) {
-      alert("Can only select a maximum of 5 genres");
+  useEffect(() => {
+    if (ready) {
+      if (access_token !== undefined && access_token !== null) {
+        retrieveUserInfo();
+      }
     }
-  };
-  const handleNumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  }, [access_token]);
+
+  const handleNumChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
     const num = parseInt(event.target.value);
     setNumSongs(num);
   };
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     if (
       selectedGenres.length > 0 &&
       numSongs > 0 &&
@@ -150,14 +164,20 @@ export default function LoggedIn() {
     }
   };
 
-  const logout = () => {
-    //TODO: make sure any environment variables associated with the user are cleared
-    localStorage.clear();
-    sessionStorage.clear();
-    router.push("/");
-  };
+  /**
+   * Helper function to retrieve the user's information from the Spotify API.
+   */
+  async function retrieveUserInfo() {
+    const url = "/api/spotify/profile?access_token=" + access_token;
+    fetch(url)
+      .then((res) => res.json())
+      .then((json: SpotifyProfile) => {
+        if (json.username !== null && json.username !== undefined) {
+          setProfile(json);
+        }
+      });
+  }
 
-  //TODO: get the user's name from the spotify api and display it here
   return (
     <>
       {!ready ? (
@@ -165,9 +185,7 @@ export default function LoggedIn() {
       ) : (
         <>
           <Head>
-            <title>
-              Cadance | A fine tuned running and listening experience
-            </title>
+            <title>{HEAD_TITLE}</title>
             <meta name="description" content="Generated by create next app" />
             <meta
               name="viewport"
@@ -175,78 +193,53 @@ export default function LoggedIn() {
             />
             <link rel="icon" href="/favicon.ico" />
           </Head>
-          <div className="outer">
-            <div className="inner">
-              <h1 className="header">CADANCE</h1>
-              <div className="log-in-buttons">
-                <button className="spotify-button" onClick={logout}>
-                  Log Out
-                </button>
-              </div>
-
-              <div className="metronome-switch-div">
-                <h3 className="switch-title">
-                  Metronome {metronomePlaying ? <>ON</> : <> OFF</>}
-                </h3>
-                <label className="switch">
-                  <input
-                    onChange={() => {
-                      metronome.startStop();
-                      setMetronomePlaying(!metronomePlaying);
-                    }}
-                    aria-label="metronome switch"
-                    type="checkbox"
-                  />
-                  <span className="slider round"></span>
-                </label>
-              </div>
-              <MetronomeComponent
-                tempo={tempo}
-                setTempo={setTempo}
+          <div className="container">
+            <h1 className="header">{APP_TITLE}</h1>
+            <div className="login-container">
+              <p className="user-info">
+                {profile.username === ""
+                  ? "Logged in"
+                  : "Logged in as " + profile.username}
+              </p>
+              <SpotifyButton
+                action={SpotifyButtonAction.Logout}
+                router={router}
+              />
+            </div>
+            <div className="input-fields">
+              <ModeSelect
+                setMode={setMode}
                 metronome={metronome}
-                max={300}
-                min={50}
-              ></MetronomeComponent>
-
-              <div className="selectedOptions">
-                {selectedGenres.length === 0 ? (
-                  <></>
-                ) : (
-                  selectedGenres.map((val, i) => {
-                    return (
-                      <Genre
-                        key={i}
-                        genre={val}
-                        genres={selectedGenres}
-                        setGenre={setSelectedGenres}
-                      ></Genre>
-                    );
-                  })
-                )}
-              </div>
-
+                metronomePlaying={metronomePlaying}
+                setMetronomePlaying={setMetronomePlaying}
+              />
+              {mode == Mode.Watch ? (
+                <></>
+              ) : (
+                <>
+                  <div className="metronome-container">
+                    <MetronomeSwitch
+                      metronome={metronome}
+                      metronomePlaying={metronomePlaying}
+                      setMetronomePlaying={setMetronomePlaying}
+                    />
+                    <MetronomeController
+                      tempo={tempo}
+                      setTempo={setTempo}
+                      metronome={metronome}
+                      max={300}
+                      min={50}
+                    />
+                  </div>
+                </>
+              )}
               <div className="dropdown-div">
-                <select
-                  name="genre"
-                  value={
-                    selectedGenres.length === 0
-                      ? "disabled"
-                      : selectedGenres[selectedGenres.length - 1]
-                  }
-                  onChange={handleGenreChange}
-                  className="dropdown hvr-grow"
-                >
-                  <option disabled value={"disabled"}>
-                    Select up to 5 desired genres
-                  </option>
-                  {genres.map((val, index) => {
-                    return (
-                      <option key={index} value={val}>
-                        {val}
-                      </option>
-                    );
-                  })}
-                </select>
+                <GenreSelect
+                  genres={genres}
+                  selectedGenres={selectedGenres}
+                  setSelectedGenres={setSelectedGenres}
+                  maxLimit={5}
+                />
 
                 <select
                   name="num-songs"
@@ -265,85 +258,90 @@ export default function LoggedIn() {
                     );
                   })}
                 </select>
-                <select
-                  name="gender"
-                  defaultValue={"disabled"}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                    setGender(event.target.value)
-                  }
-                  className="dropdown hvr-grow"
-                >
-                  <option disabled value={"disabled"}>
-                    Select your gender
-                  </option>
-                  <option value={"male"}>Male</option>
-                  <option value={"female"}>Female</option>
-                </select>
-
-                <select
-                  name="hr"
-                  defaultValue={"disabled"}
-                  className="dropdown hvr-grow"
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                    setHR(event.target.value)
-                  }
-                >
-                  <option disabled value={"disabled"}>
-                    Select your heart rate zone (optional)
-                  </option>
-                  {HR_ZONES.map((val, index) => {
-                    return (
-                      <option key={index} value={val}>
-                        {val}
+                {mode == Mode.Watch ? (
+                  <></>
+                ) : (
+                  <>
+                    <Select
+                      name="gender"
+                      options={[{ male: "Male" }, { female: "Female" }]}
+                    />
+                    <select
+                      name="gender"
+                      defaultValue={"disabled"}
+                      onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                        setGender(event.target.value)
+                      }
+                      className="dropdown hvr-grow"
+                    >
+                      <option disabled value={"disabled"}>
+                        Select your gender
                       </option>
-                    );
-                  })}
-                </select>
-                <p className="height-title">Please enter your height</p>
-                <div className="height-div">
-                  <input
-                    type="number"
-                    id="quantity"
-                    name="quantity"
-                    min="3"
-                    max="8"
-                    className="height-input"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      setFeet(parseInt(event.target.value))
-                    }
-                  ></input>
-                  <label className="height-label">ft</label>
-                  <input
-                    type="number"
-                    id="quantity"
-                    name="quantity"
-                    min="1"
-                    max="12"
-                    className="height-input"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      setInches(parseInt(event.target.value))
-                    }
-                  ></input>
-                  <label className="height-label">in</label>
-                </div>
+                      <option value={"male"}>Male</option>
+                      <option value={"female"}>Female</option>
+                    </select>
+
+                    <select
+                      name="hr"
+                      defaultValue={"disabled"}
+                      className="dropdown hvr-grow"
+                      onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                        setHR(event.target.value)
+                      }
+                    >
+                      <option disabled value={"disabled"}>
+                        Select your heart rate zone (optional)
+                      </option>
+                      {HR_ZONES.map((val, index) => {
+                        return (
+                          <option key={index} value={val}>
+                            {val}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    <p className="height-title">Please enter your height</p>
+                    <div className="height-div">
+                      <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        min="3"
+                        max="8"
+                        className="height-input"
+                        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                          setFeet(parseInt(event.target.value))
+                        }
+                      ></input>
+                      <label className="height-label">ft</label>
+                      <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        min="0"
+                        max="11"
+                        className="height-input"
+                        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                          setInches(parseInt(event.target.value))
+                        }
+                      ></input>
+                      <label className="height-label">in</label>
+                    </div>
+                  </>
+                )}
               </div>
-              <div className="search-button-div">
-                <button
-                  className="search-button hvr-grow"
-                  onClick={handleClick}
-                >
-                  FIND SONGS
-                </button>
-              </div>
-              {playerShow ? (
-                <Webplayer
-                  songs={songs}
-                  access_token={access_token}
-                ></Webplayer>
-              ) : (
-                <></>
-              )}
             </div>
+
+            <div className="search-button-div">
+              <button className="search-button hvr-grow" onClick={handleClick}>
+                FIND SONGS
+              </button>
+            </div>
+            {playerShow ? (
+              <Webplayer songs={songs} access_token={access_token}></Webplayer>
+            ) : (
+              <></>
+            )}
           </div>
         </>
       )}

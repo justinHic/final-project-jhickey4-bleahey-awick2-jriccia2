@@ -1,5 +1,6 @@
 import { cadenceToEnergy, hrToEnergy } from "@/scripts/algorithms";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { CADENCE_WEIGHT, HR_WEIGHT } from "@/resources/metrics";
 
 interface Tracks {
   tracks: track[];
@@ -28,7 +29,9 @@ export default async function songHandler(
     const energy =
       hr === undefined
         ? cadenceToEnergy(t, h, m)
-        : hrToEnergy(convertHR(hr.toString()));
+        : cadenceToEnergy(t, h, m) * CADENCE_WEIGHT +
+          hrToEnergy(convertHR(hr.toString())) * HR_WEIGHT;
+    console.log(energy);
     let x = "seed_genres=";
     g.forEach((val) => (x += val + "%2C"));
     x = x.substring(0, x.length - 3);

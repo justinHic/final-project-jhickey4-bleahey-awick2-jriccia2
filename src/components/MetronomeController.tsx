@@ -8,13 +8,13 @@ interface MetronomeProps {
   min: number;
 }
 
-export function MetronomeComponent(props: MetronomeProps) {
+export function MetronomeController(props: MetronomeProps) {
   return (
-    <div className="metronome_div" aria-label="metronome" aria-description="">
+    <div className="metronome" aria-label="metronome" aria-description="">
       <button
         className="decreaseMetronome"
         aria-label="decrease tempo"
-        id="tempo-increase"
+        id="decrease-tempo"
         onClick={() => {
           if (props.tempo > props.min) {
             props.setTempo(props.tempo - 5);

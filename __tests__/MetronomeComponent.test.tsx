@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { MetronomeComponent } from "@/components/MetronomeComponent";
+import { MetronomeController } from "@/components/MetronomeController";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
@@ -14,13 +14,13 @@ describe("Metronome", () => {
     const metronome = new Metronome(100);
     metronome.isRunning = true;
     render(
-      <MetronomeComponent
+      <MetronomeController
         tempo={tempo}
         setTempo={setTempo}
         max={150}
         min={50}
         metronome={metronome}
-      ></MetronomeComponent>
+      ></MetronomeController>
     );
     const increase = screen.getByLabelText("increase tempo");
     const decrease = screen.getByLabelText("decrease tempo");
