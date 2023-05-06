@@ -114,11 +114,11 @@ export default function LoggedIn() {
 
   useEffect(() => {
     if (ready) {
-      if (access_token !== undefined) {
+      if (access_token !== undefined && access_token !== null) {
         retrieveUserInfo();
       }
     }
-  }, [ready, access_token]);
+  }, [access_token]);
 
   const handleNumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const num = parseInt(event.target.value);
@@ -166,7 +166,7 @@ export default function LoggedIn() {
   /**
    * Helper function to retrieve the user's information from the Spotify API.
    */
-  function retrieveUserInfo() {
+  async function retrieveUserInfo() {
     const url = "/api/spotify/profile?access_token=" + access_token;
     fetch(url)
       .then((res) => res.json())
