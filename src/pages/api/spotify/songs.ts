@@ -55,7 +55,7 @@ export default async function songHandler(
           res.status(200).json({ uris: uris, result: "success!" });
         } else {
           if (result.status === 401) {
-            res.status(201).json({ error: "access token expired" });
+            res.status(401).json({ error: "access token expired" });
           } else {
             console.log(result.status);
           }

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(
+export default async function queueHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -8,6 +8,14 @@ export default async function handler(
 
   if (isString(access_token) && isString(song_uris) && isString(device_id)) {
     const uris = JSON.parse(song_uris);
+    const body = JSON.stringify({
+      uris: uris,
+      offset: {
+        position: 0,
+      },
+      position_ms: 0,
+    });
+    console.log(body)
     const result = await fetch(
       "https://api.spotify.com/v1/me/player/play?device_id=" + device_id,
       {
@@ -16,33 +24,27 @@ export default async function handler(
           Authorization: "Bearer " + access_token,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          /*uris: song_uris,
-          offset: {
-            position: 0,
-          },
-          position_ms: 0,*/
-
-          uris: uris,
-          offset: {
-            position: 0,
-          },
-          position_ms: 0,
-        }),
+        body: body,
       }
     )
-      .then((res) => {
-        if (res !== undefined) {
-          res
+      .then((resp) => {
+        if (resp !== undefined) {
+          resp
             .json()
             .then((json) => console.log(json))
-            .catch((err) => console.log(err));
-        }
+            .catch((err) => {
+              console.log(err);
+              res.status(400).end();
+            })
+        };
       })
-      .catch((err) => console.log(err));
-
+      .catch((err) => {
+        console.log(err);
+        res.status(405).end();
+      })
     res.status(200).end();
   } else {
+    res.status(400).end();
   }
 }
 
