@@ -56,11 +56,11 @@ export default function LoggedIn() {
   const router: NextRouter = useRouter();
   const { code, state } = router.query;
 
-  type data = {
+  interface AccessTokenData {
     access_token: string;
     expires_in: number;
     refresh_token: string;
-  };
+  }
 
   useEffect(() => {
     if (router.isReady) {
@@ -70,7 +70,7 @@ export default function LoggedIn() {
       if (code !== undefined && state !== undefined) {
         fetch("/api/spotify/exchange?code=" + code + "&state=" + state)
           .then((res) => res.json())
-          .then((json: data) => {
+          .then((json: AccessTokenData) => {
             console.log(json);
             const expirationTime = new Date();
             expirationTime.setSeconds(

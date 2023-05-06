@@ -9,7 +9,7 @@ interface ModeSelectProps {
   setMetronomePlaying: (metronomeIsPlaying: SetStateAction<boolean>) => void;
 }
 
-export default function ModeSelect(props: ModeSelectProps) {
+export default function ModeSelect(props: ModeSelectProps): React.ReactElement {
   return (
     <select
       name="mode"

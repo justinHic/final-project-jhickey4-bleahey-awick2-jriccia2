@@ -11,37 +11,33 @@ interface GenreSelectProps {
   maxLimit: number;
 }
 
-export default function GenreSelect(props: GenreSelectProps) {
-  const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if (
-      !selectedGenres.includes(event.target.value) &&
-      selectedGenres.length < 5
-    ) {
-      const copy = selectedGenres.slice();
-      copy.push(event.target.value);
-      setSelectedGenres(copy);
-    } else if (selectedGenres.length >= 5) {
-      alert("Can only select a maximum of 5 genres");
-    }
-  };
-
+export default function GenreSelect(
+  props: GenreSelectProps
+): React.ReactElement {
   const genreOptions: GenreOption[] = createGenreOptionsFromStringArray(
     props.genres
   );
   return (
     <Select
       isMulti
+      isSearchable
       name="genres"
       options={genreOptions}
-      value={props.selectedGenres}
       defaultValue={[
         genreOptions.find((genre) => genre.value === "Classic Peruvian Pop"),
         genreOptions.find((genre) => genre.value === "Albuquerque Indie"),
         genreOptions.find((genre) => genre.value === "Scam Rap"),
       ]}
       className="basic-multi-select"
-      isOptionDisabled={() => props.selectedGenres.length >= props.maxLimit}
       classNamePrefix="select"
+      placeholder="Select genres..."
+      styles={{
+        control: (baseStyles) => ({
+          ...baseStyles,
+          backgroundColor: "#3a3a3a",
+          width: "35ch",
+        }),
+      }}
     />
   );
 }
