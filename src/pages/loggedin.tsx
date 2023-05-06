@@ -1,13 +1,6 @@
 import Head from "next/head";
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
-import Genre from "../components/Genre";
 import { NextRouter, useRouter } from "next/router";
 import { MetronomeController } from "@/components/MetronomeController";
 import Webplayer from "@/components/Webplayer";
@@ -30,7 +23,9 @@ import GenreSelect from "@/components/GenreSelect";
 import { Mode } from "../types/Mode";
 import ModeSelect from "@/components/ModeSelect";
 import MetronomeSwitch from "@/components/MetronomeSwitch";
-import GenreOption from "../types/GenreOption";
+import SelectOption from "../types/SelectOption";
+import Select from "react-select";
+import { SpotifyProfile } from "../types/SpotifyProfile";
 
 interface SongsResponse {
   uris: string[];
@@ -40,7 +35,7 @@ export default function LoggedIn() {
   const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState<GenreOption[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<SelectOption[]>([]);
   const [numSongs, setNumSongs] = useState<number>(0);
   const [ready, setReady] = useState(false);
   const [playerShow, setPlayerShow] = useState(false);
@@ -51,7 +46,7 @@ export default function LoggedIn() {
   const [inches, setInches] = useState<number>();
   const [feet, setFeet] = useState<number>();
   const [mode, setMode] = useState<Mode>(Mode.Standard);
-  const [profile, setProfile] = useState<Profile>({ username: "" });
+  const [profile, setProfile] = useState<SpotifyProfile>({ username: "" });
 
   const router: NextRouter = useRouter();
   const { code, state } = router.query;
@@ -120,12 +115,14 @@ export default function LoggedIn() {
     }
   }, [access_token]);
 
-  const handleNumChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleNumChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
     const num = parseInt(event.target.value);
     setNumSongs(num);
   };
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     if (
       selectedGenres.length > 0 &&
       numSongs > 0 &&
@@ -159,10 +156,6 @@ export default function LoggedIn() {
     }
   };
 
-  interface Profile {
-    username: string;
-  }
-
   /**
    * Helper function to retrieve the user's information from the Spotify API.
    */
@@ -170,29 +163,13 @@ export default function LoggedIn() {
     const url = "/api/spotify/profile?access_token=" + access_token;
     fetch(url)
       .then((res) => res.json())
-      .then((json: Profile) => {
+      .then((json: SpotifyProfile) => {
         if (json.username !== null && json.username !== undefined) {
           setProfile(json);
         }
       });
   }
 
-  /**
-   * TODO: make watch mode
-   * Has fields:
-   * - cadence
-   * - energy
-   * - genres
-   * - number of songs
-   *
-   * Does not have:
-   * - metronome
-   * - gender
-   * - height
-   * - heart rate
-   */
-
-  //TODO: get the user's name from the spotify api and display it here
   return (
     <>
       {!ready ? (
@@ -277,6 +254,10 @@ export default function LoggedIn() {
                   <></>
                 ) : (
                   <>
+                    <Select
+                      name="gender"
+                      options={[{ male: "Male" }, { female: "Female" }]}
+                    />
                     <select
                       name="gender"
                       defaultValue={"disabled"}
@@ -329,8 +310,8 @@ export default function LoggedIn() {
                         type="number"
                         id="quantity"
                         name="quantity"
-                        min="1"
-                        max="12"
+                        min="0"
+                        max="11"
                         className="height-input"
                         onChange={(event: ChangeEvent<HTMLInputElement>) =>
                           setInches(parseInt(event.target.value))
