@@ -195,8 +195,9 @@ a {
   display: flex;
   justify-content: center;
   padding: 3%;
+  align-items: center;
+  gap: 0.5rem;
 }
-
 .switch-title {
   text-align: center;
   color: #d9d9d9;
@@ -259,6 +260,7 @@ a {
 
 .dropdown {
   border-style: none;
+  cursor: pointer;
   border-radius: 10px;
   width: 35ch;
   padding: 1ch;
@@ -331,8 +333,14 @@ a {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  padding-top: 5%;
-  padding-bottom: 5%;
+  background: #161616;
+  border-radius: 16px;
+  width: 40%;
+  margin: 1rem auto 0.5rem;
+  min-height: 3.375rem;
+  min-width: 18rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .height-input {
