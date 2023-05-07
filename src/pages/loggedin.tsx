@@ -19,7 +19,7 @@ import {
 } from "@/scripts/algorithms";
 import { HR_ZONES } from "@/resources/metrics";
 import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
-import GenreSelect from "@/components/GenreSelect";
+import GenreSelect, { defaultGenres } from "@/components/GenreSelect";
 import { Mode } from "../types/Mode";
 import ModeSelect from "@/components/ModeSelect";
 import MetronomeSwitch from "@/components/MetronomeSwitch";
@@ -36,7 +36,7 @@ export default function LoggedIn() {
   const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<string[]>(defaultGenres);
   const [numSongs, setNumSongs] = useState<number>(0);
   const [ready, setReady] = useState(false);
   const [playerShow, setPlayerShow] = useState(false);

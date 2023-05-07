@@ -3,6 +3,8 @@ import SelectOption, {
   createSelectOptionsFromStringArray,
 } from "../types/SelectOption";
 import { Dispatch, SetStateAction } from "react";
+import { Console } from "console";
+import { getDefaultCompilerOptions } from "typescript";
 
 interface GenreSelectProps {
   genres: string[];
@@ -11,7 +13,11 @@ interface GenreSelectProps {
   maxLimit: number;
 }
 
-// TODO: contain SelectOption within component so selectedGenres in loggedin.tsx is of type string[]
+export const defaultGenres: string[] = [
+  "classic peruvian pop",
+  "albuquerque indie",
+  "scam rap",
+];
 
 export default function GenreSelect(
   props: GenreSelectProps
@@ -23,11 +29,17 @@ export default function GenreSelect(
     props.selectedGenres.map((selectedGenre) =>
       genreOptions.find((option) => option.value === selectedGenre)
     );
+
+  /**
+   * Updates the selectedGenres prop when the value of the Select element is changed
+   *
+   * @param newValue
+   */
   function handleGenreChange(
     newValue: MultiValue<SelectOption | undefined>
   ): void {
     if (newValue) {
-      const filteredGenres = newValue.filter(
+      const filteredGenres: SelectOption[] = newValue.filter(
         (item): item is SelectOption => item !== undefined
       );
       if (filteredGenres.length <= props.maxLimit) {
@@ -40,6 +52,7 @@ export default function GenreSelect(
       }
     }
   }
+
   return (
     <Select
       isMulti
@@ -47,11 +60,6 @@ export default function GenreSelect(
       name="genres"
       options={genreOptions}
       value={selectedOptions}
-      defaultValue={[
-        genreOptions.find((genre) => genre.value === "Classic Peruvian Pop"),
-        genreOptions.find((genre) => genre.value === "Albuquerque Indie"),
-        genreOptions.find((genre) => genre.value === "Scam Rap"),
-      ]}
       className="basic-multi-select"
       classNamePrefix="select"
       placeholder="Select genres..."
