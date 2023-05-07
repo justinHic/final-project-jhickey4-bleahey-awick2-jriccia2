@@ -27,6 +27,9 @@ import SelectOption from "../types/SelectOption";
 import Select from "react-select";
 import { SpotifyProfile } from "../types/SpotifyProfile";
 import { error } from "console";
+import NumSongsSelect from "@/components/NumSongsSelect";
+import SexSelect from "@/components/SexSelect";
+import UserInfo from "@/components/UserInfo";
 
 interface SongsResponse {
   uris: string[];
@@ -42,7 +45,7 @@ export default function LoggedIn() {
   const [playerShow, setPlayerShow] = useState(false);
   const [songs, setSongs] = useState<string[]>([]);
   const [access_token, setAccessToken] = useState("");
-  const [gender, setGender] = useState<string>();
+  const [sex, setSex] = useState<string>();
   const [HR, setHR] = useState<string>();
   const [inches, setInches] = useState<number>();
   const [feet, setFeet] = useState<number>();
@@ -116,22 +119,15 @@ export default function LoggedIn() {
     }
   }, [access_token]);
 
-  const handleNumChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ): void => {
-    const num = parseInt(event.target.value);
-    setNumSongs(num);
-  };
-
   const handleFindSongs = (): void => {
     if (
       selectedGenres.length > 0 &&
       numSongs > 0 &&
-      gender !== undefined &&
+      sex !== undefined &&
       inches !== undefined &&
       feet !== undefined
     ) {
-      let gen: string = gender === "male" ? "true" : "false";
+      let gen: string = sex === "male" ? "true" : "false";
       let totalInches = 12 * feet + inches;
 
       const url =
@@ -202,6 +198,7 @@ export default function LoggedIn() {
                   ? "Logged in"
                   : "Logged in as " + profile.username}
               </p>
+              <UserInfo profile={profile} />
               <SpotifyButton
                 action={SpotifyButtonAction.Logout}
                 router={router}
@@ -242,32 +239,21 @@ export default function LoggedIn() {
                   maxLimit={5}
                 />
 
-                <select
-                  name="num-songs"
-                  onChange={handleNumChange}
-                  defaultValue={"disabled"}
-                  className="dropdown hvr-grow"
-                >
-                  <option disabled value={"disabled"}>
-                    Select desired number of songs
-                  </option>
-                  {[...Array(10)].map((x, i) => {
-                    return (
-                      <option key={i + 1} value={i + 1}>
-                        {i + 1}
-                      </option>
-                    );
-                  })}
-                </select>
+                <NumSongsSelect
+                  min={0}
+                  max={10}
+                  numSongs={numSongs}
+                  setNumSongs={setNumSongs}
+                />
                 {mode == Mode.Watch ? (
                   <></>
                 ) : (
                   <>
-                    <select
+                    {/* <select
                       name="gender"
                       defaultValue={"disabled"}
                       onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                        setGender(event.target.value)
+                        setSex(event.target.value)
                       }
                       className="dropdown hvr-grow"
                     >
@@ -276,7 +262,8 @@ export default function LoggedIn() {
                       </option>
                       <option value={"male"}>Male</option>
                       <option value={"female"}>Female</option>
-                    </select>
+                    </select> */}
+                    <SexSelect sex={sex} setSex={setSex} />
 
                     <select
                       name="hr"

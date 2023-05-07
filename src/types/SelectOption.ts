@@ -11,3 +11,12 @@ export function createSelectOptionsFromStringArray(
     label: stringOption.charAt(0).toUpperCase() + stringOption.slice(1),
   }));
 }
+
+export function createSelectOptionsFromNumberArray(
+  numbers: number[]
+): SelectOption[] {
+  return numbers.map((numberOption) => ({
+    value: numberOption.toString(),
+    label: numberOption.toString(),
+  }));
+}

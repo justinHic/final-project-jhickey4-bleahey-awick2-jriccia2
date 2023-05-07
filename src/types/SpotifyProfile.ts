@@ -1,3 +1,3 @@
-export interface SpotifyProfile {
+export defauinterface SpotifyProfile {
   username: string;
 }
