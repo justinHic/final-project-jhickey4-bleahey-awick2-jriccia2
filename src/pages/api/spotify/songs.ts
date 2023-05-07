@@ -54,6 +54,7 @@ export default async function songHandler(
           let uris: string[] = [];
           json.tracks.forEach((element) => {
             uris.push(element.uri);
+            console.log("Track pushed");
           });
           res.status(200).json({ uris: uris, result: "success!" });
         } else {

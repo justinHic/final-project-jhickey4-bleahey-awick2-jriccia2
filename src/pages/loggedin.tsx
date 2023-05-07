@@ -81,7 +81,6 @@ export default function LoggedIn() {
         fetch("/api/spotify/exchange?code=" + code + "&state=" + state)
           .then((res) => res.json())
           .then((json: AccessTokenData) => {
-            console.log(json);
             const expirationTime = new Date();
             expirationTime.setSeconds(
               expirationTime.getSeconds() + json.expires_in
@@ -159,6 +158,7 @@ export default function LoggedIn() {
       console.log(url);
       fetch(url)
         .then((res) => {
+          console.log("Fetched songs returned status " + res.status);
           if (res.status === 201) {
             alert("Session expired. Please refresh page");
           } else {
@@ -167,6 +167,7 @@ export default function LoggedIn() {
         })
         .then((json: SongsResponse) => {
           setSongs(json.uris);
+          console.log(json.uris);
           setPlayerShow(true);
         })
         .catch((err) => console.log(err));
