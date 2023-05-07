@@ -539,3 +539,12 @@ input:checked + .slider:before {
   -webkit-transform: scale(1.03);
   transform: scale(1.03);
 }
+
+.number-input-container {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.number-input-label {
+  color: white;
+}

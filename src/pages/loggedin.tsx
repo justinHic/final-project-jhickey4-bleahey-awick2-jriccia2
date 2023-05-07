@@ -24,6 +24,8 @@ import SexSelect from "@/components/SexSelect";
 import { Sex } from "@/types/Sex";
 import HeartRateSelect from "@/components/HeartRateSelect";
 import HeightInput from "@/components/HeightInput";
+import EnergySlider from "@/components/EnergySlider";
+import CadenceInput from "@/components/CadenceInput";
 
 interface SongsResponse {
   uris: string[];
@@ -49,6 +51,7 @@ export default function LoggedIn() {
   const [feet, setFeet] = useState<number>();
   const [mode, setMode] = useState<Mode>(Mode.Standard);
   const [profile, setProfile] = useState<SpotifyProfile>({ username: "" });
+  const [energy, setEnergy] = useState<number>(0.5);
 
   const router: NextRouter = useRouter();
   const { code, state } = router.query;
@@ -220,7 +223,10 @@ export default function LoggedIn() {
                 setMetronomePlaying={setMetronomePlaying}
               />
               {mode == Mode.Watch ? (
-                <></>
+                <>
+                  <CadenceInput cadence={tempo} setCadence={setTempo} />
+                  <EnergySlider energy={energy} setEnergy={setEnergy} />
+                </>
               ) : (
                 <>
                   <div className="metronome-container">
