@@ -29,7 +29,7 @@ export default function SexSelect(props: SexSelectProps) {
   return (
     <Select
       isSearchable={false}
-      name="sex-select"
+      name="sex"
       className="basic-select"
       classNamePrefix="select"
       placeholder="Select your assigned sex"
