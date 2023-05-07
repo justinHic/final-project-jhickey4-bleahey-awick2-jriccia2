@@ -271,6 +271,13 @@ export default function LoggedIn() {
               <button
                 className="search-button hvr-grow"
                 onClick={handleFindSongs}
+                disabled={
+                  selectedGenres.length === 0 ||
+                  numSongs === 0 ||
+                  sex === undefined ||
+                  inches === undefined ||
+                  feet === undefined
+                }
               >
                 FIND SONGS
               </button>

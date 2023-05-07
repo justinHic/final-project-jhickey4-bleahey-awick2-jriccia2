@@ -45,7 +45,7 @@ export default function SpotifyButton(props: SpotifyButtonProps) {
   }
   return (
     <button
-      className="spotify-button"
+      className="spotify-button hvr-grow"
       onClick={() => handleClick(props.action)}
     >
       {props.action}
