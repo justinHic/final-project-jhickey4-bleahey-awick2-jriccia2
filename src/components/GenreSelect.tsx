@@ -11,6 +11,8 @@ interface GenreSelectProps {
   maxLimit: number;
 }
 
+// TODO: contain SelectOption within component so selectedGenres in loggedin.tsx is of type string[]
+
 export default function GenreSelect(
   props: GenreSelectProps
 ): React.ReactElement {

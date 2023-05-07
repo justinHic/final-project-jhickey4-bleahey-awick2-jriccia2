@@ -36,6 +36,7 @@ export default function LoggedIn() {
   const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
+  // TODO: switch selected genres to real genres
   const [selectedGenres, setSelectedGenres] = useState<SelectOption[]>([]);
   const [numSongs, setNumSongs] = useState<number>(0);
   const [ready, setReady] = useState(false);
@@ -124,6 +125,7 @@ export default function LoggedIn() {
   };
 
   const handleClick = (): void => {
+    console.log(selectedGenres);
     if (
       selectedGenres.length > 0 &&
       numSongs > 0 &&
@@ -148,6 +150,7 @@ export default function LoggedIn() {
         "&male=" +
         gen +
         (HR !== undefined ? "&hr=" + HR : "");
+      console.log(url);
       fetch(url)
         .then((res) => {
           if (res.status === 201) {
