@@ -12,28 +12,27 @@ import {
   REFRESH_TOKEN_NAME,
   EXPIRATION_STRING,
 } from "@/resources/strings";
-import {
-  cadenceToEnergy,
-  getValidTempos,
-  hrToEnergy,
-} from "@/scripts/algorithms";
 import { HR_ZONES } from "@/resources/metrics";
 import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
 import GenreSelect, { defaultGenres } from "@/components/GenreSelect";
 import { Mode } from "../types/Mode";
 import ModeSelect from "@/components/ModeSelect";
 import MetronomeSwitch from "@/components/MetronomeSwitch";
-import SelectOption from "../types/SelectOption";
-import Select from "react-select";
 import { SpotifyProfile } from "../types/SpotifyProfile";
-import { error } from "console";
 import NumSongsSelect from "@/components/NumSongsSelect";
 import SexSelect from "@/components/SexSelect";
+import { Sex } from "@/types/Sex";
+import HeartRateSelect from "@/components/HeartRateSelect";
+import HeightInput from "@/components/HeightInput";
 
 interface SongsResponse {
   uris: string[];
 }
 
+/**
+ * The page that is displayed when the user is logged in.
+ * @returns The page that is displayed when the user is logged in.
+ */
 export default function LoggedIn() {
   const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
@@ -44,7 +43,7 @@ export default function LoggedIn() {
   const [playerShow, setPlayerShow] = useState(false);
   const [songs, setSongs] = useState<string[]>([]);
   const [access_token, setAccessToken] = useState("");
-  const [sex, setSex] = useState<string>();
+  const [sex, setSex] = useState<Sex>();
   const [HR, setHR] = useState<string>();
   const [inches, setInches] = useState<number>();
   const [feet, setFeet] = useState<number>();
@@ -54,12 +53,22 @@ export default function LoggedIn() {
   const router: NextRouter = useRouter();
   const { code, state } = router.query;
 
+  /**
+   * The access token data returned from the Spotify API.
+   * @interface
+   * @property {string} access_token - The access token.
+   * @property {number} expires_in - The number of seconds until the access token expires.
+   *  @property {string} refresh_token - The refresh token.
+   */
   interface AccessTokenData {
     access_token: string;
     expires_in: number;
     refresh_token: string;
   }
 
+  //waits for the router to be ready before checking for code
+  //if code is present, exchange it for an access token, refresh token, and expiration time
+  //if access token is present, refresh it if it is expired
   useEffect(() => {
     if (router.isReady) {
       const access = localStorage.getItem(ACCESS_TOKEN_NAME);
@@ -110,6 +119,7 @@ export default function LoggedIn() {
     }
   }, [code]);
 
+  // Retrieve user info from Spotify API after access token is set
   useEffect(() => {
     if (ready) {
       if (access_token !== undefined && access_token !== null) {
@@ -126,7 +136,7 @@ export default function LoggedIn() {
       inches !== undefined &&
       feet !== undefined
     ) {
-      let gen: string = sex === "male" ? "true" : "false";
+      let gen: string = sex === Sex.Male ? "true" : "false";
       let totalInches = 12 * feet + inches;
 
       const url =
@@ -249,52 +259,9 @@ export default function LoggedIn() {
                   <>
                     <SexSelect sex={sex} setSex={setSex} />
 
-                    <select
-                      name="hr"
-                      defaultValue={"disabled"}
-                      className="dropdown hvr-grow"
-                      onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                        setHR(event.target.value)
-                      }
-                    >
-                      <option disabled value={"disabled"}>
-                        Select your heart rate zone (optional)
-                      </option>
-                      {HR_ZONES.map((val, index) => {
-                        return (
-                          <option key={index} value={val}>
-                            {val}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    <p className="height-title">Please enter your height</p>
-                    <div className="height-div">
-                      <input
-                        type="number"
-                        id="quantity"
-                        name="quantity"
-                        min="3"
-                        max="8"
-                        className="height-input"
-                        onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                          setFeet(parseInt(event.target.value))
-                        }
-                      ></input>
-                      <label className="height-label">ft</label>
-                      <input
-                        type="number"
-                        id="quantity"
-                        name="quantity"
-                        min="0"
-                        max="11"
-                        className="height-input"
-                        onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                          setInches(parseInt(event.target.value))
-                        }
-                      ></input>
-                      <label className="height-label">in</label>
-                    </div>
+                    <HeartRateSelect HRZones={HR_ZONES} setHR={setHR} />
+
+                    <HeightInput setInches={setInches} setFeet={setFeet} />
                   </>
                 )}
               </div>

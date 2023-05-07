@@ -4,6 +4,15 @@ import SelectOption, {
 } from "../types/SelectOption";
 import Select, { SingleValue } from "react-select";
 
+/**
+ * The props for the NumSongsSelect component.
+ * @interface
+ * @property {number} min - The minimum number of songs that can be selected.
+ * @property {number} max - The maximum number of songs that can be selected.
+ * @property {number} numSongs - The number of songs that are currently selected.
+ * @property {Dispatch<SetStateAction<number>>} setNumSongs - The function to
+ * set the number of songs that are currently selected.
+ */
 interface NumSongsSelectProps {
   min: number;
   max: number;
@@ -13,7 +22,16 @@ interface NumSongsSelectProps {
 
 export default function NumSongsSelect(props: NumSongsSelectProps) {
   const numSongsOptions: SelectOption[] = createSelectOptionsFromNumberArray([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, //TODO: use min and max
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10, //TODO: use min and max
   ]);
   const selectedOption: SelectOption | undefined = numSongsOptions.find(
     (option) => option.value === props.numSongs.toString()

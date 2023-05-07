@@ -3,9 +3,14 @@ import SelectOption, {
   createSelectOptionsFromStringArray,
 } from "../types/SelectOption";
 import { Dispatch, SetStateAction } from "react";
-import { Console } from "console";
-import { getDefaultCompilerOptions } from "typescript";
 
+/**
+ * Props for GenreSelect component.
+ * @param genres - Array of strings representing all genres.
+ * @param selectedGenres - Array of strings representing the selected genres.
+ * @param setSelectedGenres - Function to update the selectedGenres prop.
+ * @param maxLimit - Maximum number of genres that can be selected.
+ */
 interface GenreSelectProps {
   genres: string[];
   selectedGenres: string[];
@@ -13,12 +18,20 @@ interface GenreSelectProps {
   maxLimit: number;
 }
 
+/**
+ * Default genres to display when the user has not searched for anything.
+ */
 export const defaultGenres: string[] = [
   "classic peruvian pop",
   "albuquerque indie",
   "scam rap",
 ];
 
+/**
+ * Component for selecting genres.
+ * @param props - Props for GenreSelect component.
+ * @returns A GenreSelect component.
+ */
 export default function GenreSelect(
   props: GenreSelectProps
 ): React.ReactElement {
@@ -33,7 +46,8 @@ export default function GenreSelect(
   /**
    * Updates the selectedGenres prop when the value of the Select element is changed
    *
-   * @param newValue
+   * @param newValue - The new value of the Select element.
+   * @returns void
    */
   function handleGenreChange(
     newValue: MultiValue<SelectOption | undefined>

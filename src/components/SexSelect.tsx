@@ -3,10 +3,11 @@ import Select, { SingleValue } from "react-select";
 import SelectOption, {
   createSelectOptionsFromStringArray,
 } from "../types/SelectOption";
+import { Sex, parseSex } from "@/types/Sex";
 
 interface SexSelectProps {
-  sex: string | undefined;
-  setSex: Dispatch<SetStateAction<string | undefined>>;
+  sex: Sex | undefined;
+  setSex: Dispatch<SetStateAction<Sex | undefined>>;
 }
 
 export default function SexSelect(props: SexSelectProps) {
@@ -22,7 +23,7 @@ export default function SexSelect(props: SexSelectProps) {
 
   function handleSexChange(newValue: SingleValue<SelectOption>): void {
     if (newValue) {
-      props.setSex(newValue.value);
+      props.setSex(parseSex(newValue.value));
     }
   }
 

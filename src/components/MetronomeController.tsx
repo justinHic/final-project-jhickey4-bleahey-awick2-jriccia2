@@ -1,5 +1,14 @@
 import { Metronome } from "@/scripts/metronome";
 
+/**
+ * The props for the MetronomeController component.
+ *
+ * @param tempo The tempo of the metronome.
+ * @param metronome The metronome object.
+ * @param setTempo The function to set the tempo.
+ * @param max The maximum tempo.
+ * @param min The minimum tempo.
+ */
 interface MetronomeProps {
   tempo: number;
   metronome: Metronome;
@@ -8,6 +17,11 @@ interface MetronomeProps {
   min: number;
 }
 
+/**
+ * Provides a controller for the metronome.
+ * @param props The props for the MetronomeController component.
+ * @returns The MetronomeController component.
+ */
 export function MetronomeController(props: MetronomeProps) {
   return (
     <div className="metronome" aria-label="metronome" aria-description="">

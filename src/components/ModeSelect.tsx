@@ -2,6 +2,14 @@ import { ChangeEvent, SetStateAction } from "react";
 import { Mode } from "../types/Mode";
 import { Metronome } from "@/scripts/metronome";
 
+/**
+ * The props for the ModeSelect component.
+ * @interface
+ * @prop {(watchMode: SetStateAction<Mode>) => void } setMode - Sets the mode.
+ * @prop {Metronome} metronome - The metronome object.
+ * @prop {boolean} metronomePlaying - Whether the metronome is playing.
+ * @prop {(metronomeIsPlaying: SetStateAction<boolean>) => void} setMetronomePlaying - Sets whether the metronome is playing.
+ */
 interface ModeSelectProps {
   setMode: (watchMode: SetStateAction<Mode>) => void;
   metronome: Metronome;
@@ -9,6 +17,11 @@ interface ModeSelectProps {
   setMetronomePlaying: (metronomeIsPlaying: SetStateAction<boolean>) => void;
 }
 
+/**
+ * Creates a component for selecting the mode.
+ * @param props - The props for the component.
+ * @returns The mode select component.
+ */
 export default function ModeSelect(props: ModeSelectProps): React.ReactElement {
   return (
     <select
