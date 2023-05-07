@@ -29,7 +29,6 @@ import { SpotifyProfile } from "../types/SpotifyProfile";
 import { error } from "console";
 import NumSongsSelect from "@/components/NumSongsSelect";
 import SexSelect from "@/components/SexSelect";
-import UserInfo from "@/components/UserInfo";
 
 interface SongsResponse {
   uris: string[];
@@ -198,7 +197,6 @@ export default function LoggedIn() {
                   ? "Logged in"
                   : "Logged in as " + profile.username}
               </p>
-              <UserInfo profile={profile} />
               <SpotifyButton
                 action={SpotifyButtonAction.Logout}
                 router={router}
@@ -249,20 +247,6 @@ export default function LoggedIn() {
                   <></>
                 ) : (
                   <>
-                    {/* <select
-                      name="gender"
-                      defaultValue={"disabled"}
-                      onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                        setSex(event.target.value)
-                      }
-                      className="dropdown hvr-grow"
-                    >
-                      <option disabled value={"disabled"}>
-                        Select your gender
-                      </option>
-                      <option value={"male"}>Male</option>
-                      <option value={"female"}>Female</option>
-                    </select> */}
                     <SexSelect sex={sex} setSex={setSex} />
 
                     <select
