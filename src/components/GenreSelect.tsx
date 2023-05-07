@@ -6,8 +6,8 @@ import { Dispatch, SetStateAction } from "react";
 
 interface GenreSelectProps {
   genres: string[];
-  selectedGenres: SelectOption[];
-  setSelectedGenres: Dispatch<SetStateAction<SelectOption[]>>;
+  selectedGenres: string[];
+  setSelectedGenres: Dispatch<SetStateAction<string[]>>;
   maxLimit: number;
 }
 
@@ -17,6 +17,10 @@ export default function GenreSelect(
   const genreOptions: SelectOption[] = createSelectOptionsFromStringArray(
     props.genres
   );
+  const selectedOptions: (SelectOption | undefined)[] =
+    props.selectedGenres.map((selectedGenre) =>
+      genreOptions.find((option) => option.value === selectedGenre)
+    );
   function handleGenreChange(
     newValue: MultiValue<SelectOption | undefined>
   ): void {
@@ -24,11 +28,12 @@ export default function GenreSelect(
       const filteredGenres = newValue.filter(
         (item): item is SelectOption => item !== undefined
       );
-
       if (filteredGenres.length <= props.maxLimit) {
-        props.setSelectedGenres(filteredGenres);
+        const selectedStrings: string[] = filteredGenres.map(
+          (selectedOption) => selectedOption.value
+        );
+        props.setSelectedGenres(selectedStrings);
       } else {
-        // If the user tries to select more items than the maxLimit, show an alert
         alert(`You can only select up to ${props.maxLimit} genres.`);
       }
     }
@@ -39,7 +44,7 @@ export default function GenreSelect(
       isSearchable
       name="genres"
       options={genreOptions}
-      value={props.selectedGenres}
+      value={selectedOptions}
       defaultValue={[
         genreOptions.find((genre) => genre.value === "Classic Peruvian Pop"),
         genreOptions.find((genre) => genre.value === "Albuquerque Indie"),
