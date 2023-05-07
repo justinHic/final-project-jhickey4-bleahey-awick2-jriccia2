@@ -36,8 +36,12 @@ export default function LoggedIn() {
   const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
+<<<<<<< HEAD
   // TODO: switch selected genres to real genres
   const [selectedGenres, setSelectedGenres] = useState<SelectOption[]>([]);
+=======
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+>>>>>>> b89e1d2a9f8847c6fe7ce3861bcdd1980f18d5bc
   const [numSongs, setNumSongs] = useState<number>(0);
   const [ready, setReady] = useState(false);
   const [playerShow, setPlayerShow] = useState(false);
@@ -124,8 +128,7 @@ export default function LoggedIn() {
     setNumSongs(num);
   };
 
-  const handleClick = (): void => {
-    console.log(selectedGenres);
+  const handleFindSongs = (): void => {
     if (
       selectedGenres.length > 0 &&
       numSongs > 0 &&
@@ -265,10 +268,6 @@ export default function LoggedIn() {
                   <></>
                 ) : (
                   <>
-                    <Select
-                      name="gender"
-                      options={[{ male: "Male" }, { female: "Female" }]}
-                    />
                     <select
                       name="gender"
                       defaultValue={"disabled"}
@@ -336,7 +335,10 @@ export default function LoggedIn() {
             </div>
 
             <div className="search-button-div">
-              <button className="search-button hvr-grow" onClick={handleClick}>
+              <button
+                className="search-button hvr-grow"
+                onClick={handleFindSongs}
+              >
                 FIND SONGS
               </button>
             </div>

@@ -1,48 +1,80 @@
-import { resolve } from "path";
-import { initialState } from "./PKCEVerifier";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export async function testButton() {
-  let pl = await getPlaylists("hiphop")
-  console.log(getPlaylists("hiphop"));
-}
+// export async function testButton() {
+//   let pl = await getPlaylists("hiphop");
+//   console.log(getPlaylists("hiphop"));
+// }
 
-//MAKE SURE TO USE .then WHEN CALLING THIS 
-function getPlaylists(genre: string): Promise<SimplifiedPlaylistObject[] | undefined> {
-  return new Promise((resolve) => {
-    let plList: SimplifiedPlaylistObject[] = [];
-    fetch(`https://api.spotify.com/v1/browse/categories/${genre}/playlists`, {
-      headers: {
-        Authorization: "Bearer " + initialState.access_token,
-      },
-    })
-      .then(async (response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw await response.json();
-        }
-      })
-      .then((data) => {
-        console.log(data);
-        let playlistsObject: any = data["playlists"];
-        let playlists: PlaylistsObject;
-        if (isPlaylistObject(playlistsObject)) {
-          playlists = playlistsObject;
-          let items: SimplifiedPlaylistObject[] = playlists.items;
+/**
+ * Creates a playlist for the user with the given name and description.
+ * @param req - The request object, containing an access token, username,
+ * playlist name, and playlist description
+ * @param res - The response object, containing the playlist ID
+ */
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const { access_token, username, playlist_name, playlist_description } =
+    req.query;
+  if (
+    access_token === undefined ||
+    Array.isArray(access_token) ||
+    username === undefined ||
+    Array.isArray(username) ||
+    playlist_name === undefined ||
+    Array.isArray(playlist_name) ||
+    playlist_description === undefined ||
+    Array.isArray(playlist_description)
+  ) {
+    res.status(405).end();
+  }
 
-          items.forEach((playlist: SimplifiedPlaylistObject) => {
-            if (isSimplifiedPlaylistObject(playlist)) {
-              plList.push(playlist);
-            }
-          });
-          resolve(plList);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
+  const requestOptions = {
+    method: "PUT",
+    headers: {
+      Authorization: "Bearer " + access_token,
+    },
+    body: JSON.stringify({
+      name: playlist_name,
+      description: playlist_description,
+    }),
+  };
+
+  fetch(
+    `https://api.spotify.com/v1/users/${username}/playlists`,
+    requestOptions
+  ).then(async (response) => {
+    if (response.ok) {
+      response.json().then((json) => {
+        res.status(200).json({ playlist_id: json.id });
       });
+    } else {
+      res.status(405).end();
+    }
   });
-  
+
+  //TODO: use this type checking to error check response
+
+  // .then((data) => {
+  //   console.log(data);
+  //   let playlistsObject: any = data["playlists"];
+  //   let playlists: PlaylistsObject;
+  //   if (isPlaylistObject(playlistsObject)) {
+  //     playlists = playlistsObject;
+  //     let items: SimplifiedPlaylistObject[] = playlists.items;
+
+  //     items.forEach((playlist: SimplifiedPlaylistObject) => {
+  //       if (isSimplifiedPlaylistObject(playlist)) {
+  //         plList.push(playlist);
+  //       }
+  //     });
+  //     resolve(plList);
+  //   }
+  // })
+  // .catch((error) => {
+  //   console.error(error);
+  // });
 }
 
 function isPlaylistObject(data: any): data is PlaylistsObject {
@@ -53,7 +85,7 @@ function isPlaylistObject(data: any): data is PlaylistsObject {
   if (!("previous" in data)) return false;
   if (!("total" in data)) return false;
   if (!("items" in data)) return false;
-  return true
+  return true;
 }
 
 function isSimplifiedPlaylistObject(item: any): item is PlaylistsObject {
@@ -71,26 +103,24 @@ function isSimplifiedPlaylistObject(item: any): item is PlaylistsObject {
 }
 
 interface SimplifiedPlaylistObject {
-  collaborative: boolean,
-  description: string,
-  external_urls: object,
-  href: string,
-  id: string,
-  images: object[],
-  public: boolean,
-  tracks: object,
-  type: string,
-  uri: string,
+  collaborative: boolean;
+  description: string;
+  external_urls: object;
+  href: string;
+  id: string;
+  images: object[];
+  public: boolean;
+  tracks: object;
+  type: string;
+  uri: string;
 }
 
 interface PlaylistsObject {
-  href: string,
-  limit: number,
-  next: string,
-  offset: number,
-  previous: string,
-  total: number,
-  items: SimplifiedPlaylistObject[],
+  href: string;
+  limit: number;
+  next: string;
+  offset: number;
+  previous: string;
+  total: number;
+  items: SimplifiedPlaylistObject[];
 }
-
-export {}
