@@ -1,6 +1,7 @@
 import { cadenceToEnergy, hrToEnergy } from "@/scripts/algorithms";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { CADENCE_WEIGHT, HR_WEIGHT } from "@/resources/metrics";
+import { Console } from "console";
 
 interface Tracks {
   tracks: track[];
@@ -15,44 +16,47 @@ export default async function songHandler(
 ) {
   const { bpm, genres, numsongs, hr, height, male, access_token } = req.query;
   let { energy } = req.query;
+
   if (
     isString(bpm) &&
     isString(genres) &&
     isString(numsongs) &&
     isString(access_token) &&
-    isString(male) &&
-    isString(height) &&
     !Array.isArray(energy)
   ) {
     const copiedGenres = genres.split(",");
-    const copiedSex = male.toLowerCase() === "true";
-    const copiedHeight = parseInt(height);
     const copiedCadence = parseInt(bpm);
     // energy must be calculated (not in watch mode)
     if (energy === undefined) {
-      if (Array.isArray(hr)) {
-        res.status(405).end();
-      } else if (hr === undefined) {
-        energy = cadenceToEnergy(
-          copiedCadence,
-          copiedHeight,
-          copiedSex
-        ).toString();
-      } else {
-        energy = (
-          CADENCE_WEIGHT *
-            cadenceToEnergy(copiedCadence, copiedHeight, copiedSex) +
-          HR_WEIGHT * hrToEnergy(parseInt(hr))
-        ).toString();
+      if (isString(male) && isString(height)) {
+        const copiedSex = male.toLowerCase() === "true";
+        const copiedHeight = parseInt(height);
+        if (Array.isArray(hr)) {
+          res.status(405).end();
+        } else if (hr === undefined) {
+          energy = cadenceToEnergy(
+            copiedCadence,
+            copiedHeight,
+            copiedSex
+          ).toString();
+        } else {
+          energy = (
+            CADENCE_WEIGHT *
+              cadenceToEnergy(copiedCadence, copiedHeight, copiedSex) +
+            HR_WEIGHT * hrToEnergy(parseInt(hr))
+          ).toString();
+        }
       }
     }
-    console.log(energy);
+    console.log("energy: " + energy);
     let x = "seed_genres=";
     copiedGenres.forEach((val) => (x += val + "%2C"));
     x = x.substring(0, x.length - 3);
     x += "&target_tempo=" + bpm;
     x += "&limit=" + numsongs;
     x += "&target_energy=" + energy;
+
+    console.log("x: " + x);
     const result = await fetch(
       //"https://api.spotify.com/v1/recommendations?seed_genres=club%2Cpop&target_tempo=120&target_liveness=1&target_energy=1",
       "https://api.spotify.com/v1/recommendations?" + x,

@@ -139,46 +139,77 @@ export default function LoggedIn() {
   }, [access_token]);
 
   const handleFindSongs = (): void => {
-    if (
-      selectedGenres.length > 0 &&
-      numSongs > 0 &&
-      sex !== undefined &&
-      inches !== undefined &&
-      feet !== undefined
-    ) {
-      let gen: string = sex === Sex.Male ? "true" : "false";
-      let totalInches = 12 * feet + inches;
+    if (mode === Mode.Standard) {
+      if (
+        selectedGenres.length > 0 &&
+        numSongs > 0 &&
+        sex !== undefined &&
+        inches !== undefined &&
+        feet !== undefined
+      ) {
+        let gen: string = sex === Sex.Male ? "true" : "false";
+        let totalInches = 12 * feet + inches;
 
-      const url =
-        "/api/spotify/songs?bpm=" +
-        tempo +
-        "&genres=" +
-        selectedGenres +
-        "&numsongs=" +
-        numSongs +
-        "&access_token=" +
-        localStorage.getItem("access_token") +
-        "&height=" +
-        totalInches +
-        "&male=" +
-        gen +
-        (HR !== undefined ? "&hr=" + HR : "");
-      console.log(url);
-      fetch(url)
-        .then((res) => {
-          console.log("Fetched songs returned status " + res.status);
-          if (res.status === 201) {
-            alert("Session expired. Please refresh page");
-          } else {
-            return res.json();
-          }
-        })
-        .then((json: SongsResponse) => {
-          setSongs(json.uris);
-          console.log(json.uris);
-          setPlayerShow(true);
-        })
-        .catch((err) => console.log(err));
+        const url =
+          "/api/spotify/songs?bpm=" +
+          tempo +
+          "&genres=" +
+          selectedGenres +
+          "&numsongs=" +
+          numSongs +
+          "&access_token=" +
+          localStorage.getItem("access_token") +
+          "&height=" +
+          totalInches +
+          "&male=" +
+          gen +
+          (HR !== undefined ? "&hr=" + HR : "");
+        console.log(url);
+        fetch(url)
+          .then((res) => {
+            console.log("Fetched songs returned status " + res.status);
+            if (res.status === 201) {
+              alert("Session expired. Please refresh page");
+            } else {
+              return res.json();
+            }
+          })
+          .then((json: SongsResponse) => {
+            setSongs(json.uris);
+            console.log(json.uris);
+            setPlayerShow(true);
+          })
+          .catch((err) => console.log(err));
+      }
+    } else if (mode === Mode.Watch) {
+      if (selectedGenres.length > 0 && numSongs > 0 && energy !== undefined) {
+        const url =
+          "/api/spotify/songs?bpm=" +
+          tempo +
+          "&genres=" +
+          selectedGenres +
+          "&numsongs=" +
+          numSongs +
+          "&access_token=" +
+          localStorage.getItem("access_token") +
+          "&energy=" +
+          energy +
+          (HR !== undefined ? "&hr=" + HR : "");
+        fetch(url)
+          .then((res) => {
+            console.log("Fetched songs returned status " + res.status);
+            if (res.status === 201) {
+              alert("Session expired. Please refresh page");
+            } else {
+              return res.json();
+            }
+          })
+          .then((json: SongsResponse) => {
+            setSongs(json.uris);
+            setPlayerShow(true);
+          })
+          .catch((err) => console.log(err));
+      }
     }
   };
 
