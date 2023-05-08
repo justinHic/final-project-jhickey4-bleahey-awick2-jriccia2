@@ -14,26 +14,41 @@ export default async function songHandler(
   res: NextApiResponse
 ) {
   const { bpm, genres, numsongs, hr, height, male, access_token } = req.query;
+  let { energy } = req.query;
   if (
     isString(bpm) &&
     isString(genres) &&
     isString(numsongs) &&
     isString(access_token) &&
     isString(male) &&
-    isString(height)
+    isString(height) &&
+    !Array.isArray(energy)
   ) {
-    const g = genres.split(",");
-    const m = male.toLowerCase() === "true";
-    const h = parseInt(height);
-    const t = parseInt(bpm);
-    const energy =
-      hr === undefined
-        ? cadenceToEnergy(t, h, m)
-        : cadenceToEnergy(t, h, m) * CADENCE_WEIGHT +
-          hrToEnergy(convertHR(hr.toString())) * HR_WEIGHT;
+    const copiedGenres = genres.split(",");
+    const copiedSex = male.toLowerCase() === "true";
+    const copiedHeight = parseInt(height);
+    const copiedCadence = parseInt(bpm);
+    // energy must be calculated (not in watch mode)
+    if (energy === undefined) {
+      if (Array.isArray(hr)) {
+        res.status(405).end();
+      } else if (hr === undefined) {
+        energy = cadenceToEnergy(
+          copiedCadence,
+          copiedHeight,
+          copiedSex
+        ).toString();
+      } else {
+        energy = (
+          CADENCE_WEIGHT *
+            cadenceToEnergy(copiedCadence, copiedHeight, copiedSex) +
+          HR_WEIGHT * hrToEnergy(parseInt(hr))
+        ).toString();
+      }
+    }
     console.log(energy);
     let x = "seed_genres=";
-    g.forEach((val) => (x += val + "%2C"));
+    copiedGenres.forEach((val) => (x += val + "%2C"));
     x = x.substring(0, x.length - 3);
     x += "&target_tempo=" + bpm;
     x += "&limit=" + numsongs;

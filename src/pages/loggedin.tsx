@@ -188,6 +188,22 @@ export default function LoggedIn() {
       });
   }
 
+  function checkDisabled(): boolean {
+    if (mode === Mode.Standard) {
+      return (
+        selectedGenres.length === 0 ||
+        numSongs === 0 ||
+        sex === undefined ||
+        inches === undefined ||
+        feet === undefined
+      );
+    } else {
+      return (
+        selectedGenres.length === 0 || numSongs === 0 || energy === undefined
+      );
+    }
+  }
+
   return (
     <>
       {!ready ? (
@@ -278,13 +294,7 @@ export default function LoggedIn() {
               <button
                 className="search-button hvr-grow"
                 onClick={handleFindSongs}
-                disabled={
-                  selectedGenres.length === 0 ||
-                  numSongs === 0 ||
-                  sex === undefined ||
-                  inches === undefined ||
-                  feet === undefined
-                }
+                disabled={checkDisabled()}
               >
                 FIND SONGS
               </button>
