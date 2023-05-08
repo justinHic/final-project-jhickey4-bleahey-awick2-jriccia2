@@ -5,7 +5,7 @@ const redirect_uri = "http://localhost:3000/loggedin"; // Your redirect uri
 type data = {
   url: string;
 };
-export default function handler(
+export default function verifyHandler(
   req: NextApiRequest,
   res: NextApiResponse<data>
 ) {

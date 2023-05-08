@@ -8,7 +8,7 @@ type data = {
   refresh_token: string;
 };
 
-export default async function handler(
+export default async function exchangeHandler(
   req: NextApiRequest,
   res: NextApiResponse<data>
 ) {
@@ -24,7 +24,7 @@ export default async function handler(
     Array.isArray(state)
   ) {
     console.log(state);
-    res.status(405).end();
+    res.status(400).end();
   } else {
     const response = async () => {
       /*

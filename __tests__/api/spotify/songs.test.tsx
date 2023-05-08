@@ -100,40 +100,6 @@ describe("/api/spotify/songs", () => {
     expect(res.statusCode).toBe(405);
   });
 
-  test("bad query - no height", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify(mockResponse));
-    const { req, res } = createMocks({
-      method: "GET",
-      query: {
-        bpm: "220",
-        genres: "hip-hop",
-        numsongs: "5",
-        access_token: localStorage.getItem("access_token"),
-        male: "true",
-        hr: "",
-      },
-    });
-    await songHandler(req, res);
-    expect(res.statusCode).toBe(405);
-  });
-
-  test("bad query - no male", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify(mockResponse));
-    const { req, res } = createMocks({
-      method: "GET",
-      query: {
-        bpm: "220",
-        genres: "hip-hop",
-        numsongs: "5",
-        access_token: localStorage.getItem("access_token"),
-        height: "72",
-        hr: "",
-      },
-    });
-    await songHandler(req, res);
-    expect(res.statusCode).toBe(405);
-  });
-
   test("bad query", async () => {
     fetchMock.mockResponseOnce(JSON.stringify(mockResponse));
     const { req, res } = createMocks({

@@ -237,3 +237,20 @@ export const mockResponse2 = {
     },
   ],
 };
+
+export const mockExchangeResponse = {
+  access_token: "access",
+  token_type: "Bearer",
+  expires_in: 3600,
+  refresh_token: "refresh",
+  scope: "streaming user-modify-playback-state user-read-email user-read-private",
+};
+
+export const mockExchangeResponse2 = {
+  access_token: "access2",
+  token_type: "Bearer",
+  expires_in: 3600,
+  refresh_token: "refresh2",
+  scope:
+    "streaming user-modify-playback-state user-read-email user-read-private",
+};
