@@ -39,8 +39,13 @@ export default function SexSelect(props: SexSelectProps) {
       styles={{
         control: (baseStyles) => ({
           ...baseStyles,
+          color: "white",
           backgroundColor: "#3a3a3a",
           width: "35ch",
+        }),
+        singleValue: (baseStyles) => ({
+          ...baseStyles,
+          color: "white",
         }),
       }}
     />

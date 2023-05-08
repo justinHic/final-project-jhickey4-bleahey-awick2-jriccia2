@@ -60,6 +60,10 @@ export default function NumSongsSelect(props: NumSongsSelectProps) {
           backgroundColor: "#3a3a3a",
           width: "35ch",
         }),
+        singleValue: (baseStyles) => ({
+          ...baseStyles,
+          color: "white",
+        }),
       }}
     />
   );

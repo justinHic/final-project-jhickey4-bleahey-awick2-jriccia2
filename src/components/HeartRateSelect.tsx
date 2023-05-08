@@ -32,6 +32,10 @@ export default function HeartRateSelect(props: HeartRateSelectProps) {
           backgroundColor: "#3a3a3a",
           width: "35ch",
         }),
+        singleValue: (baseStyles) => ({
+          ...baseStyles,
+          color: "white",
+        }),
       }}
     />
   );
