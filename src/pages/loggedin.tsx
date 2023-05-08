@@ -36,6 +36,7 @@ interface SongsResponse {
  * @returns The page that is displayed when the user is logged in.
  */
 export default function LoggedIn() {
+  // State variables - these are used to store data that is used by the page
   const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
@@ -53,8 +54,10 @@ export default function LoggedIn() {
   const [profile, setProfile] = useState<SpotifyProfile>({ username: "" });
   const [energy, setEnergy] = useState<number>(0.5);
 
+  //used to navigate between pages
   const router: NextRouter = useRouter();
-  const { code, state } = router.query;
+  // Get the code and state from the URL query parameters
+  const { code, state, error } = router.query;
 
   /**
    * The access token data returned from the Spotify API.
@@ -69,6 +72,11 @@ export default function LoggedIn() {
     refresh_token: string;
   }
 
+  // Does not allow the user to access the page if there was an error during
+  // the login process
+  if (error !== undefined) {
+    router.push("/").then(() => setReady(true));
+  }
   //waits for the router to be ready before checking for code
   //if code is present, exchange it for an access token, refresh token, and expiration time
   //if access token is present, refresh it if it is expired
