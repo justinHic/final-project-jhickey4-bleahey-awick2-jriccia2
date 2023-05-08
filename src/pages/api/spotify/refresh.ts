@@ -8,13 +8,13 @@ type data = {
   refresh_token: string;
 };
 
-export default async function handler(
+export default async function refreshHandler(
   req: NextApiRequest,
   res: NextApiResponse<data>
 ) {
   const refresh_token = req.query.refresh_token;
   if (refresh_token === undefined || Array.isArray(refresh_token)) {
-    res.status(405).end();
+    res.status(400).end();
   } else {
     const response = async () => {
       const client_secret = process.env.CLIENT_SECRET;
