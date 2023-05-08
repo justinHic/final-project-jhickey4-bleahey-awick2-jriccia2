@@ -4,6 +4,11 @@ export enum Sex {
   // Future implementation: other/intersex? would have to modify algorithm
 }
 
+/**
+ * Parses the given string to determine the sex of the user.
+ * @param sexString - the string to parse
+ * @returns the value of the sex present in the string
+ */
 export function parseSex(sexString: string): Sex {
   switch (sexString.toLowerCase()) {
     case "male":

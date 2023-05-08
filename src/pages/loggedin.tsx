@@ -36,6 +36,7 @@ interface SongsResponse {
  * @returns The page that is displayed when the user is logged in.
  */
 export default function LoggedIn() {
+  // State variables - these are used to store data that is used by the page
   const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
@@ -53,8 +54,10 @@ export default function LoggedIn() {
   const [profile, setProfile] = useState<SpotifyProfile>({ username: "" });
   const [energy, setEnergy] = useState<number>(0.5);
 
+  //used to navigate between pages
   const router: NextRouter = useRouter();
-  const { code, state } = router.query;
+  // Get the code and state from the URL query parameters
+  const { code, state, error } = router.query;
 
   /**
    * The access token data returned from the Spotify API.
@@ -69,6 +72,11 @@ export default function LoggedIn() {
     refresh_token: string;
   }
 
+  // Does not allow the user to access the page if there was an error during
+  // the login process
+  if (error !== undefined) {
+    router.push("/").then(() => setReady(true));
+  }
   //waits for the router to be ready before checking for code
   //if code is present, exchange it for an access token, refresh token, and expiration time
   //if access token is present, refresh it if it is expired
@@ -131,46 +139,77 @@ export default function LoggedIn() {
   }, [access_token]);
 
   const handleFindSongs = (): void => {
-    if (
-      selectedGenres.length > 0 &&
-      numSongs > 0 &&
-      sex !== undefined &&
-      inches !== undefined &&
-      feet !== undefined
-    ) {
-      let gen: string = sex === Sex.Male ? "true" : "false";
-      let totalInches = 12 * feet + inches;
+    if (mode === Mode.Standard) {
+      if (
+        selectedGenres.length > 0 &&
+        numSongs > 0 &&
+        sex !== undefined &&
+        inches !== undefined &&
+        feet !== undefined
+      ) {
+        let gen: string = sex === Sex.Male ? "true" : "false";
+        let totalInches = 12 * feet + inches;
 
-      const url =
-        "/api/spotify/songs?bpm=" +
-        tempo +
-        "&genres=" +
-        selectedGenres +
-        "&numsongs=" +
-        numSongs +
-        "&access_token=" +
-        localStorage.getItem("access_token") +
-        "&height=" +
-        totalInches +
-        "&male=" +
-        gen +
-        (HR !== undefined ? "&hr=" + HR : "");
-      console.log(url);
-      fetch(url)
-        .then((res) => {
-          console.log("Fetched songs returned status " + res.status);
-          if (res.status === 201) {
-            alert("Session expired. Please refresh page");
-          } else {
-            return res.json();
-          }
-        })
-        .then((json: SongsResponse) => {
-          setSongs(json.uris);
-          console.log(json.uris);
-          setPlayerShow(true);
-        })
-        .catch((err) => console.log(err));
+        const url =
+          "/api/spotify/songs?bpm=" +
+          tempo +
+          "&genres=" +
+          selectedGenres +
+          "&numsongs=" +
+          numSongs +
+          "&access_token=" +
+          localStorage.getItem("access_token") +
+          "&height=" +
+          totalInches +
+          "&male=" +
+          gen +
+          (HR !== undefined ? "&hr=" + HR : "");
+        console.log(url);
+        fetch(url)
+          .then((res) => {
+            console.log("Fetched songs returned status " + res.status);
+            if (res.status === 201) {
+              alert("Session expired. Please refresh page");
+            } else {
+              return res.json();
+            }
+          })
+          .then((json: SongsResponse) => {
+            setSongs(json.uris);
+            console.log(json.uris);
+            setPlayerShow(true);
+          })
+          .catch((err) => console.log(err));
+      }
+    } else if (mode === Mode.Watch) {
+      if (selectedGenres.length > 0 && numSongs > 0 && energy !== undefined) {
+        const url =
+          "/api/spotify/songs?bpm=" +
+          tempo +
+          "&genres=" +
+          selectedGenres +
+          "&numsongs=" +
+          numSongs +
+          "&access_token=" +
+          localStorage.getItem("access_token") +
+          "&energy=" +
+          energy +
+          (HR !== undefined ? "&hr=" + HR : "");
+        fetch(url)
+          .then((res) => {
+            console.log("Fetched songs returned status " + res.status);
+            if (res.status === 201) {
+              alert("Session expired. Please refresh page");
+            } else {
+              return res.json();
+            }
+          })
+          .then((json: SongsResponse) => {
+            setSongs(json.uris);
+            setPlayerShow(true);
+          })
+          .catch((err) => console.log(err));
+      }
     }
   };
 
@@ -186,6 +225,22 @@ export default function LoggedIn() {
           setProfile(json);
         }
       });
+  }
+
+  function checkDisabled(): boolean {
+    if (mode === Mode.Standard) {
+      return (
+        selectedGenres.length === 0 ||
+        numSongs === 0 ||
+        sex === undefined ||
+        inches === undefined ||
+        feet === undefined
+      );
+    } else {
+      return (
+        selectedGenres.length === 0 || numSongs === 0 || energy === undefined
+      );
+    }
   }
 
   return (
@@ -278,13 +333,7 @@ export default function LoggedIn() {
               <button
                 className="search-button hvr-grow"
                 onClick={handleFindSongs}
-                disabled={
-                  selectedGenres.length === 0 ||
-                  numSongs === 0 ||
-                  sex === undefined ||
-                  inches === undefined ||
-                  feet === undefined
-                }
+                disabled={checkDisabled()}
               >
                 FIND SONGS
               </button>

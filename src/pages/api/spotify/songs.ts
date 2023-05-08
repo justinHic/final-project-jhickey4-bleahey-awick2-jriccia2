@@ -1,6 +1,7 @@
 import { cadenceToEnergy, hrToEnergy } from "@/scripts/algorithms";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { CADENCE_WEIGHT, HR_WEIGHT } from "@/resources/metrics";
+import { Console } from "console";
 
 interface Tracks {
   tracks: track[];
@@ -14,26 +15,41 @@ export default async function songHandler(
   res: NextApiResponse
 ) {
   const { bpm, genres, numsongs, hr, height, male, access_token } = req.query;
+  let { energy } = req.query;
+
   if (
     isString(bpm) &&
     isString(genres) &&
     isString(numsongs) &&
     isString(access_token) &&
-    isString(male) &&
-    isString(height)
+    !Array.isArray(energy)
   ) {
-    const g = genres.split(",");
-    const m = male.toLowerCase() === "true";
-    const h = parseInt(height);
-    const t = parseInt(bpm);
-    const energy =
-      hr === undefined
-        ? cadenceToEnergy(t, h, m)
-        : cadenceToEnergy(t, h, m) * CADENCE_WEIGHT +
-          hrToEnergy(convertHR(hr.toString())) * HR_WEIGHT;
-    console.log(energy);
+    const copiedGenres = genres.split(",");
+    const copiedCadence = parseInt(bpm);
+    // energy must be calculated (not in watch mode)
+    if (energy === undefined) {
+      if (isString(male) && isString(height)) {
+        const copiedSex = male.toLowerCase() === "true";
+        const copiedHeight = parseInt(height);
+        if (Array.isArray(hr)) {
+          res.status(405).end();
+        } else if (hr === undefined) {
+          energy = cadenceToEnergy(
+            copiedCadence,
+            copiedHeight,
+            copiedSex
+          ).toString();
+        } else {
+          energy = (
+            CADENCE_WEIGHT *
+              cadenceToEnergy(copiedCadence, copiedHeight, copiedSex) +
+            HR_WEIGHT * hrToEnergy(parseInt(hr))
+          ).toString();
+        }
+      }
+    }
     let x = "seed_genres=";
-    g.forEach((val) => (x += val + "%2C"));
+    copiedGenres.forEach((val) => (x += val + "%2C"));
     x = x.substring(0, x.length - 3);
     x += "&target_tempo=" + bpm;
     x += "&limit=" + numsongs;
@@ -54,7 +70,6 @@ export default async function songHandler(
           let uris: string[] = [];
           json.tracks.forEach((element) => {
             uris.push(element.uri);
-            console.log("Track pushed");
           });
           res.status(200).json({ uris: uris, result: "success!" });
         } else {
