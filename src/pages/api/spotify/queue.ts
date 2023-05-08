@@ -15,7 +15,6 @@ export default async function queueHandler(
       },
       position_ms: 0,
     });
-    console.log(body);
     let tries = 5;
     const fetchResult: any = async () => {
       const result = await fetch(
@@ -30,7 +29,6 @@ export default async function queueHandler(
         }
       );
       if (result.status === 502 && tries > 0) {
-        console.log("thi");
         tries -= 1;
         return fetchResult();
       } else if (result.status !== 200) {
@@ -46,12 +44,9 @@ export default async function queueHandler(
 
     await fetchResult()
       .then((info: any) => {
-        console.log("hit");
-        console.log(info);
         res.status(200).json({ result: info });
       })
       .catch((err: any) => {
-        console.log(err);
         res.status(400).end();
       });
 
