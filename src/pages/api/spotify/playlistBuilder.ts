@@ -13,45 +13,43 @@ export default async function playlistBuilderHandler(
 ) {
   const { access_token, id, playlist_name, playlist_description } = req.query;
   if (
-    access_token === undefined ||
-    Array.isArray(access_token) ||
-    id === undefined ||
-    Array.isArray(id) ||
-    playlist_name === undefined ||
-    Array.isArray(playlist_name) ||
-    playlist_description === undefined ||
-    Array.isArray(playlist_description)
+    isString(access_token) &&
+    isString(id) &&
+    isString(playlist_name) &&
+    isString(playlist_description)
   ) {
+    const requestOptions = {
+      method: "POST",
+      contentType: "application/json",
+      headers: {
+        Authorization: "Bearer " + access_token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: playlist_name,
+        description: playlist_description,
+      }),
+    };
+    await fetch(
+      `https://api.spotify.com/v1/users/${id}/playlists`,
+      requestOptions
+    )
+      .then(async (response) => {
+        if (response.ok) {
+          await response.json().then((json) => {
+            res.status(200).json({ playlist_id: json.id });
+          });
+        } else {
+          await response.json().then((json) => {
+            console.log(json.error.message);
+            res.status(405).end();
+          });
+        }
+      })
+      .catch((error) => console.log("error", error));
+  } else {
     res.status(400).end();
   }
-
-  const requestOptions = {
-    method: "POST",
-    contentType: "application/json",
-    headers: {
-      Authorization: "Bearer " + access_token,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name: playlist_name,
-      description: playlist_description,
-    }),
-  };
-
-  fetch(`https://api.spotify.com/v1/users/${id}/playlists`, requestOptions)
-    .then(async (response) => {
-      if (response.ok) {
-        response.json().then((json) => {
-          res.status(200).json({ playlist_id: json.id });
-        });
-      } else {
-        response.json().then((json) => {
-          console.log(json.error.message);
-          res.status(405).end();
-        });
-      }
-    })
-    .catch((error) => console.log("error", error));
 
   //TODO: use this type checking to error check response
 
@@ -122,4 +120,10 @@ interface PlaylistsObject {
   previous: string;
   total: number;
   items: SimplifiedPlaylistObject[];
+}
+
+function isString(item: any): item is string {
+  if (item === undefined) return false;
+  if (Array.isArray(item)) return false;
+  return true;
 }

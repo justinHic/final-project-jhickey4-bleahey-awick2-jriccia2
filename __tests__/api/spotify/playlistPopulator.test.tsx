@@ -11,7 +11,7 @@ afterEach(() => {
   fetchMock.resetMocks();
 });
 
-describe("/api/spotify/playlistBuilder", () => {
+describe("/api/spotify/playlistPopulator", () => {
   test("returns success", async () => {
     fetchMock.mockResponseOnce(JSON.stringify(mockPlaylistsTracksResponse));
     const { req, res } = createMocks({

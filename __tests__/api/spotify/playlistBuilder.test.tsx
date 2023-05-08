@@ -24,6 +24,7 @@ describe("/api/spotify/playlistBuilder", () => {
     });
     await playlistBuilderHandler(req, res);
     expect(res.statusCode).toBe(200);
+    expect(res._getData()).toEqual('{"playlist_id":"string"}');
   });
 
   test("bad query - no access_token", async () => {
@@ -153,6 +154,7 @@ describe("/api/spotify/playlistBuilder", () => {
     });
     await playlistBuilderHandler(req1, res1);
     expect(res1.statusCode).toBe(200);
+    expect(res1._getData()).toEqual('{"playlist_id":"string"}');
 
     fetchMock.mockResponseOnce(JSON.stringify(mockPlaylistsResponse2));
     const { req: req2, res: res2 } = createMocks({
@@ -165,5 +167,6 @@ describe("/api/spotify/playlistBuilder", () => {
     });
     await playlistBuilderHandler(req2, res2);
     expect(res2.statusCode).toBe(200);
+    expect(res2._getData()).toEqual('{"playlist_id":"string2"}');
   });
 });
