@@ -1,126 +1,351 @@
 import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
-import localFont from "next/font/local";
-import Genre from "../components/Genre";
-import { logout, exchangeToken } from "../api/spotify/testVerifier";
-const variableFont = localFont({ src: "../../public/fonts/DS-Digital.woff2" });
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
+import { MetronomeController } from "@/components/MetronomeController";
+import Webplayer from "@/components/Webplayer";
+import { genres } from "@/resources/genres";
+import {
+  HEAD_TITLE,
+  APP_TITLE,
+  ACCESS_TOKEN_NAME,
+  REFRESH_TOKEN_NAME,
+  EXPIRATION_STRING,
+} from "@/resources/strings";
+import { HR_ZONES } from "@/resources/metrics";
+import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
+import GenreSelect, { defaultGenres } from "@/components/GenreSelect";
+import { Mode } from "../types/Mode";
+import ModeSelect from "@/components/ModeSelect";
+import MetronomeSwitch from "@/components/MetronomeSwitch";
+import { SpotifyProfile } from "../types/SpotifyProfile";
+import NumSongsSelect from "@/components/NumSongsSelect";
+import SexSelect from "@/components/SexSelect";
+import { Sex } from "@/types/Sex";
+import HeartRateSelect from "@/components/HeartRateSelect";
+import HeightInput from "@/components/HeightInput";
+import EnergySlider from "@/components/EnergySlider";
+import CadenceInput from "@/components/CadenceInput";
 
+interface SongsResponse {
+  uris: string[];
+}
+
+/**
+ * The page that is displayed when the user is logged in.
+ * @returns The page that is displayed when the user is logged in.
+ */
 export default function LoggedIn() {
-  const [tempo, setTempo] = useState(100);
+  // State variables - these are used to store data that is used by the page
+  const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<string[]>(defaultGenres);
+  const [numSongs, setNumSongs] = useState<number>(0);
+  const [ready, setReady] = useState(false);
+  const [playerShow, setPlayerShow] = useState(false);
+  const [songs, setSongs] = useState<string[]>([]);
+  const [access_token, setAccessToken] = useState("");
+  const [sex, setSex] = useState<Sex>();
+  const [HR, setHR] = useState<string>();
+  const [inches, setInches] = useState<number>();
+  const [feet, setFeet] = useState<number>();
+  const [mode, setMode] = useState<Mode>(Mode.Standard);
+  const [profile, setProfile] = useState<SpotifyProfile>({ username: "" });
+  const [energy, setEnergy] = useState<number>(0.5);
 
-  const router = useRouter();
-  const { code } = router.query;
-  console.log(code);
-  //TODO: make code part of the state and use it to get the user's name from the spotify api
+  //used to navigate between pages
+  const router: NextRouter = useRouter();
+  // Get the code and state from the URL query parameters
+  const { code, state, error } = router.query;
 
+  /**
+   * The access token data returned from the Spotify API.
+   * @interface
+   * @property {string} access_token - The access token.
+   * @property {number} expires_in - The number of seconds until the access token expires.
+   *  @property {string} refresh_token - The refresh token.
+   */
+  interface AccessTokenData {
+    access_token: string;
+    expires_in: number;
+    refresh_token: string;
+  }
+
+  // Does not allow the user to access the page if there was an error during
+  // the login process
+  if (error !== undefined) {
+    router.push("/").then(() => setReady(true));
+  }
+  //waits for the router to be ready before checking for code
+  //if code is present, exchange it for an access token, refresh token, and expiration time
+  //if access token is present, refresh it if it is expired
   useEffect(() => {
     if (router.isReady) {
-      console.log("here");
-      if (code !== undefined) {
-        console.log("got code");
-        exchangeToken(code);
-      } else if (
-        localStorage.getItem("access_token") &&
-        localStorage.getItem("refresh_token") &&
-        localStorage.getItem("expires_at")
-      ) {
+      const access = localStorage.getItem(ACCESS_TOKEN_NAME);
+      const refresh_token = localStorage.getItem(REFRESH_TOKEN_NAME);
+      const expires_at = localStorage.getItem(EXPIRATION_STRING);
+      if (code !== undefined && state !== undefined) {
+        fetch("/api/spotify/exchange?code=" + code + "&state=" + state)
+          .then((res) => res.json())
+          .then((json: AccessTokenData) => {
+            const expirationTime = new Date();
+            expirationTime.setSeconds(
+              expirationTime.getSeconds() + json.expires_in
+            );
+            localStorage.setItem(ACCESS_TOKEN_NAME, json.access_token);
+            localStorage.setItem(REFRESH_TOKEN_NAME, json.refresh_token);
+            localStorage.setItem(EXPIRATION_STRING, expirationTime.toString());
+            setAccessToken(json.access_token);
+            window.history.replaceState({}, document.title, "/loggedin");
+          });
+        setReady(true);
+      } else if (access && refresh_token && expires_at) {
+        if (new Date(expires_at).valueOf() - new Date().valueOf() <= 0) {
+          fetch("/api/spotify/refresh?refresh_token=" + refresh_token)
+            .then((res) => res.json())
+            .then((json) => {
+              console.log(json);
+              const expirationTime = new Date();
+              expirationTime.setSeconds(
+                expirationTime.getSeconds() + json.expires_in
+              );
+              localStorage.setItem(ACCESS_TOKEN_NAME, json.access_token);
+              localStorage.setItem(
+                EXPIRATION_STRING,
+                expirationTime.toString()
+              );
+              setAccessToken(json.access_token);
+            });
+        }
+        let x = localStorage.getItem(ACCESS_TOKEN_NAME);
+        {
+          x !== null ? setAccessToken(x) : "";
+        }
+        setReady(true);
       } else {
-        router.push("/");
+        router.push("/").then(() => setReady(true));
       }
     }
   }, [code]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if (event.target) {
-      console.log(event.target.value);
-      if (!selectedGenres.includes(event.target.value)) {
-        const copy = selectedGenres.slice();
-        copy.push(event.target.value);
-        setSelectedGenres(copy);
+  // Retrieve user info from Spotify API after access token is set
+  useEffect(() => {
+    if (ready) {
+      if (access_token !== undefined && access_token !== null) {
+        retrieveUserInfo();
+      }
+    }
+  }, [access_token]);
+
+  const handleFindSongs = (): void => {
+    if (mode === Mode.Standard) {
+      if (
+        selectedGenres.length > 0 &&
+        numSongs > 0 &&
+        sex !== undefined &&
+        inches !== undefined &&
+        feet !== undefined
+      ) {
+        let gen: string = sex === Sex.Male ? "true" : "false";
+        let totalInches = 12 * feet + inches;
+
+        const url =
+          "/api/spotify/songs?bpm=" +
+          tempo +
+          "&genres=" +
+          selectedGenres +
+          "&numsongs=" +
+          numSongs +
+          "&access_token=" +
+          localStorage.getItem("access_token") +
+          "&height=" +
+          totalInches +
+          "&male=" +
+          gen +
+          (HR !== undefined ? "&hr=" + HR : "");
+        console.log(url);
+        fetch(url)
+          .then((res) => {
+            console.log("Fetched songs returned status " + res.status);
+            if (res.status === 201) {
+              alert("Session expired. Please refresh page");
+            } else {
+              return res.json();
+            }
+          })
+          .then((json: SongsResponse) => {
+            setSongs(json.uris);
+            console.log(json.uris);
+            setPlayerShow(true);
+          })
+          .catch((err) => console.log(err));
+      }
+    } else if (mode === Mode.Watch) {
+      if (selectedGenres.length > 0 && numSongs > 0 && energy !== undefined) {
+        const url =
+          "/api/spotify/songs?bpm=" +
+          tempo +
+          "&genres=" +
+          selectedGenres +
+          "&numsongs=" +
+          numSongs +
+          "&access_token=" +
+          localStorage.getItem("access_token") +
+          "&energy=" +
+          energy +
+          (HR !== undefined ? "&hr=" + HR : "");
+        fetch(url)
+          .then((res) => {
+            console.log("Fetched songs returned status " + res.status);
+            if (res.status === 201) {
+              alert("Session expired. Please refresh page");
+            } else {
+              return res.json();
+            }
+          })
+          .then((json: SongsResponse) => {
+            setSongs(json.uris);
+            setPlayerShow(true);
+          })
+          .catch((err) => console.log(err));
       }
     }
   };
-  //TODO: get the user's name from the spotify api and display it here
+
+  /**
+   * Helper function to retrieve the user's information from the Spotify API.
+   */
+  async function retrieveUserInfo() {
+    const url = "/api/spotify/profile?access_token=" + access_token;
+    fetch(url)
+      .then((res) => res.json())
+      .then((json: SpotifyProfile) => {
+        if (json.username !== null && json.username !== undefined) {
+          setProfile(json);
+        }
+      });
+  }
+
+  function checkDisabled(): boolean {
+    if (mode === Mode.Standard) {
+      return (
+        selectedGenres.length === 0 ||
+        numSongs === 0 ||
+        sex === undefined ||
+        inches === undefined ||
+        feet === undefined
+      );
+    } else {
+      return (
+        selectedGenres.length === 0 || numSongs === 0 || energy === undefined
+      );
+    }
+  }
+
   return (
     <>
-      <Head>
-        <title>Create Next App</title>
-        <meta name="description" content="Generated by create next app" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <h1 className="header">CADANCE</h1>
-      <div className="log-in-buttons">
-        <button onClick={logout}>Log Out</button>
-      </div>
+      {!ready ? (
+        <></>
+      ) : (
+        <>
+          <Head>
+            <title>{HEAD_TITLE}</title>
+            <meta name="description" content="Generated by create next app" />
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1"
+            />
+            <link rel="icon" href="/favicon.ico" />
+          </Head>
+          <div className="container">
+            <h1 className="header">{APP_TITLE}</h1>
+            <div className="login-container">
+              <p className="user-info">
+                {profile.username === ""
+                  ? "Logged in"
+                  : "Logged in as " + profile.username}
+              </p>
+              <SpotifyButton
+                action={SpotifyButtonAction.Logout}
+                router={router}
+              />
+            </div>
+            <div className="input-fields">
+              <ModeSelect
+                setMode={setMode}
+                metronome={metronome}
+                metronomePlaying={metronomePlaying}
+                setMetronomePlaying={setMetronomePlaying}
+              />
+              {mode == Mode.Watch ? (
+                <>
+                  <CadenceInput cadence={tempo} setCadence={setTempo} />
+                  <EnergySlider energy={energy} setEnergy={setEnergy} />
+                </>
+              ) : (
+                <>
+                  <div className="metronome-container">
+                    <MetronomeSwitch
+                      metronome={metronome}
+                      metronomePlaying={metronomePlaying}
+                      setMetronomePlaying={setMetronomePlaying}
+                    />
+                    <MetronomeController
+                      tempo={tempo}
+                      setTempo={setTempo}
+                      metronome={metronome}
+                      max={300}
+                      min={50}
+                    />
+                  </div>
+                </>
+              )}
+              <div className="dropdown-div">
+                <GenreSelect
+                  genres={genres}
+                  selectedGenres={selectedGenres}
+                  setSelectedGenres={setSelectedGenres}
+                  maxLimit={5}
+                />
 
-      <div className="options">
-        <button
-          className="metronome-play-pause"
-          onClick={() => {
-            metronome.startStop();
-            setMetronomePlaying(!metronomePlaying);
-          }}
-        >
-          {metronomePlaying ? "Stop Metronome" : "Play Metronome"}
-        </button>
-        <div className="metronome_div">
-          <button
-            className="decreaseMetronome"
-            onClick={() => {
-              setTempo(tempo - 5);
-              metronome.tempo = tempo - 5;
-            }}
-          >
-            -
-          </button>
-          <div className="test">
-            <div className="tempo">Tempo: {tempo}</div>
+                <NumSongsSelect
+                  min={0}
+                  max={10}
+                  numSongs={numSongs}
+                  setNumSongs={setNumSongs}
+                />
+                {mode == Mode.Watch ? (
+                  <></>
+                ) : (
+                  <>
+                    <SexSelect sex={sex} setSex={setSex} />
+
+                    <HeartRateSelect HRZones={HR_ZONES} setHR={setHR} />
+
+                    <HeightInput setInches={setInches} setFeet={setFeet} />
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="search-button-div">
+              <button
+                className="search-button hvr-grow"
+                onClick={handleFindSongs}
+                disabled={checkDisabled()}
+              >
+                FIND SONGS
+              </button>
+            </div>
+            {playerShow ? (
+              <Webplayer songs={songs} access_token={access_token}></Webplayer>
+            ) : (
+              <></>
+            )}
           </div>
-
-          <button
-            className="increaseMetronome"
-            onClick={() => {
-              setTempo(tempo + 5);
-              metronome.tempo = tempo + 5;
-            }}
-          >
-            +
-          </button>
-        </div>
-
-        <div className="selectedOptions">
-          {selectedGenres.map((val) => {
-            return (
-              <Genre
-                genre={val}
-                genres={selectedGenres}
-                setGenre={setSelectedGenres}
-              ></Genre>
-            );
-          })}
-        </div>
-
-        <select
-          className="dropdown"
-          name="genre"
-          onChange={handleChange}
-          defaultValue={"disabled"}
-        >
-          <option disabled value={"disabled"}>
-            select desired genres
-          </option>
-          <option value="test1">test1</option>
-          <option value="test2">test2</option>
-        </select>
-      </div>
+        </>
+      )}
     </>
   );
 }
