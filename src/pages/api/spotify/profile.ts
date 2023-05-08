@@ -27,7 +27,7 @@ export default async function handler(
       },
     });
     response.json().then((json) => {
-      res.status(200).json({ username: json.display_name });
+      res.status(200).json({ username: json.display_name, id: json.id });
     });
   }
 }

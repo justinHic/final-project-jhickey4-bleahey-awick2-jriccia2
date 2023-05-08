@@ -51,7 +51,10 @@ export default function LoggedIn() {
   const [inches, setInches] = useState<number>();
   const [feet, setFeet] = useState<number>();
   const [mode, setMode] = useState<Mode>(Mode.Standard);
-  const [profile, setProfile] = useState<SpotifyProfile>({ username: "" });
+  const [profile, setProfile] = useState<SpotifyProfile>({
+    username: "",
+    id: "",
+  });
   const [energy, setEnergy] = useState<number>(0.5);
 
   //used to navigate between pages
@@ -221,7 +224,12 @@ export default function LoggedIn() {
     fetch(url)
       .then((res) => res.json())
       .then((json: SpotifyProfile) => {
-        if (json.username !== null && json.username !== undefined) {
+        if (
+          json.username !== null &&
+          json.username !== undefined &&
+          json.id !== null &&
+          json.id !== undefined
+        ) {
           setProfile(json);
         }
       });
@@ -251,8 +259,8 @@ export default function LoggedIn() {
     fetch(
       "/api/spotify/playlistBuilder?access_token=" +
         access_token +
-        "&username=" +
-        profile.username +
+        "&id=" +
+        profile.id +
         "&playlist_name=" +
         "Running Playlist" +
         "&playlist_description=" +
@@ -261,6 +269,33 @@ export default function LoggedIn() {
       console.log("Playlist created with status " + res.status);
       if (res.status === 201) {
         alert("Session expired. Please refresh page");
+      } else if (res.status === 200) {
+        res.json().then((json) => {
+          let playlist_id = json.id;
+          fetch(
+            "/api/spotify/playlistPopulator?access_token=" +
+              access_token +
+              "&playlist_id=" +
+              playlist_id +
+              "&songs=" +
+              songs
+          ).then((res) => {
+            console.log("Playlist populated with status " + res.status);
+            if (res.status === 201) {
+              alert("Session expired. Please refresh page");
+            } else if (res.status === 200) {
+              res.json().then((json) => {
+                console.log(json);
+                let playlist_url = json.external_urls.spotify;
+                console.log(playlist_url);
+              });
+            } else {
+              res.json().then((json) => {
+                console.log(json.message);
+              });
+            }
+          });
+        });
       }
     });
   }

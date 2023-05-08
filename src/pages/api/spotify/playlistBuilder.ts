@@ -1,11 +1,6 @@
 import { Console } from "console";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-// export async function testButton() {
-//   let pl = await getPlaylists("hiphop");
-//   console.log(getPlaylists("hiphop"));
-// }
-
+import { isConstructorDeclaration } from "typescript";
 /**
  * Creates a playlist for the user with the given name and description.
  * @param req - The request object, containing an access token, username,
@@ -16,13 +11,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { access_token, username, playlist_name, playlist_description } =
-    req.query;
+  const { access_token, id, playlist_name, playlist_description } = req.query;
   if (
     access_token === undefined ||
     Array.isArray(access_token) ||
-    username === undefined ||
-    Array.isArray(username) ||
+    id === undefined ||
+    Array.isArray(id) ||
     playlist_name === undefined ||
     Array.isArray(playlist_name) ||
     playlist_description === undefined ||
@@ -45,7 +39,7 @@ export default async function handler(
   };
 
   fetch(
-    `https://api.spotify.com/v1/users/${username}/playlists`,
+    `https://api.spotify.com/v1/users/${id}/playlists`,
     requestOptions
   ).then(async (response) => {
     if (response.ok) {
