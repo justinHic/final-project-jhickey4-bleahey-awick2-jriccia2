@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
 /**
  *
@@ -17,32 +18,34 @@ export default async function handler(
     playlist_id === undefined ||
     Array.isArray(playlist_id) ||
     song_uris === undefined ||
-    !Array.isArray(song_uris)
+    Array.isArray(song_uris)
   ) {
     res.status(405).end();
+  } else {
+    const urisAsArray = song_uris.split(",");
+
+    fetch(`https://api.spotify.com/v1/playlists/${playlist_id}/tracks`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + access_token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uris: urisAsArray,
+        position: 0,
+      }),
+    })
+      .then(async (response) => {
+        if (response.ok) {
+          response.json().then((json) => {
+            res.status(200).json({});
+          });
+        } else {
+          response.json().then((json) => {
+            res.status(405).end();
+          });
+        }
+      })
+      .catch((error) => console.log("error", error));
   }
-
-  const requestOptions = {
-    method: "POST",
-    Headers: {
-      Authorization: "Bearer " + access_token,
-    },
-    body: JSON.stringify({
-      uris: song_uris,
-      position: 0,
-    }),
-  };
-
-  fetch(
-    `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
-    requestOptions
-  ).then(async (response) => {
-    if (response.ok) {
-      response.json().then((json) => {
-        res.status(200).json({});
-      });
-    } else {
-      res.status(405).end();
-    }
-  });
 }

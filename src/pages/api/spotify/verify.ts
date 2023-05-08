@@ -11,7 +11,7 @@ export default function handler(
 ) {
   const state: string = generateRandomString(16);
   const scope: string =
-    "user-read-private streaming user-modify-playback-state user-read-playback-state user-read-currently-playing playlist-modify-public playlist-modify-private";
+    "user-read-private streaming user-modify-playback-state user-read-playback-state user-read-currently-playing playlist-modify-public playlist-modify-private app-remote-control";
   const params: URLSearchParams = new URLSearchParams({
     response_type: "code",
     client_id: client_id,

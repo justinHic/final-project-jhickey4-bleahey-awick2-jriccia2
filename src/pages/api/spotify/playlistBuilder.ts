@@ -38,21 +38,20 @@ export default async function handler(
     }),
   };
 
-  fetch(
-    `https://api.spotify.com/v1/users/${id}/playlists`,
-    requestOptions
-  ).then(async (response) => {
-    if (response.ok) {
-      response.json().then((json) => {
-        res.status(200).json({ playlist_id: json.id });
-      });
-    } else {
-      response.json().then((json) => {
-        console.log(json);
-      });
-      res.status(405).end();
-    }
-  });
+  fetch(`https://api.spotify.com/v1/users/${id}/playlists`, requestOptions)
+    .then(async (response) => {
+      if (response.ok) {
+        response.json().then((json) => {
+          res.status(200).json({ playlist_id: json.id });
+        });
+      } else {
+        response.json().then((json) => {
+          console.log(json.error.message);
+          res.status(405).end();
+        });
+      }
+    })
+    .catch((error) => console.log("error", error));
 
   //TODO: use this type checking to error check response
 

@@ -252,9 +252,7 @@ export default function LoggedIn() {
   }
 
   function generatePlaylist(songs: string[]): void {
-    //TODO: make a call to the backend to create a playlist then
-    //populate it with the songs. Provide a link to the playlist
-    //in the UI
+    //TODO: Provide a link to the playlist in the UI
 
     fetch(
       "/api/spotify/playlistBuilder?access_token=" +
@@ -271,29 +269,30 @@ export default function LoggedIn() {
         alert("Session expired. Please refresh page");
       } else if (res.status === 200) {
         res.json().then((json) => {
-          let playlist_id = json.id;
+          let playlist_id = json.playlist_id;
           fetch(
             "/api/spotify/playlistPopulator?access_token=" +
               access_token +
               "&playlist_id=" +
               playlist_id +
-              "&songs=" +
+              "&song_uris=" +
               songs
           ).then((res) => {
+            // console.log("Playlist populated with status " + res.status);
+            // if (res.status === 201) {
+            //   alert("Session expired. Please refresh page");
+            // } else if (res.status === 200) {
+            //   res.json().then((json) => {
+            //     console.log(json);
+            //     let playlist_url = json.external_urls.spotify;
+            //     console.log(playlist_url);
+            //   });
+            // } else {
+            //   res.json().then((json) => {
+            //     console.log(json.message);
+            //   });
+            // }
             console.log("Playlist populated with status " + res.status);
-            if (res.status === 201) {
-              alert("Session expired. Please refresh page");
-            } else if (res.status === 200) {
-              res.json().then((json) => {
-                console.log(json);
-                let playlist_url = json.external_urls.spotify;
-                console.log(playlist_url);
-              });
-            } else {
-              res.json().then((json) => {
-                console.log(json.message);
-              });
-            }
           });
         });
       }
