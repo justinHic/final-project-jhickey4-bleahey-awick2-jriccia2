@@ -7,7 +7,7 @@ import { isConstructorDeclaration } from "typescript";
  * playlist name, and playlist description
  * @param res - The response object, containing the playlist ID
  */
-export default async function handler(
+export default async function playlistBuilderHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -22,7 +22,7 @@ export default async function handler(
     playlist_description === undefined ||
     Array.isArray(playlist_description)
   ) {
-    res.status(405).end();
+    res.status(400).end();
   }
 
   const requestOptions = {
