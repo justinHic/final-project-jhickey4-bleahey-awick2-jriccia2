@@ -7,7 +7,7 @@ import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
  * and and list of song URIs to add to the playlist
  * @param res - The response object, which is an empty JSON object
  */
-export default async function handler(
+export default async function playlistPopulatorHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -20,7 +20,7 @@ export default async function handler(
     song_uris === undefined ||
     Array.isArray(song_uris)
   ) {
-    res.status(405).end();
+    res.status(400).end();
   } else {
     const urisAsArray = song_uris.split(",");
 

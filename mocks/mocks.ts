@@ -598,3 +598,11 @@ export const mockPlaylistsResponse2 = {
   type: "string",
   uri: "string",
 };
+
+export const mockPlaylistsTracksResponse = {
+  snapshot_id: "abc",
+};
+
+export const mockPlaylistsTracksResponse2 = {
+  snapshot_id: "abc2",
+};

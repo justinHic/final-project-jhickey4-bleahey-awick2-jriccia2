@@ -42,7 +42,6 @@ export default async function playlistBuilderHandler(
     .then(async (response) => {
       if (response.ok) {
         response.json().then((json) => {
-          console.log(json.id);
           res.status(200).json({ playlist_id: json.id });
         });
       } else {
