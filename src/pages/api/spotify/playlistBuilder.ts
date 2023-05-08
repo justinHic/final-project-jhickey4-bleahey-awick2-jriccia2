@@ -1,3 +1,4 @@
+import { Console } from "console";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 // export async function testButton() {
@@ -31,9 +32,11 @@ export default async function handler(
   }
 
   const requestOptions = {
-    method: "PUT",
+    method: "POST",
+    contentType: "application/json",
     headers: {
       Authorization: "Bearer " + access_token,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       name: playlist_name,
@@ -50,6 +53,9 @@ export default async function handler(
         res.status(200).json({ playlist_id: json.id });
       });
     } else {
+      response.json().then((json) => {
+        console.log(json);
+      });
       res.status(405).end();
     }
   });

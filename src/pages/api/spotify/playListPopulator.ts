@@ -23,7 +23,7 @@ export default async function handler(
   }
 
   const requestOptions = {
-    method: "PUT",
+    method: "POST",
     Headers: {
       Authorization: "Bearer " + access_token,
     },
