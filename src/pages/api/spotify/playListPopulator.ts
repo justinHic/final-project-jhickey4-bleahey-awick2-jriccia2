@@ -20,6 +20,7 @@ export default async function handler(
     song_uris === undefined ||
     Array.isArray(song_uris)
   ) {
+    console.log(access_token, playlist_id, song_uris);
     res.status(405).end();
   } else {
     const urisAsArray = song_uris.split(",");
@@ -42,6 +43,7 @@ export default async function handler(
           });
         } else {
           response.json().then((json) => {
+            console.log(json);
             res.status(405).end();
           });
         }
