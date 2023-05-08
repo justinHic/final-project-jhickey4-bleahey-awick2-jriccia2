@@ -48,15 +48,12 @@ export default async function songHandler(
         }
       }
     }
-    console.log("energy: " + energy);
     let x = "seed_genres=";
     copiedGenres.forEach((val) => (x += val + "%2C"));
     x = x.substring(0, x.length - 3);
     x += "&target_tempo=" + bpm;
     x += "&limit=" + numsongs;
     x += "&target_energy=" + energy;
-
-    console.log("x: " + x);
     const result = await fetch(
       //"https://api.spotify.com/v1/recommendations?seed_genres=club%2Cpop&target_tempo=120&target_liveness=1&target_energy=1",
       "https://api.spotify.com/v1/recommendations?" + x,
@@ -73,7 +70,6 @@ export default async function songHandler(
           let uris: string[] = [];
           json.tracks.forEach((element) => {
             uris.push(element.uri);
-            console.log("Track pushed");
           });
           res.status(200).json({ uris: uris, result: "success!" });
         } else {
