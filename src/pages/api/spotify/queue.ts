@@ -33,11 +33,13 @@ export default async function queueHandler(
         console.log("thi");
         tries -= 1;
         return fetchResult();
-      } else if (result.status !== 202) {
+      } else if (result.status !== 200) {
         console.log(result.status);
         console.log(result.statusText);
         return result.json();
       } else {
+        console.log(result.status)
+        console.log(result.statusText)
         return JSON.stringify({ result: "success" });
       }
     };
