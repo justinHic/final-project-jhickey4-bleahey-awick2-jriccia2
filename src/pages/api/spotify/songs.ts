@@ -3,9 +3,17 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { CADENCE_WEIGHT, HR_WEIGHT } from "@/resources/metrics";
 import { Console } from "console";
 
+/**
+ * A list of tracks
+ */
 interface Tracks {
   tracks: track[];
 }
+
+/**
+ * A track
+ * @propertyuri - the uri of the track
+ */
 interface track {
   uri: string;
 }

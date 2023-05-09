@@ -1,15 +1,38 @@
 import SelectOption, {
   createSelectOptionsFromStringArray,
 } from "@/types/SelectOption";
-import { Dispatch, SetStateAction } from "react";
 import Select, { SingleValue } from "react-select";
 
+/**
+ * The props of the HeartRateSelect component.
+ * @property {string[]} HRZones The heart rate zones to display in the Select element.
+ * @property {(HRZone: string | undefined) => void} setHR The function to call when the heart rate zone is changed.
+ */
 interface HeartRateSelectProps {
+  /**
+   * The heart rate zones to display in the Select element.
+   */
   HRZones: string[];
-  setHR: Dispatch<SetStateAction<string | undefined>>;
+
+  /**
+   * The function to call when the heart rate zone is changed.
+   * @param {string | undefined} HRZone The new heart rate zone.
+   * @returns {void}
+   */
+  setHR: (HRZone: string | undefined) => void;
 }
 
-export default function HeartRateSelect(props: HeartRateSelectProps) {
+/**
+ * Component for selecting heart rate zones.
+ * @param {HeartRateSelectProps} props The props for the HeartRateSelect.
+ * @returns {JSX.Element} A HeartRateSelect component.
+ */
+export default function HeartRateSelect(
+  props: HeartRateSelectProps
+): JSX.Element {
+  /**
+   * The options to display in the Select element.
+   */
   const heartRateOptions: SelectOption[] = createSelectOptionsFromStringArray(
     props.HRZones
   );
@@ -30,7 +53,7 @@ export default function HeartRateSelect(props: HeartRateSelectProps) {
         control: (baseStyles) => ({
           ...baseStyles,
           backgroundColor: "#3a3a3a",
-          width: "35ch",
+          width: "30ch",
         }),
         singleValue: (baseStyles) => ({
           ...baseStyles,

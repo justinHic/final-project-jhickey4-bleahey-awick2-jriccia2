@@ -3,26 +3,47 @@ import { Metronome } from "@/scripts/metronome";
 /**
  * The props for the MetronomeController component.
  *
- * @param tempo The tempo of the metronome.
- * @param metronome The metronome object.
- * @param setTempo The function to set the tempo.
- * @param max The maximum tempo.
- * @param min The minimum tempo.
+ * @property {number} tempo The tempo of the metronome.
+ * @property {Metronome} metronome The metronome object.
+ * @property {(tempo: number) => void} setTempo The function to set the tempo of the metronome.
+ * @property {number} max The maximum tempo of the metronome.
+ * @property {number} min The minimum tempo of the metronome.
  */
 interface MetronomeProps {
+  /**
+   * The tempo of the metronome.
+   */
   tempo: number;
+
+  /**
+   * The metronome object.
+   */
   metronome: Metronome;
+
+  /**
+   * The function to set the tempo of the metronome.
+   * @param {number} tempo The tempo to set the metronome to.
+   * @returns {void}
+   */
   setTempo: (tempo: number) => void;
+
+  /**
+   * The maximum tempo of the metronome.
+   */
   max: number;
+
+  /**
+   * The minimum tempo of the metronome.
+   */
   min: number;
 }
 
 /**
- * Provides a controller for the metronome.
- * @param props The props for the MetronomeController component.
- * @returns The MetronomeController component.
+ * A component that allows the user to control the metronome.
+ * @param {Metronome} props The props for the MetronomeController.
+ * @returns {JSX.Element} A MetronomeController component.
  */
-export function MetronomeController(props: MetronomeProps) {
+export function MetronomeController(props: MetronomeProps): JSX.Element {
   return (
     <div className="metronome" aria-label="metronome" aria-description="">
       <button

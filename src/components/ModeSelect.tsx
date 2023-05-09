@@ -5,24 +5,43 @@ import { Metronome } from "@/scripts/metronome";
 /**
  * The props for the ModeSelect component.
  * @interface
- * @prop {(watchMode: SetStateAction<Mode>) => void } setMode - Sets the mode.
- * @prop {Metronome} metronome - The metronome object.
- * @prop {boolean} metronomePlaying - Whether the metronome is playing.
- * @prop {(metronomeIsPlaying: SetStateAction<boolean>) => void} setMetronomePlaying - Sets whether the metronome is playing.
+ * @prop {(watchMode: Mode) => void } setMode Sets the mode.
+ * @prop {Metronome} metronome The metronome object.
+ * @prop {boolean} metronomePlaying Whether the metronome is playing.
+ * @prop {(metronomeIsPlaying: boolean) => void} setMetronomePlaying Sets whether the metronome is playing.
  */
 interface ModeSelectProps {
-  setMode: (watchMode: SetStateAction<Mode>) => void;
+  /**
+   * Sets the mode.
+   * @param {Mode} watchMode The mode to set.
+   * @returns {void}
+   */
+  setMode: (watchMode: Mode) => void;
+
+  /**
+   * The metronome object.
+   */
   metronome: Metronome;
+
+  /**
+   * Whether the metronome is playing.
+   */
   metronomePlaying: boolean;
+
+  /**
+   * Sets whether the metronome is playing.
+   * @param {boolean} metronomeIsPlaying Whether the metronome is playing.
+   * @returns {void}
+   */
   setMetronomePlaying: (metronomeIsPlaying: SetStateAction<boolean>) => void;
 }
 
 /**
- * Creates a component for selecting the mode.
- * @param props - The props for the component.
- * @returns The mode select component.
+ * A component that allows the user to select the mode.
+ * @param props The props for the ModeSelect.
+ * @returns {JSX.Element} A ModeSelect component.
  */
-export default function ModeSelect(props: ModeSelectProps): React.ReactElement {
+export default function ModeSelect(props: ModeSelectProps): JSX.Element {
   return (
     <select
       name="mode"

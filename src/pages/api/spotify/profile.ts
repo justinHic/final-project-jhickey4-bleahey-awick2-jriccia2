@@ -26,12 +26,15 @@ export default async function profileHandler(
         Authorization: `Bearer ${access_token}`,
       },
     });
-    await response.json()
+    await response
+      .json()
       .then((json) => {
         const displayName = json.display_name;
         const id = json.id;
         res.status(200).json({ username: displayName, id: id });
-      }
-    );
+      })
+      .catch((err) => {
+        res.status(500).end(err.message);
+      });
   }
 }

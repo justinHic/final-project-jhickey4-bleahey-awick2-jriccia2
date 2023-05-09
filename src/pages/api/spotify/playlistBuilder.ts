@@ -37,16 +37,24 @@ export default async function playlistBuilderHandler(
       .then(async (response) => {
         if (response.ok) {
           await response.json().then((json) => {
-            res.status(200).json({ playlist_id: json.id });
+            res
+              .status(200)
+              .json({
+                playlist_id: json.id,
+                playlist_url: json.external_urls.spotify,
+              });
           });
         } else {
           await response.json().then((json) => {
             console.log(json.error.message);
-            res.status(405).end();
+            res.status(json.error.status).end(json.error.message);
           });
         }
       })
-      .catch((error) => console.log("error", error));
+      .catch((error) => {
+        console.log("error", error);
+        res.status(500).end();
+      });
   } else {
     res.status(400).end();
   }

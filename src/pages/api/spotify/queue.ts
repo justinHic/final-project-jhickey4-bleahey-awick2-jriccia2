@@ -45,7 +45,7 @@ export default async function queueHandler(
         res.status(200).json({ result: info });
       })
       .catch((err: any) => {
-        console.log(err.status)
+        console.log(err.status);
         res.status(err.status).end(err.statusText);
       });
   } else {

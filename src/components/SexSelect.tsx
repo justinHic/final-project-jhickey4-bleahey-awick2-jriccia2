@@ -5,21 +5,39 @@ import SelectOption, {
 } from "../types/SelectOption";
 import { Sex, parseSex } from "@/types/Sex";
 
+/**
+ * The props for the SexSelect component.
+ * @property {Sex | undefined} sex The sex that is currently selected.
+ * @property {(sex: Sex | undefined) => void;} setSex The function to set the currently selected sex.
+ */
 interface SexSelectProps {
+  /**
+   * Sex that is currently selected.
+   */
   sex: Sex | undefined;
-  setSex: Dispatch<SetStateAction<Sex | undefined>>;
+
+  /**
+   * The function to set the currently selected sex.
+   * @param {Sex | undefined} sex
+   * @returns {void}
+   */
+  setSex: (sex: Sex | undefined) => void;
 }
 
-export default function SexSelect(props: SexSelectProps) {
+/**
+ * A component that allows the user to select their sex.
+ * @param {SexSelectProps} props The props for the SexSelect component.
+ * @returns {JSX.Element} A SexSelect component.
+ */
+export default function SexSelect(props: SexSelectProps): JSX.Element {
+  /**
+   * The options for sex.
+   */
   const sexOptions: SelectOption[] = createSelectOptionsFromStringArray([
     "Male",
     "Female",
-    /*"other -- future implementation that would require algorithm change",*/
+    /*"intersex/other -- future implementation that would require algorithm change",*/
   ]);
-
-  const selectedOption: SelectOption | undefined = sexOptions.find(
-    (option) => option.value === props.sex
-  );
 
   function handleSexChange(newValue: SingleValue<SelectOption>): void {
     if (newValue) {
@@ -41,7 +59,7 @@ export default function SexSelect(props: SexSelectProps) {
           ...baseStyles,
           color: "white",
           backgroundColor: "#3a3a3a",
-          width: "35ch",
+          minWidth: "30ch",
         }),
         singleValue: (baseStyles) => ({
           ...baseStyles,
