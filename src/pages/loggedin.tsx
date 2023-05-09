@@ -11,6 +11,12 @@ import {
   ACCESS_TOKEN_NAME,
   REFRESH_TOKEN_NAME,
   EXPIRATION_STRING,
+  LOGGED_IN_NO_USERNAME,
+  LOGGED_IN_USERNAME,
+  SAVE_AS_PLAYLIST_TEXT,
+  FIND_SONGS_TEXT,
+  SESSION_EXPIRED_TEXT,
+  RATE_LIMIT_TEXT,
 } from "@/resources/strings";
 import { HR_ZONES } from "@/resources/metrics";
 import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
@@ -181,7 +187,7 @@ export default function LoggedIn(): JSX.Element {
             .then((res) => {
               console.log("Fetched songs returned status " + res.status);
               if (res.status === 201) {
-                alert("Session expired. Please refresh page");
+                alert(SESSION_EXPIRED_TEXT);
               } else {
                 return res.json();
               }
@@ -228,7 +234,8 @@ export default function LoggedIn(): JSX.Element {
   }
 
   /**
-   * Helper function to retrieve the user's information from the Spotify API.
+   * Helper function to retrieve the user's information from the Spotify API
+   * using the profile endpoint.
    * @returns {Promise<void>}
    */
   async function retrieveUserInfo(): Promise<void> {
@@ -292,7 +299,7 @@ export default function LoggedIn(): JSX.Element {
     ).then(async (res) => {
       console.log("Playlist created with status " + res.status);
       if (res.status === 201) {
-        alert("Session expired. Please refresh page");
+        alert(SESSION_EXPIRED_TEXT);
       } else if (res.status === 200) {
         await res.json().then(async (json) => {
           let playlist_id = json.playlist_id;
@@ -307,11 +314,9 @@ export default function LoggedIn(): JSX.Element {
           ).then(async (res) => {
             console.log("Playlist populated with status " + res.status);
             if (res.status === 401) {
-              alert("Session expired. Please refresh page");
+              alert(SESSION_EXPIRED_TEXT);
             } else if (res.status === 429) {
-              alert(
-                "App has exceeded rate limit. Please contact the developer."
-              );
+              alert(RATE_LIMIT_TEXT);
             } else if (res.status === 200) {
               //TODO - Provide a link to the playlist in the UI
             } else {
@@ -345,8 +350,8 @@ export default function LoggedIn(): JSX.Element {
             <div className="login-container">
               <p className="user-info">
                 {profile.username === ""
-                  ? "Logged in"
-                  : "Logged in as " + profile.username}
+                  ? LOGGED_IN_NO_USERNAME
+                  : LOGGED_IN_USERNAME + profile.username}
               </p>
               <SpotifyButton
                 action={SpotifyButtonAction.Logout}
@@ -417,7 +422,7 @@ export default function LoggedIn(): JSX.Element {
                 onClick={handleFindSongs}
                 disabled={checkFindSongsButtonDisabled()}
               >
-                FIND SONGS
+                {FIND_SONGS_TEXT}
               </button>
             </div>
             {playerShow ? (
@@ -434,7 +439,7 @@ export default function LoggedIn(): JSX.Element {
                 className="search-button hvr-grow"
                 onClick={() => generatePlaylist(songs)}
               >
-                Generate Playlist
+                {SAVE_AS_PLAYLIST_TEXT}
               </button>
             ) : (
               <></>
