@@ -1,5 +1,5 @@
 import { CADENCE_LABEL_TEXT } from "@/resources/strings";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 /**
  * The props of the CadenceInput component.
@@ -26,6 +26,18 @@ export interface CadenceInputProps {
  * @returns {JSX.Element} A CadenceInput component.
  */
 export default function CadenceInput(props: CadenceInputProps): JSX.Element {
+  const [cadenceInputIsFocused, setCadenceInputIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (!cadenceInputIsFocused) {
+      if (props.cadence < 50 || isNaN(props.cadence)) {
+        props.setCadence(50);
+      } else if (props.cadence > 250) {
+        props.setCadence(250);
+      }
+    }
+  }, [cadenceInputIsFocused]);
+
   return (
     <div className="number-input-container">
       <label className="number-input-label">{CADENCE_LABEL_TEXT}</label>
@@ -37,6 +49,8 @@ export default function CadenceInput(props: CadenceInputProps): JSX.Element {
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
           props.setCadence(parseInt(event.target.value))
         }
+        onFocus={() => setCadenceInputIsFocused(true)}
+        onBlur={() => setCadenceInputIsFocused(false)}
       />
     </div>
   );
