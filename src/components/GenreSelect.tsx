@@ -35,15 +35,6 @@ interface GenreSelectProps {
 }
 
 /**
- * The default genres to display when the user has not searched for anything.
- */
-export const defaultGenres: string[] = [
-  "classic peruvian pop",
-  "albuquerque indie",
-  "scam rap",
-];
-
-/**
  * Component for selecting genres.
  * @param {GenreSelectProps} props Props for the GenreSelect.
  * @returns {JSX.Element} A GenreSelect component.

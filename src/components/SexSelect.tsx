@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import Select, { SingleValue } from "react-select";
 import SelectOption, {
   createSelectOptionsFromStringArray,
@@ -39,6 +38,10 @@ export default function SexSelect(props: SexSelectProps): JSX.Element {
     /*"intersex/other -- future implementation that would require algorithm change",*/
   ]);
 
+  /**
+   * Handles the change of sex.
+   * @param {SingleValue<SelectOption>} newValue The new sex value.
+   */
   function handleSexChange(newValue: SingleValue<SelectOption>): void {
     if (newValue) {
       props.setSex(parseSex(newValue.value));

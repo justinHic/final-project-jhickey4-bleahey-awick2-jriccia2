@@ -1,35 +1,41 @@
 import React, { useState, useEffect } from "react";
-const track = {
-  name: "",
-  album: {
-    images: [{ url: "" }],
-  },
-  artists: [{ name: "" }],
-};
+import { Track, emptyTrack } from "../types/WebPlayerDataTypes";
 
-interface PlayerProps {
-  access_token: string;
-  songs: string[];
+/**
+ * The props for the WebPlayer component.
+ * @property {string} access_token The access token for the Spotify API.
+ * @property {string[]} song_uris The URIs of the songs to play.
+ * @property {(loaded: boolean) => void} setWebPlayerLoaded A function to set the web player loaded state.
+ */
+interface WebPlayerProps {
+  accessToken: string;
+  songURIs: string[];
+  setWebPlayerLoaded: (loaded: boolean) => void;
 }
 
-export default function Webplayer(props: PlayerProps) {
-  const [is_paused, setPaused] = useState(false);
-  const [is_active, setActive] = useState(false);
-  const [player, setPlayer] = useState<any>(undefined);
-  const [current_track, setTrack] = useState(track);
+/**
+ * A component that allows the user to play music from Spotify.
+ * @param {WebPlayerProps} props The props for the WebPlayer.
+ * @returns {JSX.Element} A WebPlayer component.
+ */
+export default function WebPlayer(props: WebPlayerProps): JSX.Element {
+  const [is_paused, setPaused] = useState<boolean>(false);
+  const [is_active, setActive] = useState<boolean>(false);
+  const [player, setPlayer] = useState<Spotify.Player | undefined>(undefined);
+  const [current_track, setTrack] = useState<Track>(emptyTrack);
   const [device_id, setDeviceId] = useState<string>();
 
   useEffect(() => {
-    const script = document.createElement("script");
+    const script: HTMLScriptElement = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
-      const player = new window.Spotify.Player({
+      const player: Spotify.Player = new window.Spotify.Player({
         name: "Web Playback SDK",
         getOAuthToken: (cb: any) => {
-          cb(props.access_token);
+          cb(props.accessToken);
         },
         volume: 0.5,
       });
@@ -46,9 +52,9 @@ export default function Webplayer(props: PlayerProps) {
         ).then(() => {
           fetch(
             "/api/spotify/queue?access_token=" +
-              props.access_token +
+              props.accessToken +
               "&song_uris=" +
-              JSON.stringify(props.songs) +
+              JSON.stringify(props.songURIs) +
               "&device_id=" +
               device_id
           );
@@ -78,8 +84,14 @@ export default function Webplayer(props: PlayerProps) {
 
         setTrack(state.track_window.current_track);
         setPaused(state.paused);
-        player.getCurrentState().then((state) => {
-          !state ? setActive(false) : setActive(true);
+        player.getCurrentState().then((state: Spotify.PlaybackState | null) => {
+          if (!state) {
+            setActive(false);
+            props.setWebPlayerLoaded(false);
+          } else {
+            setActive(true);
+            props.setWebPlayerLoaded(true);
+          }
         });
       });
 
@@ -88,8 +100,8 @@ export default function Webplayer(props: PlayerProps) {
   }, []);
 
   useEffect(() => {
-    if (device_id !== undefined) {
-      setTrack(track);
+    if (device_id !== undefined && player !== undefined) {
+      setTrack(emptyTrack);
       fetch(
         "/api/spotify/transfer?access_token=" +
           localStorage.getItem("access_token") +
@@ -98,15 +110,15 @@ export default function Webplayer(props: PlayerProps) {
       ).then(() => {
         fetch(
           "/api/spotify/queue?access_token=" +
-            props.access_token +
+            props.accessToken +
             "&song_uris=" +
-            JSON.stringify(props.songs) +
+            JSON.stringify(props.songURIs) +
             "&device_id=" +
             device_id
         ).then(() => player.seek(0));
       });
     }
-  }, [props.songs]);
+  }, [props.songURIs]);
 
   if (!is_active) {
     return (
@@ -138,7 +150,7 @@ export default function Webplayer(props: PlayerProps) {
                 <button
                   className="btn-spotify"
                   onClick={() => {
-                    player.previousTrack();
+                    if (player !== undefined) player.previousTrack();
                   }}
                 >
                   &lt;&lt;
@@ -147,7 +159,7 @@ export default function Webplayer(props: PlayerProps) {
                 <button
                   className="btn-spotify"
                   onClick={() => {
-                    player.togglePlay();
+                    if (player !== undefined) player.togglePlay();
                   }}
                 >
                   {is_paused ? "PLAY" : "PAUSE"}
@@ -156,7 +168,7 @@ export default function Webplayer(props: PlayerProps) {
                 <button
                   className="btn-spotify"
                   onClick={() => {
-                    player.nextTrack();
+                    if (player !== undefined) player.nextTrack();
                   }}
                 >
                   &gt;&gt;

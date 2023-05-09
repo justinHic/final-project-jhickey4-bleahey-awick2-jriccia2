@@ -1,9 +1,9 @@
 import Head from "next/head";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import { NextRouter, useRouter } from "next/router";
 import { MetronomeController } from "@/components/MetronomeController";
-import Webplayer from "@/components/Webplayer";
+import WebPlayer from "@/components/WebPlayer";
 import { genres } from "@/resources/genres";
 import {
   HEAD_TITLE,
@@ -14,7 +14,7 @@ import {
 } from "@/resources/strings";
 import { HR_ZONES } from "@/resources/metrics";
 import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
-import GenreSelect, { defaultGenres } from "@/components/GenreSelect";
+import GenreSelect from "@/components/GenreSelect";
 import { Mode } from "../types/Mode";
 import ModeSelect from "@/components/ModeSelect";
 import MetronomeSwitch from "@/components/MetronomeSwitch";
@@ -27,20 +27,24 @@ import HeightInput from "@/components/HeightInput";
 import EnergyInput from "@/components/EnergyInput";
 import CadenceInput from "@/components/CadenceInput";
 
+/**
+ * The response from the songs API request.
+ * @property {string[]} uris The URIs of the songs.
+ */
 interface SongsResponse {
   uris: string[];
 }
 
 /**
  * The page that is displayed when the user is logged in.
- * @returns The page that is displayed when the user is logged in.
+ * @returns {JSX.Element} The page that is displayed when the user is logged in.
  */
-export default function LoggedIn() {
+export default function LoggedIn(): JSX.Element {
   // State variables - these are used to store data that is used by the page
   const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>(defaultGenres);
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [numSongs, setNumSongs] = useState<number>(0);
   const [ready, setReady] = useState(false);
   const [playerShow, setPlayerShow] = useState(false);
@@ -56,6 +60,7 @@ export default function LoggedIn() {
     id: "",
   });
   const [energy, setEnergy] = useState<number>(0.5);
+  const [webPlayerLoaded, setWebPlayerLoaded] = useState<boolean>(false);
 
   //used to navigate between pages
   const router: NextRouter = useRouter();
@@ -218,8 +223,9 @@ export default function LoggedIn() {
 
   /**
    * Helper function to retrieve the user's information from the Spotify API.
+   * @returns {Promise<void>}
    */
-  async function retrieveUserInfo() {
+  async function retrieveUserInfo(): Promise<void> {
     const url = "/api/spotify/profile?access_token=" + access_token;
     fetch(url)
       .then((res) => res.json())
@@ -235,7 +241,11 @@ export default function LoggedIn() {
       });
   }
 
-  function checkDisabled(): boolean {
+  /**
+   * Checks if the find songs button should be disabled.
+   * @returns {boolean} True if the button should be disabled, false otherwise.
+   */
+  function checkFindSongsButtonDisabled(): boolean {
     if (mode === Mode.Standard) {
       return (
         selectedGenres.length === 0 ||
@@ -251,6 +261,11 @@ export default function LoggedIn() {
     }
   }
 
+  /**
+   * Generates a playlist on the user's Spotify account.
+   * @param {string[]} songs A list of the URIs of the songs to add to the playlist.
+   * @returns {Promise<void>}
+   */
   async function generatePlaylist(songs: string[]): Promise<void> {
     //TODO: Provide a link to the playlist in the UI
     let genres: string = "";
@@ -394,22 +409,26 @@ export default function LoggedIn() {
               <button
                 className="search-button hvr-grow"
                 onClick={handleFindSongs}
-                disabled={checkDisabled()}
+                disabled={checkFindSongsButtonDisabled()}
               >
                 FIND SONGS
               </button>
             </div>
             {playerShow ? (
-              <Webplayer songs={songs} access_token={access_token}></Webplayer>
+              <WebPlayer
+                songURIs={songs}
+                accessToken={access_token}
+                setWebPlayerLoaded={setWebPlayerLoaded}
+              ></WebPlayer>
             ) : (
               <></>
             )}
-            {playerShow ? (
+            {webPlayerLoaded ? (
               <button
                 className="search-button hvr-grow"
                 onClick={() => generatePlaylist(songs)}
               >
-                GeneratePlaylist
+                Generate Playlist
               </button>
             ) : (
               <></>
