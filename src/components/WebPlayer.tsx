@@ -131,7 +131,7 @@ export default function WebPlayer(props: WebPlayerProps): JSX.Element {
       <>
         <div className="container">
           <div className="main-wrapper">
-            <b id="webplayerloading">{WEBPLAYER_LOADING_TEXT}</b>
+            <p id="webplayerloading">{WEBPLAYER_LOADING_TEXT}</p>
           </div>
         </div>
       </>

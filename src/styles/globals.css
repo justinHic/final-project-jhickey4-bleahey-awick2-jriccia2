@@ -56,6 +56,10 @@
   font-display: swap;
 }
 
+:root {
+  --spotify-green: #1db954;
+}
+
 *,
 *::before,
 *::after {
@@ -95,12 +99,18 @@ a {
 }
 
 .container {
-  margin: 5% auto 0;
+  margin: 5% auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 3rem;
+}
+
+.container p,
+.container label,
+.container a {
+  color: white;
 }
 
 .header {
@@ -118,7 +128,7 @@ a {
 .spotify-button {
   border: none;
   border-radius: 10px;
-  background-color: #1db954;
+  background-color: var(--spotify-green);
   color: #ffffff;
   width: 15rem;
   font-size: 1rem;
@@ -400,7 +410,7 @@ a {
   background-color: #dd6522;
   color: #ffffff;
   width: 300px;
-  padding: 20px;
+  padding: 1.25rem 0.75rem;
   font-size: 25px;
 }
 .search-button:hover:enabled {
@@ -415,6 +425,18 @@ a {
 
 .search-button:disabled {
   background-color: gray;
+}
+
+.search-button.playlist-url {
+  font-size: 1.25rem;
+  text-align: center;
+  background-color: var(--spotify-green);
+}
+
+.external-link-icon {
+  margin-left: 5px;
+  width: 1rem;
+  display: inline-block;
 }
 
 .switch {
@@ -475,10 +497,6 @@ input:checked + .slider:before {
   height: 0;
 }
 
-.container {
-  display: flex;
-  justify-content: center;
-}
 .main-wrapper {
   display: flex;
   flex-direction: column;
@@ -506,9 +524,9 @@ input:checked + .slider:before {
 }
 .btn-spotify {
   display: block;
-  color: #1db954;
+  color: var(--spotify-green);
   border-style: solid;
-  border-color: #1db954;
+  border-color: var(--spotify-green);
   border-radius: 10px;
   font-size: large;
   background-color: #222222;
@@ -549,10 +567,6 @@ input:checked + .slider:before {
   gap: 0.5rem;
 }
 
-.number-input-label {
-  color: white;
-}
-
-#webplayerloading {
-  color: white;
+.webplayerloading {
+  font-weight: bold;
 }
