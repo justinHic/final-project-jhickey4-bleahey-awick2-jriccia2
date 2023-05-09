@@ -16,9 +16,12 @@ export default async function profileHandler(
   res: NextApiResponse
 ) {
   const { access_token } = req.query;
-
   //TODO: error check response
-  if (access_token === undefined || Array.isArray(access_token)) {
+  if (
+    access_token === undefined ||
+    access_token === "undefined" ||
+    Array.isArray(access_token)
+  ) {
     res.status(400).end();
   } else {
     const response = await fetch("https://api.spotify.com/v1/me", {
@@ -26,6 +29,9 @@ export default async function profileHandler(
         Authorization: `Bearer ${access_token}`,
       },
     });
+    if (response.status === 401 || response.status === 403) {
+      res.status(401).end();
+    }
     await response
       .json()
       .then((json) => {
@@ -34,6 +40,7 @@ export default async function profileHandler(
         res.status(200).json({ username: displayName, id: id });
       })
       .catch((err) => {
+        console.error(err);
         res.status(500).end(err.message);
       });
   }
