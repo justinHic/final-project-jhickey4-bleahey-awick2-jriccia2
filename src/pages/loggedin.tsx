@@ -17,6 +17,7 @@ import {
   FIND_SONGS_TEXT,
   SESSION_EXPIRED_TEXT,
   RATE_LIMIT_TEXT,
+  OPEN_IN_SPOTIFY_TEXT,
 } from "@/resources/strings";
 import { HR_ZONES } from "@/resources/metrics";
 import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
@@ -32,6 +33,8 @@ import HeartRateSelect from "@/components/HeartRateSelect";
 import HeightInput from "@/components/HeightInput";
 import EnergyInput from "@/components/EnergyInput";
 import CadenceInput from "@/components/CadenceInput";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 /**
  * The page that is displayed when the user is logged in.
@@ -59,6 +62,7 @@ export default function LoggedIn(): JSX.Element {
   });
   const [energy, setEnergy] = useState<number>(0.5);
   const [webPlayerLoaded, setWebPlayerLoaded] = useState<boolean>(false);
+  const [generatedPlaylistURL, setGeneratedPlaylistURL] = useState<string>("");
 
   //used to navigate between pages
   const router: NextRouter = useRouter();
@@ -165,6 +169,7 @@ export default function LoggedIn(): JSX.Element {
           inches !== undefined &&
           feet !== undefined
         ) {
+          setGeneratedPlaylistURL("");
           let gen: string = sex === Sex.Male ? "true" : "false";
           let totalInches = 12 * feet + inches;
 
@@ -202,6 +207,7 @@ export default function LoggedIn(): JSX.Element {
         break;
       case Mode.Watch:
         if (selectedGenres.length > 0 && numSongs > 0 && energy !== undefined) {
+          setGeneratedPlaylistURL("");
           const url =
             "/api/spotify/songs?bpm=" +
             tempo +
@@ -318,7 +324,8 @@ export default function LoggedIn(): JSX.Element {
             } else if (res.status === 429) {
               alert(RATE_LIMIT_TEXT);
             } else if (res.status === 200) {
-              //TODO - Provide a link to the playlist in the UI
+              console.log("Playlist URL: " + playlist_url);
+              setGeneratedPlaylistURL(playlist_url);
             } else {
               await res.json().then((json) => {
                 console.log(json.message);
@@ -435,12 +442,28 @@ export default function LoggedIn(): JSX.Element {
               <></>
             )}
             {webPlayerLoaded ? (
-              <button
-                className="search-button hvr-grow"
-                onClick={() => generatePlaylist(songs)}
-              >
-                {SAVE_AS_PLAYLIST_TEXT}
-              </button>
+              generatedPlaylistURL !== "" ? (
+                <a
+                  className="search-button playlist-url hvr-grow"
+                  href={generatedPlaylistURL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {OPEN_IN_SPOTIFY_TEXT}
+                  <FontAwesomeIcon
+                    icon={faExternalLinkAlt}
+                    className="external-link-icon"
+                    aria-hidden="true"
+                  />
+                </a>
+              ) : (
+                <button
+                  className="search-button hvr-grow"
+                  onClick={() => generatePlaylist(songs)}
+                >
+                  {SAVE_AS_PLAYLIST_TEXT}
+                </button>
+              )
             ) : (
               <></>
             )}
