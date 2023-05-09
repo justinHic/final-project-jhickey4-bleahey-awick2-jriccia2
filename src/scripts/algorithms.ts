@@ -20,14 +20,6 @@ export function hrToEnergy(hr: number): number {
   return res;
 }
 
-export function getValidTempos(tempo: number) {
-  let res: Array<number> = [];
-  res.push(tempo);
-  res.push(Math.round(tempo / 2));
-  res.push(Math.round(tempo * (2 / 3)));
-  return res;
-}
-
 export function cadenceToEnergy(
   cadence: number,
   height: number,
