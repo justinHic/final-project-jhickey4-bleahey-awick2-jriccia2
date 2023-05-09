@@ -18,9 +18,9 @@ describe("Home", () => {
   });
 
   test("renders app title and description", async () => {
-    expect(screen.getByText(/CaDance/i)).toBeInTheDocument();
+    expect(screen.getByText("CaDance")).toBeInTheDocument();
     expect(
-      screen.getByText(/Cadence-based running playlists/i)
+      screen.getByText("A fine tuned running and listening experience")
     ).toBeInTheDocument();
   });
 
