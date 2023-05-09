@@ -53,7 +53,7 @@ export default function HeartRateSelect(
         control: (baseStyles) => ({
           ...baseStyles,
           backgroundColor: "#3a3a3a",
-          width: "35ch",
+          width: "30ch",
         }),
         singleValue: (baseStyles) => ({
           ...baseStyles,

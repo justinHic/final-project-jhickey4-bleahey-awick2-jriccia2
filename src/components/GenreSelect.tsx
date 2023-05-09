@@ -96,7 +96,7 @@ export default function GenreSelect(props: GenreSelectProps): JSX.Element {
         control: (baseStyles) => ({
           ...baseStyles,
           backgroundColor: "#3a3a3a",
-          width: "35ch",
+          width: "30ch",
         }),
         input: (provided) => ({
           ...provided,
