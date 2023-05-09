@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 const client_id = "d4f1fb65364d48f38e76c1d7c26da3ae";
-const redirect_uri = "http://localhost:3000/loggedin"; // Your redirect uri
+const redirect_uri = "https://cadance-deployment.vercel.app/loggedin"; // Your redirect uri
 
 type data = {
   url: string;
