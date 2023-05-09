@@ -1,7 +1,7 @@
 import { createMocks } from "node-mocks-http";
 import fetchMock from "jest-fetch-mock";
 import { mockPlaylistsTracksResponse, mockPlaylistsTracksResponse2 } from "../../../mocks/mocks";
-import playlistPopulatorHandler from "@/pages/api/spotify/playListPopulator";
+import playlistPopulatorHandler from "@/pages/api/spotify/playlistPopulator";
 
 beforeAll(() => {
   fetchMock.enableMocks();
@@ -23,7 +23,7 @@ describe("/api/spotify/playlistPopulator", () => {
     });
     await playlistPopulatorHandler(req, res);
     expect(res.statusCode).toBe(200);
-    expect(res._getData()).toBe("")
+    expect(res._getData()).toBe('{"result":"success!"}');
   });
 
   test("bad query - no access_token", async () => {
@@ -80,7 +80,7 @@ describe("/api/spotify/playlistPopulator", () => {
     });
     await playlistPopulatorHandler(req1, res1);
     expect(res1.statusCode).toBe(200);
-    expect(res1._getData()).toBe("");
+    expect(res1._getData()).toBe('{"result":"success!"}');
 
     fetchMock.mockResponseOnce(JSON.stringify(mockPlaylistsTracksResponse2));
     const { req: req2, res: res2 } = createMocks({
@@ -92,6 +92,6 @@ describe("/api/spotify/playlistPopulator", () => {
     });
     await playlistPopulatorHandler(req2, res2);
     expect(res2.statusCode).toBe(200);
-    expect(res2._getData()).toBe("");
+    expect(res2._getData()).toBe('{"result":"success!"}');
   });
 });

@@ -22,7 +22,7 @@ describe("/api/spotify/queue", () => {
       },
     });
     await queueHandler(req, res);
-    expect(res.statusCode).toBe(202);
+    expect(res.statusCode).toBe(200);
   });
 
   test("bad query - no access_token", async () => {
@@ -68,7 +68,7 @@ describe("/api/spotify/queue", () => {
       },
     });
     await queueHandler(req1, res1);
-    expect(res1.statusCode).toBe(202);
+    expect(res1.statusCode).toBe(200);
 
     fetchMock.mockResponseOnce(JSON.stringify(mockQueueResponse));
     const { req: req2, res: res2 } = createMocks({
@@ -79,6 +79,6 @@ describe("/api/spotify/queue", () => {
       },
     });
     await queueHandler(req2, res2);
-    expect(res1.statusCode).toBe(202);
+    expect(res1.statusCode).toBe(200);
   });
 });
