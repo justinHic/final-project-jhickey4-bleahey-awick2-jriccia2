@@ -64,7 +64,7 @@ export default function LoggedIn(): JSX.Element {
   const [webPlayerLoaded, setWebPlayerLoaded] = useState<boolean>(false);
   const [generatedPlaylistURL, setGeneratedPlaylistURL] = useState<string>("");
 
-  //used to navigate between pages
+  //used to navigate between the pages
   const router: NextRouter = useRouter();
   // Get the code and state from the URL query parameters
   const { code, state, error } = router.query;
