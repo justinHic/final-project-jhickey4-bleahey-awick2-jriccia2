@@ -25,7 +25,7 @@ export default async function playlistPopulatorHandler(
   } else {
     const urisAsArray = song_uris.split(",");
 
-    fetch(`https://api.spotify.com/v1/playlists/${playlist_id}/tracks`, {
+    await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}/tracks`, {
       method: "POST",
       headers: {
         Authorization: "Bearer " + access_token,
@@ -38,11 +38,9 @@ export default async function playlistPopulatorHandler(
     })
       .then(async (response) => {
         if (response.ok) {
-          response.json().then((json) => {
-            res.status(200).json({ uris: json.external_urls.spotify });
-          });
+          res.status(200).json({ result: "success!" });
         } else {
-          response.json().then((json) => {
+          await response.json().then((json) => {
             console.log(json);
             res.status(json.error.status).end(json.error.message);
           });
