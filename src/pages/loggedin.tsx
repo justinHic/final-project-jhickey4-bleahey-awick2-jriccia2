@@ -28,14 +28,6 @@ import EnergyInput from "@/components/EnergyInput";
 import CadenceInput from "@/components/CadenceInput";
 
 /**
- * The response from the songs API request.
- * @property {string[]} uris The URIs of the songs.
- */
-interface SongsResponse {
-  uris: string[];
-}
-
-/**
  * The page that is displayed when the user is logged in.
  * @returns {JSX.Element} The page that is displayed when the user is logged in.
  */
@@ -69,10 +61,9 @@ export default function LoggedIn(): JSX.Element {
 
   /**
    * The access token data returned from the Spotify API.
-   * @interface
-   * @property {string} access_token - The access token.
-   * @property {number} expires_in - The number of seconds until the access token expires.
-   *  @property {string} refresh_token - The refresh token.
+   * @property {string} access_token The access token.
+   * @property {number} expires_in The number of seconds until the access token expires.
+   * @property {string} refresh_token The refresh token.
    */
   interface AccessTokenData {
     access_token: string;
@@ -146,80 +137,95 @@ export default function LoggedIn(): JSX.Element {
     }
   }, [access_token]);
 
-  const handleFindSongs = (): void => {
-    if (mode === Mode.Standard) {
-      if (
-        selectedGenres.length > 0 &&
-        numSongs > 0 &&
-        sex !== undefined &&
-        inches !== undefined &&
-        feet !== undefined
-      ) {
-        let gen: string = sex === Sex.Male ? "true" : "false";
-        let totalInches = 12 * feet + inches;
+  /**
+   * The response from the songs API request.
+   * @property {string[]} uris The URIs of the songs.
+   */
+  interface SongsResponse {
+    uris: string[];
+  }
 
-        const url =
-          "/api/spotify/songs?bpm=" +
-          tempo +
-          "&genres=" +
-          selectedGenres +
-          "&numsongs=" +
-          numSongs +
-          "&access_token=" +
-          localStorage.getItem("access_token") +
-          "&height=" +
-          totalInches +
-          "&male=" +
-          gen +
-          (HR !== undefined ? "&hr=" + HR : "");
-        console.log(url);
-        fetch(url)
-          .then((res) => {
-            console.log("Fetched songs returned status " + res.status);
-            if (res.status === 201) {
-              alert("Session expired. Please refresh page");
-            } else {
-              return res.json();
-            }
-          })
-          .then((json: SongsResponse) => {
-            setSongs(json.uris);
-            console.log(json.uris);
-            setPlayerShow(true);
-          })
-          .catch((err) => console.log(err));
-      }
-    } else if (mode === Mode.Watch) {
-      if (selectedGenres.length > 0 && numSongs > 0 && energy !== undefined) {
-        const url =
-          "/api/spotify/songs?bpm=" +
-          tempo +
-          "&genres=" +
-          selectedGenres +
-          "&numsongs=" +
-          numSongs +
-          "&access_token=" +
-          localStorage.getItem("access_token") +
-          "&energy=" +
-          energy +
-          (HR !== undefined ? "&hr=" + HR : "");
-        fetch(url)
-          .then((res) => {
-            console.log("Fetched songs returned status " + res.status);
-            if (res.status === 201) {
-              alert("Session expired. Please refresh page");
-            } else {
-              return res.json();
-            }
-          })
-          .then((json: SongsResponse) => {
-            setSongs(json.uris);
-            setPlayerShow(true);
-          })
-          .catch((err) => console.log(err));
-      }
+  /**
+   * Handles the click event for the "Find Songs" button by making a request to the songs API formatted based on the mode.
+   * @returns {void}
+   */
+  function handleFindSongs(): void {
+    switch (mode) {
+      case Mode.Standard:
+        if (
+          selectedGenres.length > 0 &&
+          numSongs > 0 &&
+          sex !== undefined &&
+          inches !== undefined &&
+          feet !== undefined
+        ) {
+          let gen: string = sex === Sex.Male ? "true" : "false";
+          let totalInches = 12 * feet + inches;
+
+          const url =
+            "/api/spotify/songs?bpm=" +
+            tempo +
+            "&genres=" +
+            selectedGenres +
+            "&numsongs=" +
+            numSongs +
+            "&access_token=" +
+            localStorage.getItem("access_token") +
+            "&height=" +
+            totalInches +
+            "&male=" +
+            gen +
+            (HR !== undefined ? "&hr=" + HR : "");
+          console.log(url);
+          fetch(url)
+            .then((res) => {
+              console.log("Fetched songs returned status " + res.status);
+              if (res.status === 201) {
+                alert("Session expired. Please refresh page");
+              } else {
+                return res.json();
+              }
+            })
+            .then((json: SongsResponse) => {
+              setSongs(json.uris);
+              console.log(json.uris);
+              setPlayerShow(true);
+            })
+            .catch((err) => console.log(err));
+        }
+        break;
+      case Mode.Watch:
+        if (selectedGenres.length > 0 && numSongs > 0 && energy !== undefined) {
+          const url =
+            "/api/spotify/songs?bpm=" +
+            tempo +
+            "&genres=" +
+            selectedGenres +
+            "&numsongs=" +
+            numSongs +
+            "&access_token=" +
+            localStorage.getItem("access_token") +
+            "&energy=" +
+            energy +
+            (HR !== undefined ? "&hr=" + HR : "");
+          fetch(url)
+            .then((res) => {
+              console.log("Fetched songs returned status " + res.status);
+              if (res.status === 201) {
+                alert("Session expired. Please refresh page");
+              } else {
+                return res.json();
+              }
+            })
+            .then((json: SongsResponse) => {
+              setSongs(json.uris);
+              setPlayerShow(true);
+            })
+            .catch((err) => console.log(err));
+        }
+        break;
     }
-  };
+  }
 
   /**
    * Helper function to retrieve the user's information from the Spotify API.
