@@ -664,3 +664,7 @@ export const mockProfileResponse2 = {
   type: "string",
   uri: "string",
 };
+
+export const mockQueueResponse = {
+  status: 202,
+}

@@ -1,6 +1,7 @@
 import { createMocks } from "node-mocks-http";
 import queueHandler from "@/pages/api/spotify/queue";
 import fetchMock from "jest-fetch-mock";
+import { mockQueueResponse } from "../../../mocks/mocks";
 
 beforeAll(() => {
   fetchMock.enableMocks();
@@ -12,6 +13,7 @@ afterEach(() => {
 
 describe("/api/spotify/queue", () => {
   test("returns success", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockQueueResponse));
     const { req, res } = createMocks({
       query: {
         access_token: localStorage.getItem("access_token"),
@@ -57,6 +59,7 @@ describe("/api/spotify/queue", () => {
   });
 
   test("returns success after multiple calls", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockQueueResponse));
     const { req: req1, res: res1 } = createMocks({
       query: {
         access_token: localStorage.getItem("access_token"),
@@ -67,6 +70,7 @@ describe("/api/spotify/queue", () => {
     await queueHandler(req1, res1);
     expect(res1.statusCode).toBe(200);
 
+    fetchMock.mockResponseOnce(JSON.stringify(mockQueueResponse));
     const { req: req2, res: res2 } = createMocks({
       query: {
         access_token: localStorage.getItem("access_token"),

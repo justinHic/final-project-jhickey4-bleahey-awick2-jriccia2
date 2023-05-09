@@ -1,4 +1,3 @@
-import { access } from "fs";
 import React, { useState, useEffect } from "react";
 const track = {
   name: "",
@@ -114,7 +113,7 @@ export default function Webplayer(props: PlayerProps) {
       <>
         <div className="container">
           <div className="main-wrapper">
-            <b>Test</b>
+            <b>Loading...</b>
           </div>
         </div>
       </>
