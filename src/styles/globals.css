@@ -209,7 +209,7 @@ a {
   color: #3a3a3a;
   font-size: 40px;
   border-style: none;
-  width: 4ch;
+  max-width: 4ch;
   border-radius: 10px 0px 0px 10px;
 }
 
@@ -218,7 +218,7 @@ a {
   color: #3a3a3a;
   font-size: 40px;
   border-style: none;
-  width: 4ch;
+  max-width: 4ch;
   border-radius: 0px 10px 10px 0px;
 }
 
@@ -227,6 +227,7 @@ a {
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  max-width: 100%;
 }
 
 .dropdown {
@@ -271,7 +272,7 @@ a {
   border-style: none;
   cursor: pointer;
   border-radius: 10px;
-  width: 35ch;
+  max-width: 35ch;
   padding: 1ch;
   margin: 1ch;
   color: #d9d9d9;

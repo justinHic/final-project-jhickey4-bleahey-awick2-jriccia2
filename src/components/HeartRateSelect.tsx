@@ -30,7 +30,7 @@ export default function HeartRateSelect(props: HeartRateSelectProps) {
         control: (baseStyles) => ({
           ...baseStyles,
           backgroundColor: "#3a3a3a",
-          width: "35ch",
+          width: "30ch",
         }),
         singleValue: (baseStyles) => ({
           ...baseStyles,

@@ -58,7 +58,7 @@ export default function NumSongsSelect(props: NumSongsSelectProps) {
         control: (baseStyles) => ({
           ...baseStyles,
           backgroundColor: "#3a3a3a",
-          width: "35ch",
+          minWidth: "30ch",
         }),
         singleValue: (baseStyles) => ({
           ...baseStyles,
