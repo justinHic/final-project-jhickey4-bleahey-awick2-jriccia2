@@ -1,3 +1,4 @@
+import { CADENCE_LABEL_TEXT } from "@/resources/strings";
 import { ChangeEvent } from "react";
 
 /**
@@ -27,7 +28,7 @@ export interface CadenceInputProps {
 export default function CadenceInput(props: CadenceInputProps): JSX.Element {
   return (
     <div className="number-input-container">
-      <label className="number-input-label">Cadence:</label>
+      <label className="number-input-label">{CADENCE_LABEL_TEXT}</label>
       <input
         type="number"
         min={50}

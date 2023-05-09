@@ -1,9 +1,9 @@
 import Head from "next/head";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Metronome } from "../scripts/metronome";
 import { NextRouter, useRouter } from "next/router";
 import { MetronomeController } from "@/components/MetronomeController";
-import Webplayer from "@/components/Webplayer";
+import WebPlayer from "@/components/WebPlayer";
 import { genres } from "@/resources/genres";
 import {
   HEAD_TITLE,
@@ -11,10 +11,16 @@ import {
   ACCESS_TOKEN_NAME,
   REFRESH_TOKEN_NAME,
   EXPIRATION_STRING,
+  LOGGED_IN_NO_USERNAME,
+  LOGGED_IN_USERNAME,
+  SAVE_AS_PLAYLIST_TEXT,
+  FIND_SONGS_TEXT,
+  SESSION_EXPIRED_TEXT,
+  RATE_LIMIT_TEXT,
 } from "@/resources/strings";
 import { HR_ZONES } from "@/resources/metrics";
 import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
-import GenreSelect, { defaultGenres } from "@/components/GenreSelect";
+import GenreSelect from "@/components/GenreSelect";
 import { Mode } from "../types/Mode";
 import ModeSelect from "@/components/ModeSelect";
 import MetronomeSwitch from "@/components/MetronomeSwitch";
@@ -27,20 +33,16 @@ import HeightInput from "@/components/HeightInput";
 import EnergyInput from "@/components/EnergyInput";
 import CadenceInput from "@/components/CadenceInput";
 
-interface SongsResponse {
-  uris: string[];
-}
-
 /**
  * The page that is displayed when the user is logged in.
- * @returns The page that is displayed when the user is logged in.
+ * @returns {JSX.Element} The page that is displayed when the user is logged in.
  */
-export default function LoggedIn() {
+export default function LoggedIn(): JSX.Element {
   // State variables - these are used to store data that is used by the page
   const [tempo, setTempo] = useState(170);
   const [metronome, setMetronome] = useState(new Metronome(tempo));
   const [metronomePlaying, setMetronomePlaying] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>(defaultGenres);
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [numSongs, setNumSongs] = useState<number>(0);
   const [ready, setReady] = useState(false);
   const [playerShow, setPlayerShow] = useState(false);
@@ -56,6 +58,7 @@ export default function LoggedIn() {
     id: "",
   });
   const [energy, setEnergy] = useState<number>(0.5);
+  const [webPlayerLoaded, setWebPlayerLoaded] = useState<boolean>(false);
 
   //used to navigate between pages
   const router: NextRouter = useRouter();
@@ -64,10 +67,9 @@ export default function LoggedIn() {
 
   /**
    * The access token data returned from the Spotify API.
-   * @interface
-   * @property {string} access_token - The access token.
-   * @property {number} expires_in - The number of seconds until the access token expires.
-   *  @property {string} refresh_token - The refresh token.
+   * @property {string} access_token The access token.
+   * @property {number} expires_in The number of seconds until the access token expires.
+   * @property {string} refresh_token The refresh token.
    */
   interface AccessTokenData {
     access_token: string;
@@ -141,85 +143,102 @@ export default function LoggedIn() {
     }
   }, [access_token]);
 
-  const handleFindSongs = (): void => {
-    if (mode === Mode.Standard) {
-      if (
-        selectedGenres.length > 0 &&
-        numSongs > 0 &&
-        sex !== undefined &&
-        inches !== undefined &&
-        feet !== undefined
-      ) {
-        let gen: string = sex === Sex.Male ? "true" : "false";
-        let totalInches = 12 * feet + inches;
-
-        const url =
-          "/api/spotify/songs?bpm=" +
-          tempo +
-          "&genres=" +
-          selectedGenres +
-          "&numsongs=" +
-          numSongs +
-          "&access_token=" +
-          localStorage.getItem("access_token") +
-          "&height=" +
-          totalInches +
-          "&male=" +
-          gen +
-          (HR !== undefined ? "&hr=" + HR : "");
-        console.log(url);
-        fetch(url)
-          .then((res) => {
-            console.log("Fetched songs returned status " + res.status);
-            if (res.status === 201) {
-              alert("Session expired. Please refresh page");
-            } else {
-              return res.json();
-            }
-          })
-          .then((json: SongsResponse) => {
-            setSongs(json.uris);
-            console.log(json.uris);
-            setPlayerShow(true);
-          })
-          .catch((err) => console.log(err));
-      }
-    } else if (mode === Mode.Watch) {
-      if (selectedGenres.length > 0 && numSongs > 0 && energy !== undefined) {
-        const url =
-          "/api/spotify/songs?bpm=" +
-          tempo +
-          "&genres=" +
-          selectedGenres +
-          "&numsongs=" +
-          numSongs +
-          "&access_token=" +
-          localStorage.getItem("access_token") +
-          "&energy=" +
-          energy +
-          (HR !== undefined ? "&hr=" + HR : "");
-        fetch(url)
-          .then((res) => {
-            console.log("Fetched songs returned status " + res.status);
-            if (res.status === 201) {
-              alert("Session expired. Please refresh page");
-            } else {
-              return res.json();
-            }
-          })
-          .then((json: SongsResponse) => {
-            setSongs(json.uris);
-            setPlayerShow(true);
-          })
-          .catch((err) => console.log(err));
-      }
-    }
-  };
+  /**
+   * The response from the songs API request.
+   * @property {string[]} uris The URIs of the songs.
+   */
+  interface SongsResponse {
+    uris: string[];
+  }
 
   /**
-   * Helper function to retrieve the user's information from the Spotify API.
+   * Handles the click event for the "Find Songs" button by making a request to the songs API formatted based on the mode.
+   * @returns {void}
    */
-  async function retrieveUserInfo() {
+  function handleFindSongs(): void {
+    switch (mode) {
+      case Mode.Standard:
+        if (
+          selectedGenres.length > 0 &&
+          numSongs > 0 &&
+          sex !== undefined &&
+          inches !== undefined &&
+          feet !== undefined
+        ) {
+          let gen: string = sex === Sex.Male ? "true" : "false";
+          let totalInches = 12 * feet + inches;
+
+          const url =
+            "/api/spotify/songs?bpm=" +
+            tempo +
+            "&genres=" +
+            selectedGenres +
+            "&numsongs=" +
+            numSongs +
+            "&access_token=" +
+            localStorage.getItem("access_token") +
+            "&height=" +
+            totalInches +
+            "&male=" +
+            gen +
+            (HR !== undefined ? "&hr=" + HR : "");
+          console.log(url);
+          fetch(url)
+            .then((res) => {
+              console.log("Fetched songs returned status " + res.status);
+              if (res.status === 201) {
+                alert(SESSION_EXPIRED_TEXT);
+              } else {
+                return res.json();
+              }
+            })
+            .then((json: SongsResponse) => {
+              setSongs(json.uris);
+              console.log(json.uris);
+              setPlayerShow(true);
+            })
+            .catch((err) => console.log(err));
+        }
+        break;
+      case Mode.Watch:
+        if (selectedGenres.length > 0 && numSongs > 0 && energy !== undefined) {
+          const url =
+            "/api/spotify/songs?bpm=" +
+            tempo +
+            "&genres=" +
+            selectedGenres +
+            "&numsongs=" +
+            numSongs +
+            "&access_token=" +
+            localStorage.getItem("access_token") +
+            "&energy=" +
+            energy +
+            (HR !== undefined ? "&hr=" + HR : "");
+          fetch(url)
+            .then((res) => {
+              console.log("Fetched songs returned status " + res.status);
+              if (res.status === 201) {
+                alert("Session expired. Please refresh page");
+              } else {
+                return res.json();
+              }
+            })
+            .then((json: SongsResponse) => {
+              setSongs(json.uris);
+              setPlayerShow(true);
+            })
+            .catch((err) => console.log(err));
+        }
+        break;
+    }
+  }
+
+  /**
+   * Helper function to retrieve the user's information from the Spotify API
+   * using the profile endpoint.
+   * @returns {Promise<void>}
+   */
+  async function retrieveUserInfo(): Promise<void> {
     const url = "/api/spotify/profile?access_token=" + access_token;
     fetch(url)
       .then((res) => res.json())
@@ -235,7 +254,11 @@ export default function LoggedIn() {
       });
   }
 
-  function checkDisabled(): boolean {
+  /**
+   * Checks if the find songs button should be disabled.
+   * @returns {boolean} True if the button should be disabled, false otherwise.
+   */
+  function checkFindSongsButtonDisabled(): boolean {
     if (mode === Mode.Standard) {
       return (
         selectedGenres.length === 0 ||
@@ -251,6 +274,11 @@ export default function LoggedIn() {
     }
   }
 
+  /**
+   * Generates a playlist on the user's Spotify account.
+   * @param {string[]} songs A list of the URIs of the songs to add to the playlist.
+   * @returns {Promise<void>}
+   */
   async function generatePlaylist(songs: string[]): Promise<void> {
     //TODO: Provide a link to the playlist in the UI
     let genres: string = "";
@@ -271,7 +299,7 @@ export default function LoggedIn() {
     ).then(async (res) => {
       console.log("Playlist created with status " + res.status);
       if (res.status === 201) {
-        alert("Session expired. Please refresh page");
+        alert(SESSION_EXPIRED_TEXT);
       } else if (res.status === 200) {
         await res.json().then(async (json) => {
           let playlist_id = json.playlist_id;
@@ -286,11 +314,9 @@ export default function LoggedIn() {
           ).then(async (res) => {
             console.log("Playlist populated with status " + res.status);
             if (res.status === 401) {
-              alert("Session expired. Please refresh page");
+              alert(SESSION_EXPIRED_TEXT);
             } else if (res.status === 429) {
-              alert(
-                "App has exceeded rate limit. Please contact the developer."
-              );
+              alert(RATE_LIMIT_TEXT);
             } else if (res.status === 200) {
               //TODO - Provide a link to the playlist in the UI
             } else {
@@ -324,8 +350,8 @@ export default function LoggedIn() {
             <div className="login-container">
               <p className="user-info">
                 {profile.username === ""
-                  ? "Logged in"
-                  : "Logged in as " + profile.username}
+                  ? LOGGED_IN_NO_USERNAME
+                  : LOGGED_IN_USERNAME + profile.username}
               </p>
               <SpotifyButton
                 action={SpotifyButtonAction.Logout}
@@ -394,22 +420,26 @@ export default function LoggedIn() {
               <button
                 className="search-button hvr-grow"
                 onClick={handleFindSongs}
-                disabled={checkDisabled()}
+                disabled={checkFindSongsButtonDisabled()}
               >
-                FIND SONGS
+                {FIND_SONGS_TEXT}
               </button>
             </div>
             {playerShow ? (
-              <Webplayer songs={songs} access_token={access_token}></Webplayer>
+              <WebPlayer
+                songURIs={songs}
+                accessToken={access_token}
+                setWebPlayerLoaded={setWebPlayerLoaded}
+              ></WebPlayer>
             ) : (
               <></>
             )}
-            {playerShow ? (
+            {webPlayerLoaded ? (
               <button
                 className="search-button hvr-grow"
                 onClick={() => generatePlaylist(songs)}
               >
-                GeneratePlaylist
+                {SAVE_AS_PLAYLIST_TEXT}
               </button>
             ) : (
               <></>

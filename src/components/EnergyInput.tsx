@@ -1,3 +1,4 @@
+import { ENERGY_LABEL_TEXT } from "@/resources/strings";
 import { ChangeEvent } from "react";
 
 /**
@@ -27,7 +28,7 @@ interface EnergyInputProps {
 export default function EnergyInput(props: EnergyInputProps): JSX.Element {
   return (
     <div className="number-input-container">
-      <label className="number-input-label">Energy:</label>
+      <label className="number-input-label">{ENERGY_LABEL_TEXT}</label>
       <input
         type="number"
         min={0}

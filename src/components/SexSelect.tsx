@@ -1,9 +1,9 @@
-import { Dispatch, SetStateAction } from "react";
 import Select, { SingleValue } from "react-select";
 import SelectOption, {
   createSelectOptionsFromStringArray,
 } from "../types/SelectOption";
 import { Sex, parseSex } from "@/types/Sex";
+import { SEX_SELECT_PLACEHOLDER } from "@/resources/strings";
 
 /**
  * The props for the SexSelect component.
@@ -39,6 +39,10 @@ export default function SexSelect(props: SexSelectProps): JSX.Element {
     /*"intersex/other -- future implementation that would require algorithm change",*/
   ]);
 
+  /**
+   * Handles the change of sex.
+   * @param {SingleValue<SelectOption>} newValue The new sex value.
+   */
   function handleSexChange(newValue: SingleValue<SelectOption>): void {
     if (newValue) {
       props.setSex(parseSex(newValue.value));
@@ -51,7 +55,7 @@ export default function SexSelect(props: SexSelectProps): JSX.Element {
       name="sex"
       className="basic-select"
       classNamePrefix="select"
-      placeholder="Select your assigned sex"
+      placeholder={SEX_SELECT_PLACEHOLDER}
       options={sexOptions}
       onChange={handleSexChange}
       styles={{

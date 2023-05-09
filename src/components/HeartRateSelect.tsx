@@ -1,3 +1,4 @@
+import { HEART_RATE_SELECT_PLACEHOLDER } from "@/resources/strings";
 import SelectOption, {
   createSelectOptionsFromStringArray,
 } from "@/types/SelectOption";
@@ -44,7 +45,7 @@ export default function HeartRateSelect(
       name="heart-rate"
       className="basic-select"
       classNamePrefix="select"
-      placeholder="(Optional) Select your heart rate zone..."
+      placeholder={HEART_RATE_SELECT_PLACEHOLDER}
       options={heartRateOptions}
       onChange={(newValue: SingleValue<SelectOption>) =>
         newValue === null ? props.setHR(undefined) : props.setHR(newValue.value)
