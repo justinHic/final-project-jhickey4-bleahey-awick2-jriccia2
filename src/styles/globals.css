@@ -516,6 +516,10 @@ input:checked + .slider:before {
   margin: 0.3rem;
 }
 
+.btn-spotify:hover {
+  cursor: pointer;
+}
+
 .spotify-btn-div {
   display: flex;
   justify-content: center;
@@ -546,5 +550,9 @@ input:checked + .slider:before {
 }
 
 .number-input-label {
+  color: white;
+}
+
+#webplayerloading {
   color: white;
 }

@@ -1,25 +1,38 @@
 import { Metronome } from "@/scripts/metronome";
-import { SetStateAction } from "react";
 
 /**
- *The props for the MetronomeSwitch component
- *
- * @param metronome - The metronome object
- * @param metronomePlaying - The boolean state of the metronome
- * @param setMetronomePlaying - The function to set the state of the metronome
+ * The props for the MetronomeSwitch component.
+ * @property {Metronome} metronome The metronome object.
+ * @property {boolean} metronomePlaying Whether or not the metronome is playing.
+ * @property {(metronomeIsPlaying: boolean) => void} setMetronomePlaying The function to set the metronome playing state.
  */
 interface MetronomeSwitchProps {
+  /**
+   * The metronome object.
+   */
   metronome: Metronome;
+
+  /**
+   * Whether or not the metronome is playing.
+   */
   metronomePlaying: boolean;
-  setMetronomePlaying: (metronomeIsPlaying: SetStateAction<boolean>) => void;
+
+  /**
+   * The function to set the metronome playing state.
+   * @param metronomeIsPlaying Whether or not the metronome is playing.
+   * @returns {void}
+   */
+  setMetronomePlaying: (metronomeIsPlaying: boolean) => void;
 }
 
 /**
- * Provides a switch to turn the metronome on and off
- * @param props - The props for the MetronomeSwitch component
- * @returns The MetronomeSwitch component
+ * A component that allows the user to turn the metronome on and off.
+ * @param props The props for the MetronomeSwitch component.
+ * @returns {JSX.Element} A MetronomeSwitch component.
  */
-export default function MetronomeSwitch(props: MetronomeSwitchProps) {
+export default function MetronomeSwitch(
+  props: MetronomeSwitchProps
+): JSX.Element {
   return (
     <div className="metronome-switch">
       <h3 className="switch-title">

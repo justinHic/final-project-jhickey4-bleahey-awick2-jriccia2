@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
 /**
+ * This function is used to add the songs to a generated playlist.
  *
  * @param req - The request object, containing an access token, playlist ID,
  * and and list of song URIs to add to the playlist
@@ -38,15 +39,18 @@ export default async function playlistPopulatorHandler(
       .then(async (response) => {
         if (response.ok) {
           response.json().then((json) => {
-            res.status(200).json({});
+            res.status(200).json({ uris: json.external_urls.spotify });
           });
         } else {
           response.json().then((json) => {
             console.log(json);
-            res.status(405).end();
+            res.status(json.error.status).end(json.error.message);
           });
         }
       })
-      .catch((error) => console.log("error", error));
+      .catch((error) => {
+        console.log("error", error);
+        res.status(500).end();
+      });
   }
 }

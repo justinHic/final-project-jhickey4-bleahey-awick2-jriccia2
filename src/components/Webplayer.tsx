@@ -114,7 +114,7 @@ export default function Webplayer(props: PlayerProps) {
       <>
         <div className="container">
           <div className="main-wrapper">
-            <b>Test</b>
+            <b id="webplayerloading">Loading...</b>
           </div>
         </div>
       </>

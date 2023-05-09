@@ -2,12 +2,24 @@ import type { NextApiRequest, NextApiResponse } from "next";
 const client_id = "d4f1fb65364d48f38e76c1d7c26da3ae";
 const redirect_uri = "http://localhost:3000/loggedin"; // Your redirect uri
 
+/**
+ * The data that is returned from the spotify api
+ * @field access_token The access token that is used to make requests to the spotify api
+ * @field expires_in The time in seconds that the access token is valid for
+ * @field refresh_token The refresh token that is used to get a new access token
+ */
 type data = {
   access_token: string;
   expires_in: number;
   refresh_token: string;
 };
 
+/**
+ * The handler for the refresh token
+ * @param req The request that is sent to the server
+ * @param res The response that is sent to the client
+ * @returns The data that is returned from the spotify api
+ */
 export default async function refreshHandler(
   req: NextApiRequest,
   res: NextApiResponse<data>

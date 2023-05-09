@@ -10,6 +10,9 @@ interface SpotifyButtonProps {
   router: NextRouter;
 }
 
+/**
+ *
+ */
 interface RedirectURL {
   url: string;
 }

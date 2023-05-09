@@ -2,24 +2,40 @@ import Select, { MultiValue } from "react-select";
 import SelectOption, {
   createSelectOptionsFromStringArray,
 } from "../types/SelectOption";
-import { Dispatch, SetStateAction } from "react";
 
 /**
- * Props for GenreSelect component.
- * @param genres - Array of strings representing all genres.
- * @param selectedGenres - Array of strings representing the selected genres.
- * @param setSelectedGenres - Function to update the selectedGenres prop.
- * @param maxLimit - Maximum number of genres that can be selected.
+ * The props of the GenreSelect component.
+ * @property {string[]} genres The genres to display in the Select element.
+ * @property {string[]} selectedGenres The genres that are currently selected.
+ * @property {(selectedGenres: string[]) => void} setSelectedGenres The function to call when the selected genres are changed.
+ * @property {number} maxLimit The maximum number of genres that can be selected.
  */
 interface GenreSelectProps {
+  /**
+   * The genres to display in the Select element.
+   */
   genres: string[];
+
+  /**
+   * The genres that are currently selected.
+   */
   selectedGenres: string[];
-  setSelectedGenres: Dispatch<SetStateAction<string[]>>;
+
+  /**
+   * The function to call when the selected genres are changed.
+   * @param {string[]} selectedGenres The new selected genres.
+   * @returns {void}
+   */
+  setSelectedGenres: (selectedGenres: string[]) => void;
+
+  /**
+   * The maximum number of genres that can be selected.
+   */
   maxLimit: number;
 }
 
 /**
- * Default genres to display when the user has not searched for anything.
+ * The default genres to display when the user has not searched for anything.
  */
 export const defaultGenres: string[] = [
   "classic peruvian pop",
@@ -29,12 +45,10 @@ export const defaultGenres: string[] = [
 
 /**
  * Component for selecting genres.
- * @param props - Props for GenreSelect component.
- * @returns A GenreSelect component.
+ * @param {GenreSelectProps} props Props for the GenreSelect.
+ * @returns {JSX.Element} A GenreSelect component.
  */
-export default function GenreSelect(
-  props: GenreSelectProps
-): React.ReactElement {
+export default function GenreSelect(props: GenreSelectProps): JSX.Element {
   const genreOptions: SelectOption[] = createSelectOptionsFromStringArray(
     props.genres
   );
@@ -44,10 +58,10 @@ export default function GenreSelect(
     );
 
   /**
-   * Updates the selectedGenres prop when the value of the Select element is changed
+   * Updates the selectedGenres prop when the value of the Select element is changed.
    *
-   * @param newValue - The new value of the Select element.
-   * @returns void
+   * @param {MultiValue<SelectOption | undefined>} newValue The new value of the Select element.
+   * @returns {void}
    */
   function handleGenreChange(
     newValue: MultiValue<SelectOption | undefined>
@@ -83,6 +97,10 @@ export default function GenreSelect(
           ...baseStyles,
           backgroundColor: "#3a3a3a",
           width: "35ch",
+        }),
+        input: (provided) => ({
+          ...provided,
+          color: "white",
         }),
       }}
     />
