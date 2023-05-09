@@ -3,6 +3,7 @@ import SelectOption, {
   createSelectOptionsFromStringArray,
 } from "../types/SelectOption";
 import { Sex, parseSex } from "@/types/Sex";
+import { SEX_SELECT_PLACEHOLDER } from "@/resources/strings";
 
 /**
  * The props for the SexSelect component.
@@ -54,7 +55,7 @@ export default function SexSelect(props: SexSelectProps): JSX.Element {
       name="sex"
       className="basic-select"
       classNamePrefix="select"
-      placeholder="Select your assigned sex"
+      placeholder={SEX_SELECT_PLACEHOLDER}
       options={sexOptions}
       onChange={handleSexChange}
       styles={{

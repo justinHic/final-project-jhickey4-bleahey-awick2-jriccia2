@@ -1,3 +1,9 @@
+import {
+  ACCESS_TOKEN_NAME,
+  WEBPLAYER_LOADING_TEXT,
+  WEBPLAYER_PAUSE,
+  WEBPLAYER_PLAY,
+} from "@/resources/strings";
 import React, { useState, useEffect } from "react";
 import { Track, emptyTrack } from "../types/WebPlayerDataTypes";
 
@@ -46,7 +52,7 @@ export default function WebPlayer(props: WebPlayerProps): JSX.Element {
         setDeviceId(device_id);
         fetch(
           "/api/spotify/transfer?access_token=" +
-            localStorage.getItem("access_token") +
+            localStorage.getItem(ACCESS_TOKEN_NAME) +
             "&id=" +
             device_id
         ).then(() => {
@@ -104,7 +110,7 @@ export default function WebPlayer(props: WebPlayerProps): JSX.Element {
       setTrack(emptyTrack);
       fetch(
         "/api/spotify/transfer?access_token=" +
-          localStorage.getItem("access_token") +
+          localStorage.getItem(ACCESS_TOKEN_NAME) +
           "&id=" +
           device_id
       ).then(() => {
@@ -125,7 +131,7 @@ export default function WebPlayer(props: WebPlayerProps): JSX.Element {
       <>
         <div className="container">
           <div className="main-wrapper">
-            <b id="webplayerloading">Loading...</b>
+            <b id="webplayerloading">{WEBPLAYER_LOADING_TEXT}</b>
           </div>
         </div>
       </>
@@ -162,7 +168,7 @@ export default function WebPlayer(props: WebPlayerProps): JSX.Element {
                     if (player !== undefined) player.togglePlay();
                   }}
                 >
-                  {is_paused ? "PLAY" : "PAUSE"}
+                  {is_paused ? WEBPLAYER_PLAY : WEBPLAYER_PAUSE}
                 </button>
 
                 <button

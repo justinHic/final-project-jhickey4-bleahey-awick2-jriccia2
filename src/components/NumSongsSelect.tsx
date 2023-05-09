@@ -3,6 +3,7 @@ import SelectOption, {
   createSelectOptionsFromNumberArray,
 } from "../types/SelectOption";
 import Select, { SingleValue } from "react-select";
+import { NUM_SONGS_SELECT_PLACEHOLDER } from "@/resources/strings";
 
 /**
  * The props for the NumSongsSelect component.
@@ -81,7 +82,7 @@ export default function NumSongsSelect(
       value={selectedOption}
       className="basic-select"
       classNamePrefix="select"
-      placeholder="Select number of songs..."
+      placeholder={NUM_SONGS_SELECT_PLACEHOLDER}
       onChange={handleNumSongsChange}
       styles={{
         control: (baseStyles) => ({

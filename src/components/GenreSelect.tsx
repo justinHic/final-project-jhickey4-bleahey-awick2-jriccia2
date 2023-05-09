@@ -1,3 +1,4 @@
+import { GENRE_SELECT_PLACEHOLDER } from "@/resources/strings";
 import Select, { MultiValue } from "react-select";
 import SelectOption, {
   createSelectOptionsFromStringArray,
@@ -81,7 +82,7 @@ export default function GenreSelect(props: GenreSelectProps): JSX.Element {
       value={selectedOptions}
       className="basic-multi-select"
       classNamePrefix="select"
-      placeholder="Select genres..."
+      placeholder={GENRE_SELECT_PLACEHOLDER}
       onChange={handleGenreChange}
       styles={{
         control: (baseStyles) => ({

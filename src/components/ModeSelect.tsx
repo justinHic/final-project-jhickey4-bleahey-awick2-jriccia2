@@ -1,6 +1,7 @@
 import { ChangeEvent, SetStateAction } from "react";
 import { Mode } from "../types/Mode";
 import { Metronome } from "@/scripts/metronome";
+import { MODE_TEXT_STANDARD, MODE_TEXT_WATCH } from "@/resources/strings";
 
 /**
  * The props for the ModeSelect component.
@@ -59,8 +60,8 @@ export default function ModeSelect(props: ModeSelectProps): JSX.Element {
       }}
       className="dropdown hvr-grow"
     >
-      <option value={Mode.Standard}>Standard mode</option>
-      <option value={Mode.Watch}>Watch mode</option>
+      <option value={Mode.Standard}>{MODE_TEXT_STANDARD}</option>
+      <option value={Mode.Watch}>{MODE_TEXT_WATCH}</option>
     </select>
   );
 }

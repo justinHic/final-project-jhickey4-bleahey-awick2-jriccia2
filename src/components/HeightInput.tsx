@@ -1,3 +1,8 @@
+import {
+  HEIGHT_LABEL_FEET,
+  HEIGHT_LABEL_INCHES,
+  HEIGHT_TITLE,
+} from "@/resources/strings";
 import { ChangeEvent } from "react";
 
 /**
@@ -29,7 +34,7 @@ export interface HeightInputProps {
 export default function HeightInput(props: HeightInputProps): JSX.Element {
   return (
     <>
-      <p className="height-title">Please enter your height</p>
+      <p className="height-title">{HEIGHT_TITLE}</p>
       <div className="height-div">
         <input
           type="number"
@@ -42,7 +47,7 @@ export default function HeightInput(props: HeightInputProps): JSX.Element {
             props.setFeet(parseInt(event.target.value))
           }
         ></input>
-        <label className="height-label">ft</label>
+        <label className="height-label">{HEIGHT_LABEL_FEET}</label>
         <input
           type="number"
           id="quantity"
@@ -54,7 +59,7 @@ export default function HeightInput(props: HeightInputProps): JSX.Element {
             props.setInches(parseInt(event.target.value))
           }
         ></input>
-        <label className="height-label">in</label>
+        <label className="height-label">{HEIGHT_LABEL_INCHES}</label>
       </div>
     </>
   );
