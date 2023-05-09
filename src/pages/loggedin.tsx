@@ -299,7 +299,6 @@ export default function LoggedIn(): JSX.Element {
    * @returns {Promise<void>}
    */
   async function generatePlaylist(songs: string[]): Promise<void> {
-    //TODO: Provide a link to the playlist in the UI
     let genres: string = "";
     selectedGenres.forEach((genre: string) => {
       genres = genres + genre + " ";
