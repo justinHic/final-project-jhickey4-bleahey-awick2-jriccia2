@@ -84,7 +84,8 @@ export default function LoggedIn(): JSX.Element {
   // Does not allow the user to access the page if there was an error during
   // the login process
   if (error !== undefined) {
-    router.push("/").then(() => setReady(true));
+    console.error(error);
+    logout();
   }
   //waits for the router to be ready before checking for code
   //if code is present, exchange it for an access token, refresh token, and expiration time
@@ -110,11 +111,13 @@ export default function LoggedIn(): JSX.Element {
           });
         setReady(true);
       } else if (access && refresh_token && expires_at) {
-        if (new Date(expires_at).valueOf() - new Date().valueOf() <= 0) {
+        if (refresh_token === "undefined") {
+          console.log("Logged out: invalid refresh token");
+          logout();
+        } else if (new Date(expires_at).valueOf() - new Date().valueOf() <= 0) {
           fetch("/api/spotify/refresh?refresh_token=" + refresh_token)
             .then((res) => res.json())
             .then((json) => {
-              console.log(json);
               const expirationTime = new Date();
               expirationTime.setSeconds(
                 expirationTime.getSeconds() + json.expires_in
@@ -133,10 +136,20 @@ export default function LoggedIn(): JSX.Element {
         }
         setReady(true);
       } else {
-        router.push("/").then(() => setReady(true));
+        console.log("Logged out: missing authorization tokens");
+        logout();
       }
     }
   }, [code]);
+
+  /**
+   * Helper function to logout the user
+   */
+  function logout(): void {
+    localStorage.clear();
+    sessionStorage.clear();
+    router.push("/");
+  }
 
   // Retrieve user info from Spotify API after access token is set
   useEffect(() => {
@@ -202,7 +215,7 @@ export default function LoggedIn(): JSX.Element {
               console.log(json.uris);
               setPlayerShow(true);
             })
-            .catch((err) => console.log(err));
+            .catch((err) => console.error(err));
         }
         break;
       case Mode.Watch:
@@ -233,7 +246,7 @@ export default function LoggedIn(): JSX.Element {
               setSongs(json.uris);
               setPlayerShow(true);
             })
-            .catch((err) => console.log(err));
+            .catch((err) => console.error(err));
         }
         break;
     }
