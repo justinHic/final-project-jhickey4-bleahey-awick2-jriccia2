@@ -89,7 +89,7 @@ export default async function songHandler(
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         res.status(405).end();
       });
   } else {

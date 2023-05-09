@@ -18,6 +18,7 @@ import {
   SESSION_EXPIRED_TEXT,
   RATE_LIMIT_TEXT,
   OPEN_IN_SPOTIFY_TEXT,
+  UNAUTHORIZED_TEXT,
 } from "@/resources/strings";
 import { HR_ZONES } from "@/resources/metrics";
 import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
@@ -112,7 +113,7 @@ export default function LoggedIn(): JSX.Element {
         setReady(true);
       } else if (access && refresh_token && expires_at) {
         if (refresh_token === "undefined") {
-          console.log("Logged out: invalid refresh token");
+          alert(SESSION_EXPIRED_TEXT);
           logout();
         } else if (new Date(expires_at).valueOf() - new Date().valueOf() <= 0) {
           fetch("/api/spotify/refresh?refresh_token=" + refresh_token)
@@ -194,7 +195,7 @@ export default function LoggedIn(): JSX.Element {
             "&numsongs=" +
             numSongs +
             "&access_token=" +
-            localStorage.getItem("access_token") +
+            localStorage.getItem(ACCESS_TOKEN_NAME) +
             "&height=" +
             totalInches +
             "&male=" +
@@ -229,7 +230,7 @@ export default function LoggedIn(): JSX.Element {
             "&numsongs=" +
             numSongs +
             "&access_token=" +
-            localStorage.getItem("access_token") +
+            localStorage.getItem(ACCESS_TOKEN_NAME) +
             "&energy=" +
             energy +
             (HR !== undefined ? "&hr=" + HR : "");
@@ -237,7 +238,7 @@ export default function LoggedIn(): JSX.Element {
             .then((res) => {
               console.log("Fetched songs returned status " + res.status);
               if (res.status === 201) {
-                alert("Session expired. Please refresh page");
+                alert(SESSION_EXPIRED_TEXT);
               } else {
                 return res.json();
               }
@@ -259,17 +260,32 @@ export default function LoggedIn(): JSX.Element {
    */
   async function retrieveUserInfo(): Promise<void> {
     const url = "/api/spotify/profile?access_token=" + access_token;
+
     fetch(url)
-      .then((res) => res.json())
-      .then((json: SpotifyProfile) => {
-        if (
-          json.username !== null &&
-          json.username !== undefined &&
-          json.id !== null &&
-          json.id !== undefined
-        ) {
-          setProfile(json);
+      .then((res) => {
+        if (res.status === 401) {
+          alert(UNAUTHORIZED_TEXT);
+          logout();
+        } else {
+          res
+            .json()
+            .then((json: SpotifyProfile) => {
+              if (
+                json.username !== null &&
+                json.username !== undefined &&
+                json.id !== null &&
+                json.id !== undefined
+              ) {
+                setProfile(json);
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+            });
         }
+      })
+      .catch((err) => {
+        console.error(err);
       });
   }
 
