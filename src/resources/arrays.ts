@@ -126,6 +126,3 @@ export const genres = [
   "work-out",
   "world-music",
 ];
-
-//numbered list 1-100
-export const NUM_SONGS = Array.from(Array(100).keys()).map((x) => x + 1);

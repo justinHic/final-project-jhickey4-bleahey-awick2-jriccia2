@@ -432,8 +432,8 @@ export default function LoggedIn(): JSX.Element {
                 />
 
                 <NumSongsSelect
-                  min={0}
-                  max={10}
+                  min={1}
+                  max={100}
                   numSongs={numSongs}
                   setNumSongs={setNumSongs}
                 />
