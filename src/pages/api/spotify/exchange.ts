@@ -16,14 +16,15 @@ type data = {
 
 /**
  * Handles the exchange of the authorization code for the access token and refresh token
+ *
  * @param {NextApiRequest} req - The request object containing the code and state
  * @param {NextApiResponse} res - The response object
- * @returns {Promise<void>} - The response object
+ * @returns {Promise<void | JSON>} - The response object
  */
 export default async function exchangeHandler(
   req: NextApiRequest,
   res: NextApiResponse<data>
-) {
+): Promise<void | JSON> {
   // The code created in the first step of the authorization process
   const code = req.query.code;
   // The state of the application

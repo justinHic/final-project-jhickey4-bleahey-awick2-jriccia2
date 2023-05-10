@@ -8,7 +8,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async function playlistBuilderHandler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void | JSON> {
   const { access_token, id, playlist_name, playlist_description } = req.query;
   if (
     isString(access_token) &&

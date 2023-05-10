@@ -18,7 +18,7 @@ type data = {
 export default function verifyHandler(
   req: NextApiRequest, // res is not used but is inherited from NextApiResponse
   res: NextApiResponse<data>
-) {
+): void | JSON {
   const state: string = generateRandomString(16);
   const scope: string =
     "user-read-private user-read-email streaming user-modify-playback-state user-read-playback-state user-read-currently-playing playlist-modify-public playlist-modify-private app-remote-control";

@@ -11,7 +11,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async function playlistPopulatorHandler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void | JSON> {
   const { access_token, playlist_id, song_uris } = req.query;
   if (
     !isString(access_token) ||

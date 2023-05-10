@@ -28,7 +28,7 @@ interface track {
 export default async function songHandler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void | JSON> {
   const { bpm, genres, numsongs, hr, height, male, access_token } = req.query;
   let { energy } = req.query;
 

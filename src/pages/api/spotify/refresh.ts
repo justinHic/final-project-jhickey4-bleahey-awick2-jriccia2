@@ -24,7 +24,7 @@ type data = {
 export default async function refreshHandler(
   req: NextApiRequest,
   res: NextApiResponse<data>
-) {
+): Promise<void | JSON> {
   const refresh_token = req.query.refresh_token;
   if (refresh_token === undefined || Array.isArray(refresh_token)) {
     res.status(400).end();

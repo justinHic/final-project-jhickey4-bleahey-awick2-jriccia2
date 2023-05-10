@@ -14,7 +14,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async function profileHandler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void | JSON> {
   // Retrieve the access token from the query parameters
   const { access_token } = req.query;
 

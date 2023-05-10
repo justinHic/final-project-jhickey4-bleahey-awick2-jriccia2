@@ -11,11 +11,18 @@ import {
 } from "@/resources/strings";
 import SpotifyButton, { SpotifyButtonAction } from "@/components/SpotifyButton";
 
-export default function Home() {
+/**
+ * The homepage for the application.
+ * @returns {JSX.Element} the application homepage.
+ */
+export default function Home(): JSX.Element {
+  // routes between pages in the site
   const router = useRouter();
+  // state to determine if the page is ready to be rendered
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    // if the user is already logged in, redirect to the logged in page
     if (
       localStorage.getItem(ACCESS_TOKEN_NAME) &&
       localStorage.getItem(REFRESH_TOKEN_NAME) &&

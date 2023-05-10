@@ -10,7 +10,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async function queueHandler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void | JSON> {
   // Retrieve the access token, song uris, and device id from the query parameters
   const { access_token, song_uris, device_id } = req.query;
 
