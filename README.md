@@ -53,6 +53,10 @@ To learn more about Next.js, take a look at the following resources:
 
 ## Getting Started
 
+### Prerequisites
+
+A Spotify Premium account is required to use CaDance's services, as Spotify's web player feature is limited to Premium users.
+
 ### Running the application -- users
 
 The application is [deployed on Vercel](https://cadance-deployment.vercel.app) and can be run on any device with a web browser.
