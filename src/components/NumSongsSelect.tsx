@@ -90,6 +90,12 @@ export default function NumSongsSelect(
   );
 }
 
+/**
+ * Generates a list of possible number songs values
+ * @param min - the minimum value in the list
+ * @param max - the maximum value in the list
+ * @returns a list of numbers for the potential values in the list
+ */
 function generateNumSongs(min: number, max: number): number[] {
   return Array.from(Array(max - min + 1).keys()).map((x) => x + min);
 }
