@@ -16,7 +16,7 @@ Joey Ricciarduli (jriccia2)
 https://github.com/cs0320-s2023/final-project-jhickey4-bleahey-awick2-jriccia2
 
 **Description:**
-CaDance is a web applicationthat allows users to create short queues of songs
+CaDance is a web application that allows users to create short queues of songs
 that match up to their running cadence and estimated energy expenditure.
 
 **Privacy/Use of Data:**
