@@ -36,6 +36,10 @@ export default function EnergyInput(props: EnergyInputProps): JSX.Element {
         step={0.01}
         value={props.energy}
         onChange={(event: ChangeEvent<HTMLInputElement>) => {
+          if (isNaN(parseFloat(event.target.value))) {
+            return props.setEnergy(0);
+          }
+
           let toSet: number = parseFloat(event.target.value);
 
           if (toSet > 1) {

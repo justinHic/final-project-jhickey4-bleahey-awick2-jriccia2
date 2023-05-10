@@ -1,5 +1,5 @@
+import { isString } from "@/resources/utils";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
 /**
  * This function is used to add the songs to a generated playlist.
@@ -11,15 +11,12 @@ import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 export default async function playlistPopulatorHandler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void | JSON> {
   const { access_token, playlist_id, song_uris } = req.query;
   if (
-    access_token === undefined ||
-    Array.isArray(access_token) ||
-    playlist_id === undefined ||
-    Array.isArray(playlist_id) ||
-    song_uris === undefined ||
-    Array.isArray(song_uris)
+    !isString(access_token) ||
+    !isString(playlist_id) ||
+    !isString(song_uris)
   ) {
     res.status(400).end();
   } else {

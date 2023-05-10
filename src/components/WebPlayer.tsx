@@ -63,7 +63,10 @@ export default function WebPlayer(props: WebPlayerProps): JSX.Element {
               JSON.stringify(props.songURIs) +
               "&device_id=" +
               device_id
-          );
+          ).catch((err) => {
+            console.log(err);
+            return;
+          });
         });
       });
 
@@ -78,6 +81,14 @@ export default function WebPlayer(props: WebPlayerProps): JSX.Element {
       });
       player.on("account_error", ({ message }) => {
         console.error("Failed to validate Spotify account", message);
+        if (message.includes("premium users only")) {
+          alert(
+            "You must have a Premium Spotify account to access the Web Player."
+          );
+          //POTENTIAL TODO: return the list of songs for them to use regardless.
+
+          //OTHER OPTION: skip webplayer, just give them a playlist
+        }
       });
       player.on("playback_error", ({ message }) => {
         console.error("Failed to perform playback", message);

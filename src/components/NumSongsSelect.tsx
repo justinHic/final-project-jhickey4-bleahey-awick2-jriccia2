@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import SelectOption, {
   createSelectOptionsFromNumberArray,
 } from "../types/SelectOption";
@@ -44,18 +43,9 @@ interface NumSongsSelectProps {
 export default function NumSongsSelect(
   props: NumSongsSelectProps
 ): JSX.Element {
-  const numSongsOptions: SelectOption[] = createSelectOptionsFromNumberArray([
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10, //TODO: use min and max
-  ]);
+  const numSongsOptions: SelectOption[] = createSelectOptionsFromNumberArray(
+    generateNumSongs(props.min, props.max)
+  );
   /**
    * The currently selected option.
    */
@@ -97,4 +87,14 @@ export default function NumSongsSelect(
       }}
     />
   );
+}
+
+/**
+ * Generates a list of possible number songs values
+ * @param min - the minimum value in the list
+ * @param max - the maximum value in the list
+ * @returns a list of numbers for the potential values in the list
+ */
+function generateNumSongs(min: number, max: number): number[] {
+  return Array.from(Array(max - min + 1).keys()).map((x) => x + min);
 }

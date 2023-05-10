@@ -1,10 +1,11 @@
 import { cadenceToEnergy, hrToEnergy } from "@/scripts/algorithms";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { CADENCE_WEIGHT, HR_WEIGHT } from "@/resources/metrics";
-import { Console } from "console";
+import { isString } from "@/resources/utils";
 
 /**
- * A list of tracks
+ * A list of tracks returned by the Spotify API
+ * @property tracks - the tracks
  */
 interface Tracks {
   tracks: track[];
@@ -18,10 +19,16 @@ interface track {
   uri: string;
 }
 
+/**
+ * The api route for getting songs from spotify.
+ *
+ * @param req - The request object containing the query parameters
+ * @param res - The response object containing the uris of the songs
+ */
 export default async function songHandler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void | JSON> {
   const { bpm, genres, numsongs, hr, height, male, access_token } = req.query;
   let { energy } = req.query;
 
@@ -56,15 +63,18 @@ export default async function songHandler(
         }
       }
     }
-    let x = "seed_genres=";
-    copiedGenres.forEach((val) => (x += val + "%2C"));
-    x = x.substring(0, x.length - 3);
-    x += "&target_tempo=" + bpm;
-    x += "&limit=" + numsongs;
-    x += "&target_energy=" + energy;
+    // genres will be added based on the user's preferences
+    let params = "seed_genres=";
+    //add each genre to the seed
+    copiedGenres.forEach((val) => (params += val + "%2C"));
+    params = params.substring(0, params.length - 3);
+    params += "&target_tempo=" + bpm;
+    params += "&limit=" + numsongs;
+    params += "&target_energy=" + energy;
     const result = await fetch(
+      // example url:
       //"https://api.spotify.com/v1/recommendations?seed_genres=club%2Cpop&target_tempo=120&target_liveness=1&target_energy=1",
-      "https://api.spotify.com/v1/recommendations?" + x,
+      "https://api.spotify.com/v1/recommendations?" + params,
       {
         headers: {
           Authorization: "Bearer " + access_token,
@@ -84,31 +94,28 @@ export default async function songHandler(
           if (result.status === 401) {
             res.status(401).json({ error: "access token expired" });
           } else {
+            // unknown error
             console.log(result.status);
+            res.status(result.status).end();
           }
         }
       })
       .catch((err) => {
-        console.log(err);
+        // unknown error
+        console.error(err);
         res.status(405).end();
       });
   } else {
+    // invalid query parameters
     res.status(405).end();
   }
 }
 
-function isString(item: any): item is string {
-  if (item === undefined) return false;
-  if (Array.isArray(item)) return false;
-  return true;
-}
-
-function convertHR(hr: string): number {
-  let arr = hr.split("-");
-  let diff = (parseInt(arr[1]) - parseInt(arr[0])) / 2;
-  return parseInt(arr[1]) - diff;
-}
-
+/**
+ * checks if the given json is a list of tracks
+ * @param json - the json to check
+ * @returns true if the json is a list of tracks, false otherwise
+ */
 function isTracks(json: any): json is Tracks {
   return json.tracks !== undefined;
 }

@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 const client_id = "d4f1fb65364d48f38e76c1d7c26da3ae";
-const redirect_uri = "http://localhost:3000/loggedin"; // Your redirect uri
 
 /**
  * The data that is returned from the spotify api
@@ -15,7 +14,9 @@ type data = {
 };
 
 /**
- * The handler for the refresh token
+ * The API endpoint for getting the refresh token. This is used to get a new
+ * access token when the current access token expires.
+ *
  * @param req The request that is sent to the server
  * @param res The response that is sent to the client
  * @returns The data that is returned from the spotify api
@@ -23,7 +24,7 @@ type data = {
 export default async function refreshHandler(
   req: NextApiRequest,
   res: NextApiResponse<data>
-) {
+): Promise<void | JSON> {
   const refresh_token = req.query.refresh_token;
   if (refresh_token === undefined || Array.isArray(refresh_token)) {
     res.status(400).end();
@@ -39,7 +40,6 @@ export default async function refreshHandler(
           "Content-Type": "application/x-www-form-urlencoded",
           Accept: "application/json",
         },
-        //`grant_type=authorization_code&code=${code}&redirect_uri=${redirect_uri}`,
         body: new URLSearchParams({
           grant_type: "refresh_token",
           refresh_token: refresh_token,

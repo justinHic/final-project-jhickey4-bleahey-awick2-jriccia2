@@ -1,11 +1,20 @@
+import { isString } from "@/resources/utils";
 import type { NextApiRequest, NextApiResponse } from "next";
 
+/**
+ * This API route is used to queue songs to the web player.
+ *
+ * @param req The request object - contains the access token, song uris, and device id
+ * @param res The response object - contains the result of the request
+ */
 export default async function queueHandler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void | JSON> {
+  // Retrieve the access token, song uris, and device id from the query parameters
   const { access_token, song_uris, device_id } = req.query;
 
+  // If any of the parameters are undefined, send an error response
   if (isString(access_token) && isString(song_uris) && isString(device_id)) {
     const uris = JSON.parse(song_uris);
     const body = JSON.stringify({
@@ -15,8 +24,12 @@ export default async function queueHandler(
       },
       position_ms: 0,
     });
+    // Defines the max number of times to retry the fetch request
     let tries = 5;
+    // Fetches the result of starting playback on the web player
     const fetchResult: any = async () => {
+      // Recursive function that retries the fetch request if it fails
+      // This is necessary because the Spotify API sometimes returns a 502 error
       const result = await fetch(
         "https://api.spotify.com/v1/me/player/play?device_id=" + device_id,
         {
@@ -51,10 +64,4 @@ export default async function queueHandler(
   } else {
     res.status(400).end();
   }
-}
-
-function isString(item: any): item is string {
-  if (item === undefined) return false;
-  if (Array.isArray(item)) return false;
-  return true;
 }

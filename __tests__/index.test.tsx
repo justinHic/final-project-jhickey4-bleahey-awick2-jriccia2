@@ -1,26 +1,30 @@
-// __tests__/index.test.jsx
-
-import { render, screen } from "@testing-library/react";
-import Home from "../src/pages/index";
-import "@testing-library/jest-dom";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useRouter } from "next/router";
+import Home from "@/pages/index";
+
+jest.mock("next/router", () => ({
+  useRouter: jest.fn(),
+}));
 
 describe("Home", () => {
-  it("test metronome", async () => {
+  let mockRouterPush: jest.Mock;
+
+  beforeEach(() => {
+    mockRouterPush = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({ push: mockRouterPush });
+    localStorage.clear();
+  });
+
+  // test("renders app title and description", async () => {
+  //   expect(screen.getByText("CaDance")).toBeInTheDocument();
+  //   expect(
+  //     screen.getByText("A fine tuned running and listening experience")
+  //   ).toBeInTheDocument();
+  // });
+
+  test("does not navigate to loggedin page when tokens are not available", async () => {
     render(<Home />);
-    const metroSwitch = screen.getByLabelText("metronome switch");
-    const increase = screen.getByLabelText("increase tempo");
-    const decrease = screen.getByLabelText("decrease tempo");
-    const tempoText = screen.getByLabelText("current tempo");
-    expect(increase).toBeInTheDocument();
-    expect(decrease).toBeInTheDocument();
-    expect(tempoText).toBeInTheDocument();
-    expect(metroSwitch).toBeInTheDocument();
-    expect(tempoText).toHaveTextContent("Tempo: OFF");
-    await userEvent.click(increase);
-    expect(tempoText).toHaveTextContent("Tempo: OFF");
-    //starts at 100 again
-    await userEvent.click(decrease);
-    expect(tempoText).toHaveTextContent("Tempo: OFF");
+    await waitFor(() => expect(mockRouterPush).not.toHaveBeenCalled());
   });
 });

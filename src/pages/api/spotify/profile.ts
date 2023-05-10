@@ -14,18 +14,28 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async function profileHandler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void | JSON> {
+  // Retrieve the access token from the query parameters
   const { access_token } = req.query;
 
-  //TODO: error check response
-  if (access_token === undefined || Array.isArray(access_token)) {
+  // If the access token is undefined, send an error response
+  if (
+    access_token === undefined ||
+    access_token === "undefined" ||
+    Array.isArray(access_token)
+  ) {
     res.status(400).end();
   } else {
+    // Retrieve the user's profile information from the Spotify API
     const response = await fetch("https://api.spotify.com/v1/me", {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
     });
+    // If the response status is 401 or 403, send a user unauthorized response
+    if (response.status === 401 || response.status === 403) {
+      res.status(401).end();
+    }
     await response
       .json()
       .then((json) => {
@@ -34,6 +44,8 @@ export default async function profileHandler(
         res.status(200).json({ username: displayName, id: id });
       })
       .catch((err) => {
+        // If an error occurs, log it and send an internal server error response
+        console.error(err);
         res.status(500).end(err.message);
       });
   }
