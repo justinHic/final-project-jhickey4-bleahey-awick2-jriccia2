@@ -4,7 +4,7 @@ import { Metronome } from "../scripts/metronome";
 import { NextRouter, useRouter } from "next/router";
 import { MetronomeController } from "@/components/MetronomeController";
 import WebPlayer from "@/components/WebPlayer";
-import { genres } from "@/resources/genres";
+import { genres } from "@/resources/arrays";
 import {
   HEAD_TITLE,
   APP_TITLE,

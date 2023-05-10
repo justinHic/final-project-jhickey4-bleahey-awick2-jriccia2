@@ -4,6 +4,7 @@ import SelectOption, {
 } from "../types/SelectOption";
 import Select, { SingleValue } from "react-select";
 import { NUM_SONGS_SELECT_PLACEHOLDER } from "@/resources/strings";
+import { NUM_SONGS } from "@/resources/arrays";
 
 /**
  * The props for the NumSongsSelect component.
@@ -44,18 +45,8 @@ interface NumSongsSelectProps {
 export default function NumSongsSelect(
   props: NumSongsSelectProps
 ): JSX.Element {
-  const numSongsOptions: SelectOption[] = createSelectOptionsFromNumberArray([
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10, //TODO: use min and max
-  ]);
+  const numSongsOptions: SelectOption[] =
+    createSelectOptionsFromNumberArray(NUM_SONGS);
   /**
    * The currently selected option.
    */
