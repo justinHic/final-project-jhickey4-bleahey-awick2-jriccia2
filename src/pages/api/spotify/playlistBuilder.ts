@@ -1,6 +1,4 @@
-import { Console } from "console";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { isConstructorDeclaration } from "typescript";
 /**
  * Creates a playlist for the user with the given name and description.
  * @param req - The request object, containing an access token, username,
@@ -37,12 +35,10 @@ export default async function playlistBuilderHandler(
       .then(async (response) => {
         if (response.ok) {
           await response.json().then((json) => {
-            res
-              .status(200)
-              .json({
-                playlist_id: json.id,
-                playlist_url: json.external_urls.spotify,
-              });
+            res.status(200).json({
+              playlist_id: json.id,
+              playlist_url: json.external_urls.spotify,
+            });
           });
         } else {
           await response.json().then((json) => {

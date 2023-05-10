@@ -2,11 +2,21 @@ import type { NextApiRequest, NextApiResponse } from "next";
 const client_id = "d4f1fb65364d48f38e76c1d7c26da3ae";
 const redirect_uri = "http://localhost:3000/loggedin"; // Your redirect uri
 
+/**
+ * The data returned by the API route
+ */
 type data = {
   url: string;
 };
+
+/**
+ * Generates a random string of the given length
+ *
+ * @param req - The request object (not use but is inherited from NextApiRequest)
+ * @param res - The response object containing the url to redirect to
+ */
 export default function verifyHandler(
-  req: NextApiRequest,
+  req: NextApiRequest, // res is not used but is inherited from NextApiResponse
   res: NextApiResponse<data>
 ) {
   const state: string = generateRandomString(16);
@@ -28,6 +38,13 @@ export default function verifyHandler(
   });
 }
 
+/**
+ * Generates a URL with the given search params
+ *
+ * @param url - The url to add the search params to
+ * @param params - The search params to add to the url
+ * @returns The url with the search params
+ */
 function generateUrlWithSearchParams(
   url: string,
   params: URLSearchParams
@@ -37,6 +54,12 @@ function generateUrlWithSearchParams(
   return urlObject.toString();
 }
 
+/**
+ * Generates a random string of the given length for the state parameter
+ *
+ * @param length - The length of the string to generate
+ * @returns The generated string
+ */
 function generateRandomString(length: number): string {
   let text = "";
   const possible =

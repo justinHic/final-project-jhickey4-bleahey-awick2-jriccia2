@@ -1,3 +1,4 @@
+import { isString } from "@/resources/utils";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -19,10 +20,4 @@ export default async function handler(
   } else {
     res.status(405).end();
   }
-}
-
-function isString(item: any): item is string {
-  if (item === undefined) return false;
-  if (Array.isArray(item)) return false;
-  return true;
 }
