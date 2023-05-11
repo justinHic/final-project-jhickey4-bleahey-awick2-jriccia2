@@ -140,7 +140,13 @@ for songs, and retrieving audio features for songs based on mocked data.
 
 ### Integration tests
 
-TODO
+We faced a roadblock in testing the application's integration with the Spotify API.
+The main issue here is that to make queries to the Spotify API, we need to log in with
+a valid Spotify Premium account. The way that we do this is by calling our `verify` API
+endpoint, which redirects the user to a Spotify login page. Once the user logs in, they
+are then redirected back to the webapp. When considering how to integration test, we
+were unsure of how to login to Spotify in order to make our API calls. For that reason
+we were only able to unit test our endpoints and mock the API responses from Spotify.
 
 ### Running Tests
 
@@ -157,7 +163,7 @@ This will run all tests in the '**tests**' directory.
 
 ### Known Bugs
 
-- The application does not work perfectly on safari, as the Spotify Web Playback
+- The application does not work perfectly on Safari, as the Spotify Web Playback
   SDK is not supported on Safari. The application will still work, but the buttons
   on the player have little to no functionality.
 

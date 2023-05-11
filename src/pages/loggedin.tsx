@@ -263,8 +263,11 @@ export default function LoggedIn(): JSX.Element {
 
     fetch(url)
       .then((res) => {
-        if (res.status === 401) {
+        if (res.status === 403) {
           alert(UNAUTHORIZED_TEXT);
+          logout();
+        } else if (res.status === 401) {
+          console.log("Logged out: missing authorization tokens");
           logout();
         } else {
           res
